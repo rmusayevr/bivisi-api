@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.conf import settings
 from django.dispatch import receiver
-from .models import OtpToken
+from .models import OTPToken
 from .utils.otp import generate_otp
 from django.core.mail import send_mail
 from django.utils import timezone
@@ -14,25 +14,25 @@ def create_token(sender, instance, created, **kwargs):
             pass
         else:
             otp_code = generate_otp(instance.id)
-            OtpToken.objects.create(user=instance, otp_code=otp_code, otp_expires_at=timezone.now(
+            OTPToken.objects.create(user=instance, otp_code=otp_code, otp_expires_at=timezone.now(
             ) + timezone.timedelta(minutes=2))
 
-        otp = OtpToken.objects.filter(user=instance).last()
+            otp = OTPToken.objects.filter(user=instance).last()
 
-        subject = "Email Verification"
-        message = f"""
-                                Hi {instance.username}, here is your OTP {otp.otp_code}
-                                it expires in 2 minute, use the url below to redirect back to the website
-                                http://localhost:8000/api/user/verify-otp/
+            subject = "Email Verification"
+            message = f"""
+                                    Hi {instance.username}, here is your OTP {otp.otp_code}
+                                    it expires in 2 minute, use the url below to redirect back to the website
+                                    http://localhost:8000/api/user/verify-otp/
 
-                                """
-        sender = settings.AUTH_USER_MODEL
-        receiver = [instance.email, ]
+                                    """
+            sender = settings.AUTH_USER_MODEL
+            receiver = [instance.email, ]
 
-        send_mail(
-            subject,
-            message,
-            sender,
-            receiver,
-            fail_silently=False,
-        )
+            send_mail(
+                subject,
+                message,
+                sender,
+                receiver,
+                fail_silently=False,
+            )

@@ -5,6 +5,7 @@ from django.core.mail import send_mail
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -49,7 +50,19 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.username
 
 
-class OtpToken(models.Model):
+class PhoneNumber(models.Model):
+    phone = PhoneNumberField(_('phone number'), unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_phone_number')
+
+    class Meta:
+        verbose_name = _('Phone Number')
+        verbose_name_plural = _('Phone Numbers')
+
+    def __str__(self):
+        return f"{self.user.get_full_name()}'s phone number"
+
+
+class OTPToken(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE, related_name="user_otp_code")
     otp_code = models.CharField(max_length=6)
@@ -58,4 +71,8 @@ class OtpToken(models.Model):
     is_verified = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.user.username
+        return f"{self.user.get_full_name()}'s OTP token"
+
+    class Meta:
+        verbose_name = _('OTP Token')
+        verbose_name_plural = _('OTP Tokens')

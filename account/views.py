@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView
 from .utils.otp import generate_otp
-from .models import User, OtpToken
+from .models import User, OTPToken
 from .serializers import (
     LoginTokenSerializer,
     RegisterSerializer,
@@ -41,7 +41,7 @@ class OTPVerifyAPIView(APIView):
         email = serializer.validated_data['email']
         otp_code = serializer.validated_data['otp_code']
 
-        otp_token = OtpToken.objects.get(
+        otp_token = OTPToken.objects.get(
             user__email=email, otp_code=otp_code)
 
         if otp_token.otp_expires_at is not None and otp_token.otp_expires_at < timezone.now():
@@ -71,7 +71,7 @@ class OTPResendAPIView(APIView):
         user = User.objects.get(email=email)
 
         try:
-            otp_token = OtpToken.objects.get(user=user)
+            otp_token = OTPToken.objects.get(user=user)
         except ObjectDoesNotExist:
             return Response({'message': 'User not found.'}, status=status.HTTP_400_BAD_REQUEST)
 

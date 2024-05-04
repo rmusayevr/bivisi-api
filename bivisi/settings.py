@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     'drf_yasg',
     'django_rest_passwordreset',
+    "phonenumber_field",
 
     'account.apps.AccountConfig',
 ]
