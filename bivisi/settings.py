@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'parler',
     'corsheaders',
     'rest_framework_simplejwt',
+    'rest_framework_swagger',
+    'drf_yasg',
     'django_rest_passwordreset',
 
     'account.apps.AccountConfig',

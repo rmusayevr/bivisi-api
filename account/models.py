@@ -8,10 +8,10 @@ from django.contrib.auth.base_user import AbstractBaseUser
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(_('username'), max_length=20, unique=True)
+    username = models.CharField(_('username'), max_length=60, unique=True)
     email = models.EmailField(_('email address'), unique=True)
-    first_name = models.CharField(_('first name'), max_length=30)
-    last_name = models.CharField(_('last name'), max_length=30)
+    first_name = models.CharField(_('first name'), max_length=50)
+    last_name = models.CharField(_('last name'), max_length=50)
     date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
     is_active = models.BooleanField(_('active'), default=False)
     is_staff = models.BooleanField(_('staff'), default=False)
