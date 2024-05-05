@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from datetime import timedelta
 import os
 from pathlib import Path
+from import_export.formats.base_formats import CSV, XLSX
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -51,8 +52,11 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_rest_passwordreset',
     "phonenumber_field",
+    'import_export',
 
     'account.apps.AccountConfig',
+    'core',
+
 ]
 
 MIDDLEWARE = [
@@ -182,3 +186,6 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'rasmusayevhad@gmail.com'
 EMAIL_HOST_PASSWORD = 'aykusnezygsrtxgp' 
+
+IMPORT_EXPORT_FORMATS = [CSV, XLSX]
+

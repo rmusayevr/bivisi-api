@@ -25,6 +25,7 @@ from rest_framework.permissions import AllowAny
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/user/', include('account.urls')),
+    path('api/', include('core.urls')),
 ]
 
 schema_view = get_schema_view(
