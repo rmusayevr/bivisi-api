@@ -56,6 +56,7 @@ INSTALLED_APPS = [
 
     'account.apps.AccountConfig',
     'core',
+    'product',
 
 ]
 
@@ -188,4 +189,3 @@ EMAIL_HOST_USER = 'rasmusayevhad@gmail.com'
 EMAIL_HOST_PASSWORD = 'aykusnezygsrtxgp' 
 
 IMPORT_EXPORT_FORMATS = [CSV, XLSX]
-
