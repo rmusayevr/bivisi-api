@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
 from phonenumber_field.modelfields import PhoneNumberField
+from services.uploader import Uploader
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -13,6 +14,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
     first_name = models.CharField(_('first name'), max_length=50)
     last_name = models.CharField(_('last name'), max_length=50)
+    avatar = models.ImageField(_("avatar"), upload_to=Uploader.user_avatar, max_length=500, null=True, blank=True)
     date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
     is_active = models.BooleanField(_('active'), default=False)
     is_staff = models.BooleanField(_('staff'), default=False)
