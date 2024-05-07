@@ -4,7 +4,9 @@ from .views import (
     LoginTokenView,
     OTPVerifyAPIView,
     OTPResendAPIView,
-    SendEmailResetPasswordAPIView
+    SendEmailResetPasswordAPIView,
+    ResetPasswordAPIView,
+    ChangePasswordAPIView,
 )
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
@@ -15,9 +17,13 @@ urlpatterns = [
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     path('register/', RegisterAPIView.as_view(), name='register'),
-    path('verify-otp/', OTPVerifyAPIView.as_view(), name='verify-otp'),
-    path('resend-otp/', OTPResendAPIView.as_view(), name='resend-otp'),
+    path('verify_otp/', OTPVerifyAPIView.as_view(), name='verify-otp'),
+    path('resend_otp/', OTPResendAPIView.as_view(), name='resend-otp'),
 
-    path('reset-password/', SendEmailResetPasswordAPIView.as_view(),
+    path('send_email_reset_password/', SendEmailResetPasswordAPIView.as_view(),
+         name='send-email-reset-password'),
+    path('reset_password/', ResetPasswordAPIView.as_view(),
          name='reset-password'),
+    path('change_password/<int:pk>/', ChangePasswordAPIView.as_view(),
+         name='change-password'),
 ]

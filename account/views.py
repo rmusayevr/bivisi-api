@@ -2,7 +2,7 @@ from django.conf import settings
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView
 from .utils.otp import generate_otp
 from .models import User, OTPToken
 from .serializers import (
@@ -10,10 +10,11 @@ from .serializers import (
     RegisterSerializer,
     VerifyOTPSerializer,
     ResendOTPSerializer,
-    ResetPasswordSerializer
+    ResetPasswordSerializer,
+    ChangePasswordSerializer
 )
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.utils import timezone
 from django.core.mail import send_mail
@@ -139,7 +140,6 @@ class ResetPasswordAPIView(CreateAPIView):
     permission_classes = (AllowAny, )
     serializer_class = ResetPasswordSerializer
 
-
     def post(self, request):
         serializer = ResetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -155,3 +155,9 @@ class ResetPasswordAPIView(CreateAPIView):
         user.save()
 
         return Response({'message': 'Password reset successfully.'}, status=status.HTTP_200_OK)
+
+
+class ChangePasswordAPIView(UpdateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (IsAuthenticated, )
+    serializer_class = ChangePasswordSerializer
