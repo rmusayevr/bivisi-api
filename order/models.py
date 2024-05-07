@@ -1,9 +1,10 @@
 from django.db import models
 from product.models import Product
 from account.models import User
+from services.mixins import DateMixin
 
 
-class Wishlist(models.Model):
+class Wishlist(DateMixin):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="user_wishlist")
     items = models.ManyToManyField(Product, related_name="products_wishlist")
@@ -16,7 +17,7 @@ class Wishlist(models.Model):
         verbose_name_plural = "Wishlists"
 
 
-class BasketItem(models.Model):
+class BasketItem(DateMixin):
     quantity = models.PositiveIntegerField(default=0)
     product = models.ForeignKey(Product, on_delete=models.CASCADE,
                                 null=True, blank=True, related_name="product_basket_item")
@@ -44,7 +45,7 @@ class BasketItem(models.Model):
         verbose_name_plural = "Basket Items"
 
 
-class Basket(models.Model):
+class Basket(DateMixin):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="user_basket")
     items = models.ManyToManyField(BasketItem, related_name="basket_items")
