@@ -23,7 +23,7 @@ def create_token(sender, instance, created, **kwargs):
             message = f"""
                                     Hi {instance.username}, here is your OTP {otp.otp_code}
                                     it expires in 2 minute, use the url below to redirect back to the website
-                                    http://localhost:8000/api/user/verify-otp/
+                                    http://localhost:5173/user/verify-otp
 
                                     """
             sender = settings.AUTH_USER_MODEL

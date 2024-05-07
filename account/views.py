@@ -86,7 +86,7 @@ class OTPResendAPIView(APIView):
         message = f"""
                                 Hi {user.username}, here is your OTP {otp_token.otp_code}
                                 it expires in 2 minute, use the url below to redirect back to the website
-                                http://localhost:8000/api/user/verify-otp/{user.username}/
+                                http://localhost:5173/user/verify-otp
 
                                 """
         sender = settings.AUTH_USER_MODEL
@@ -120,7 +120,7 @@ class SendEmailResetPasswordAPIView(APIView):
         subject = "Email Verification"
         message = f"""
                                 Hi {user.username}, use the url below to redirect back to the website
-                                http://localhost:8000/api/user/reset-password/{user.username}/
+                                http://localhost:5173/user/reset-password
 
                                 """
         sender = settings.AUTH_USER_MODEL
