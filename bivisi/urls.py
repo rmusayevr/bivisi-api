@@ -24,9 +24,11 @@ from rest_framework.permissions import AllowAny
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', include('product.urls')),
     path('api/user/', include('account.urls')),
     path('api/core/', include('core.urls')),
-    path('api/', include('product.urls')),
+    path('api/order/', include('order.urls')),
+
 ]
 
 schema_view = get_schema_view(
@@ -43,8 +45,10 @@ schema_view = get_schema_view(
 )
 
 urlpatterns += [
-    path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
-    path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+    path("swagger/", schema_view.with_ui("swagger",
+         cache_timeout=0), name="schema-swagger-ui"),
+    path("redoc/", schema_view.with_ui("redoc",
+         cache_timeout=0), name="schema-redoc"),
 ]
 
 

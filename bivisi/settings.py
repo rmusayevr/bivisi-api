@@ -55,9 +55,9 @@ INSTALLED_APPS = [
     'import_export',
 
     'account.apps.AccountConfig',
-    'core',
-    'product',
-
+    'core.apps.CoreConfig',
+    'product.apps.ProductConfig',
+    'order.apps.OrderConfig',
 ]
 
 MIDDLEWARE = [
@@ -181,11 +181,11 @@ CORS_ALLOW_ALL_ORIGINS = True
 AUTH_USER_MODEL = 'account.User'
 AUTHENTICATION_BACKENDS = ['account.backends.EmailBackend']
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' 
-EMAIL_HOST = 'smtp.gmail.com' 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'rasmusayevhad@gmail.com'
-EMAIL_HOST_PASSWORD = 'aykusnezygsrtxgp' 
+EMAIL_HOST_PASSWORD = 'aykusnezygsrtxgp'
 
 IMPORT_EXPORT_FORMATS = [CSV, XLSX]
