@@ -14,6 +14,7 @@ from datetime import timedelta
 import os
 from pathlib import Path
 from import_export.formats.base_formats import CSV, XLSX
+from bivisi.jazzmin import JAZZMIN_SETTINGS, JAZZMIN_UI_TWEAKS
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -189,3 +190,6 @@ EMAIL_HOST_USER = 'rasmusayevhad@gmail.com'
 EMAIL_HOST_PASSWORD = 'aykusnezygsrtxgp'
 
 IMPORT_EXPORT_FORMATS = [CSV, XLSX]
+
+JAZZMIN_SETTINGS = JAZZMIN_SETTINGS
+JAZZMIN_UI_TWEAKS =JAZZMIN_UI_TWEAKS
