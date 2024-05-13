@@ -55,7 +55,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         if not any(_.isupper() for _ in attrs['password_confirm']):
             raise serializers.ValidationError(
                 {"error": "There must be at least 1 uppercase letter in the password."})
-
         return attrs
 
     def create(self, validated_data):
@@ -67,7 +66,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         user.set_password(validated_data['password'])
         user.save()
-
         return user
 
 
@@ -97,14 +95,12 @@ class ResetPasswordSerializer(serializers.Serializer):
         if not any(_.isupper() for _ in attrs['new_password_confirm']):
             raise serializers.ValidationError(
                 {"error": "There must be at least 1 uppercase letter in the password."})
-
         if attrs["email"]:
             user = User.objects.get(email=attrs["email"])
             if not user:
                 raise serializers.ValidationError("User not found!")
             if not user.is_active:
                 raise serializers.ValidationError("Email not activated!")
-
         return attrs
 
 
@@ -131,17 +127,13 @@ class ChangePasswordSerializer(serializers.Serializer):
                 {"error": "There must be at least 1 uppercase letter in the password."})
 
         user = self.context['request'].user
-        print(user)
 
         if not user.check_password(attrs['current_password']):
             raise serializers.ValidationError(
                 {"current_password": "Wrong password."})
-
         return attrs
 
     def update(self, instance, validated_data):
-
         instance.set_password(validated_data['new_password'])
         instance.save()
-
         return instance

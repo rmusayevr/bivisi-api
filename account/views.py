@@ -111,16 +111,26 @@ class SendEmailResetPasswordAPIView(APIView):
         serializer.is_valid(raise_exception=True)
 
         email = serializer.validated_data['email']
+        user = User.objects.get(email=email)
 
         try:
-            user = User.objects.get(email=email)
-        except Exception:
+            otp_token = OTPToken.objects.get(user=user)
+            otp_token.is_verified = False
+            otp_token.save()
+        except ObjectDoesNotExist:
             return Response({'message': 'User not found.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        new_otp_code = generate_otp(user.id)
+
+        otp_token.otp_code = new_otp_code
+        otp_token.otp_expires_at = timezone.now() + timezone.timedelta(minutes=2)
+        otp_token.save()
 
         subject = "Email Verification"
         message = f"""
-                                Hi {user.username}, use the url below to redirect back to the website
-                                http://localhost:5173/user/reset-password
+                                Hi {user.username}, here is your OTP {otp_token.otp_code}
+                                it expires in 2 minute, use the url below to redirect back to the website
+                                http://localhost:5173/user/verify-otp
 
                                 """
         sender = settings.AUTH_USER_MODEL
