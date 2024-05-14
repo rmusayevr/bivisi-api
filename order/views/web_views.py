@@ -1,16 +1,16 @@
 from rest_framework.views import APIView
-from .models import Wishlist, Basket, BasketItem
-from .serializers import WishlistSerializer, BasketSerializer, BasketItemSerializer
+from ..models import Wishlist, Basket, BasketItem
+from ..serializers import WishlistReadSerializer, BasketReadSerializer, BasketItemReadSerializer
 from product.models import Product
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated
 
 
 class WishlistAPIView(APIView):
-    queryset = Wishlist.objects.all()
-    serializer_class = WishlistSerializer
+    serializer_class = WishlistReadSerializer
     http_method_names = ['get', 'post', 'delete']
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         obj, created = Wishlist.objects.get_or_create(user=request.user)
@@ -44,8 +44,9 @@ class WishlistAPIView(APIView):
 
 
 class BasketAPIView(APIView):
-    serializer_class = BasketSerializer
+    serializer_class = BasketReadSerializer
     http_method_names = ['get', 'post', 'delete']
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         obj, created = Basket.objects.get_or_create(
@@ -69,7 +70,7 @@ class BasketAPIView(APIView):
             basket1.items.add(basket2)
             arr = []
             for item in basket1.items.all():
-                serializer = BasketItemSerializer(item)
+                serializer = BasketItemReadSerializer(item)
                 arr.append(serializer.data)
             data = serializer.data
             data["message"] = {
