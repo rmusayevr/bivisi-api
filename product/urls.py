@@ -1,17 +1,20 @@
 from django.urls import path
-from .views import (CategoryListCreateAPIView,
+from .views.web_views.product import WebProductVideoTypeListView
+from .views.web_views.product_and_comment_like import ToggleProductCommentLikeAPIView, ToggleProductLikeAPIView
+from .views.admin_views.views import (CategoryListCreateAPIView,
                     CategoryRetrieveUpdateDestroyAPIView,
+                    DashboardProductVideoTypeListCreateAPIView,
+                    DashboardProductVideoTypeRetrieveUpdateDestroyAPIView,
                     ProductCommentLikeListCreateAPIView,
                     ProductCommentLikeRetrieveUpdateDestroyAPIView,
                     ProductCommentListCreateAPIView,
                     ProductCommentRetrieveUpdateDestroyAPIView,
                     ProductListCreateAPIView,
                     ProductRetrieveUpdateDestroyAPIView,
-                    ProductVideoTypeListCreateAPIView,
-                    ProductVideoTypeRetrieveUpdateDestroyAPIView,
                     UserProductLikeListCreateAPIView,
                     UserProductLikeRetrieveUpdateDestroyAPIView,
                     )
+
 
 
 
@@ -24,9 +27,12 @@ urlpatterns = [
     path('product/', ProductListCreateAPIView.as_view(), name='product_list_create'),
     path('product/<int:pk>/', ProductRetrieveUpdateDestroyAPIView.as_view(), name='product_detail'),
 
-    # Product Video Type URLs
-    path('product_video_type/', ProductVideoTypeListCreateAPIView.as_view(), name='product_video_type_list_create'),
-    path('product_video_type/<int:pk>/', ProductVideoTypeRetrieveUpdateDestroyAPIView.as_view(), name='product_video_type_detail'),
+    # Dashboard Product Video Type URLs
+    path('dashboard_product_video_type/', DashboardProductVideoTypeListCreateAPIView.as_view(), name='dashboard_product_video_type_list_create'),
+    path('dashboard_product_video_type/<int:pk>/', DashboardProductVideoTypeRetrieveUpdateDestroyAPIView.as_view(), name='dashboard_product_video_type_detail'),
+
+    # Web Product Video Type URLs
+    path('web_products/', WebProductVideoTypeListView.as_view(), name='web_products_list'),
 
     # User Product Like URLs
     path('user_product_like/', UserProductLikeListCreateAPIView.as_view(), name='user_product_like_list_create'),
@@ -39,5 +45,11 @@ urlpatterns = [
     # Product Comment Like  URLs
     path('product_comment_like/', ProductCommentLikeListCreateAPIView.as_view(), name='product_comment_like_list_create'),
     path('product_comment_like/<int:pk>/', ProductCommentLikeRetrieveUpdateDestroyAPIView.as_view(), name='product_comment_like_detail'),
+
+    # Product Like
+    path('toggle_product_like/<int:product_id>/', ToggleProductLikeAPIView.as_view(), name='toggle_product_like'),
+
+    # Product Like
+    path('toggle_product_comment_like/<int:product_comment_id>/', ToggleProductCommentLikeAPIView.as_view(), name='toggle_product_comment_like'),
 
 ]

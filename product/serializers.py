@@ -44,10 +44,34 @@ class CategoryCREATESerializer(serializers.ModelSerializer):
 
 # ****************************************  <<<< PRODUCT VIDEO TYPE START >>>>  ****************************************
 
-class ProductVideoTypeSerializer(serializers.ModelSerializer):
+class DashboardProductVideoTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVideoType
-        fields = ['id', 'product_type', 'video_url', 'product', 'created_at', 'updated_at']
+        fields = ['id', 'product_type', 'video_url', 'cover_image_url','product', 'created_at', 'updated_at']
+
+
+class ProductForTypeSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    comment_count = serializers.SerializerMethodField()  # Add this line
+
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'price', 'in_sale', 'percent', 'final_price', 'view_count', 'like_count', 'category', 'user', 'comment_count', 'created_at', 'updated_at']
+
+    def get_user(self, obj):
+        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
+
+    def get_comment_count(self, obj):
+        # Return the count of comments related to the product
+        return obj.product_comment.count()
+
+
+class WebProductVideoTypeSerializer(serializers.ModelSerializer):
+    product = ProductForTypeSerializer(read_only=True)
+
+    class Meta:
+        model = ProductVideoType
+        fields = ['id', 'product_type', 'video_url', 'cover_image_url','product', 'created_at', 'updated_at']
 
 # ****************************************  <<<< PRODUCT VIDEO TYPE END >>>>   ****************************************
 
@@ -66,12 +90,15 @@ class ProductCREATESerializer(serializers.ModelSerializer):
 
 
 class ProductREADSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    product_video_type = ProductVideoTypeSerializer(many=True, read_only=True)
+    user = serializers.SerializerMethodField()
+    product_video_type = DashboardProductVideoTypeSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'product_video_type', 'price', 'in_sale', 'percent', 'final_price', 'view_count', 'like_count', 'category', 'user', 'created_at', 'updated_at']
+
+    def get_user(self, obj):
+        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
 
 # ****************************************  <<<< PRODUCT END >>>>  ****************************************
 
@@ -103,7 +130,7 @@ class UserProductLikeCREATESerializer(serializers.ModelSerializer):
 # ****************************************  <<<< PRODUCT COMMENT START >>>>  ****************************************
 
 class ProductCommentREADSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
+    user = serializers.SerializerMethodField()
     product = serializers.SerializerMethodField()
     parent_comment = serializers.SerializerMethodField()
 
@@ -121,6 +148,9 @@ class ProductCommentREADSerializer(serializers.ModelSerializer):
 
     def get_product(self, obj):
         return {'id': obj.product.id, 'name': obj.product.name}
+
+    def get_user(self, obj):
+        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
 
 
 class ProductCommentCREATESerializer(serializers.ModelSerializer):
