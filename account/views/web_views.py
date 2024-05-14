@@ -31,7 +31,7 @@ class RegisterAPIView(CreateAPIView):
     serializer_class = RegisterSerializer
 
 
-class OTPVerifyAPIView(APIView):
+class OTPVerifyAPIView(CreateAPIView):
     permission_classes = (AllowAny, )
     serializer_class = VerifyOTPSerializer
 
@@ -60,7 +60,7 @@ class OTPVerifyAPIView(APIView):
             return Response({'message': 'OTP already verified.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class OTPResendAPIView(APIView):
+class OTPResendAPIView(CreateAPIView):
     permission_classes = (AllowAny, )
     serializer_class = ResendOTPSerializer
 
@@ -102,7 +102,7 @@ class OTPResendAPIView(APIView):
         return Response({'message': 'New OTP code has been sent.'})
 
 
-class SendEmailResetPasswordAPIView(APIView):
+class SendEmailResetPasswordAPIView(CreateAPIView):
     permission_classes = (AllowAny, )
     serializer_class = ResendOTPSerializer
 
