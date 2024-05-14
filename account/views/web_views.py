@@ -3,9 +3,9 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView, UpdateAPIView
-from .utils.otp import generate_otp
-from .models import User, OTPToken
-from .serializers import (
+from ..utils.otp import generate_otp
+from ..models import User, OTPToken
+from ..serializers import (
     LoginTokenSerializer,
     RegisterSerializer,
     VerifyOTPSerializer,

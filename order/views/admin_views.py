@@ -1,4 +1,3 @@
-from rest_framework import filters
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from services.pagination import InfiniteScrollPagination
 from ..models import Wishlist, BasketItem, Basket

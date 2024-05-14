@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import (
+from .views.web_views import (
     RegisterAPIView,
     LoginTokenView,
     OTPVerifyAPIView,
@@ -7,6 +7,10 @@ from .views import (
     SendEmailResetPasswordAPIView,
     ResetPasswordAPIView,
     ChangePasswordAPIView,
+)
+from .views.admin_views import (
+    SubscriptionListCreateAPIView,
+    SubscriptionRetrieveUpdateDestroyAPIView,
 )
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
@@ -26,4 +30,9 @@ urlpatterns = [
          name='reset-password'),
     path('change_password/<int:pk>/', ChangePasswordAPIView.as_view(),
          name='change-password'),
+
+    path('admin/subscription/', SubscriptionListCreateAPIView.as_view(),
+         name='subscription_list_create'),
+    path('admin/subscription/<int:pk>/', SubscriptionRetrieveUpdateDestroyAPIView.as_view(),
+         name='subscription_detail'),
 ]

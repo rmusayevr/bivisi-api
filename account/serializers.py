@@ -1,4 +1,4 @@
-from .models import User
+from .models import User, PhoneNumber, Subscription
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
@@ -137,3 +137,19 @@ class ChangePasswordSerializer(serializers.Serializer):
         instance.set_password(validated_data['new_password'])
         instance.save()
         return instance
+
+
+class SubscriptionReadSerializer(serializers.ModelSerializer):
+    follower = serializers.StringRelatedField()
+    follows = serializers.StringRelatedField()
+
+    class Meta:
+        model = Subscription
+        fields = ['id', 'follower', 'follows']
+
+
+class SubscriptionCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Subscription
+        fields = ['id', 'follower', 'follows']

@@ -22,7 +22,7 @@ urlpatterns = [
 
     # Basket Item URLs
     path('admin/basket_item/', BasketItemListCreateAPIView.as_view(),
-         name='basketItem_list_create'),
+         name='basket_item_list_create'),
     path('admin/basket_item/<int:pk>/',
          BasketItemRetrieveUpdateDestroyAPIView.as_view(), name='basket_item_detail'),
 
