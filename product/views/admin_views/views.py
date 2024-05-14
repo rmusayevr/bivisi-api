@@ -1,16 +1,17 @@
+import django_filters.rest_framework
 from rest_framework import filters
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from .models import Category, Product, ProductComment, ProductCommentLike, ProductVideoType, UserProductLike
+from ...models import Category, Product, ProductComment, ProductCommentLike, ProductVideoType, UserProductLike
 from services.pagination import InfiniteScrollPagination
-from .serializers import (CategoryCREATESerializer,
+from ...serializers import (CategoryCREATESerializer,
                         CategoryREADSerializer,
+                        DashboardProductVideoTypeSerializer,
                         ProductCREATESerializer,
                         ProductCommentCREATESerializer,
                         ProductCommentLikeCREATESerializer,
                         ProductCommentLikeREADSerializer,
                         ProductCommentREADSerializer,
                         ProductREADSerializer,
-                        ProductVideoTypeSerializer,
                         UserProductLikeCREATESerializer,
                         UserProductLikeREADSerializer
                         )
@@ -48,6 +49,11 @@ class CategoryRetrieveUpdateDestroyAPIView(GenericAPIViewSerializerMixin, Retrie
 class ProductListCreateAPIView(GenericAPIViewSerializerMixin, ListCreateAPIView):
     queryset = Product.objects.all()
     pagination_class = InfiniteScrollPagination
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['category']
+    search_fields = ['name']
+    ordering_fields = ['view_count', 'like_count', 'created_at']  # Specify fields allowed to be ordered
+    ordering = ['-created_at']
     serializer_classes = {
         'GET' : ProductREADSerializer,
         'POST' : ProductCREATESerializer
@@ -57,6 +63,7 @@ class ProductListCreateAPIView(GenericAPIViewSerializerMixin, ListCreateAPIView)
 # Product GET & PUT & PATCH & DELETE
 class ProductRetrieveUpdateDestroyAPIView(GenericAPIViewSerializerMixin, RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
+    pagination_class = InfiniteScrollPagination
     serializer_classes = {
         'GET' : ProductREADSerializer,
         'PUT' : ProductCREATESerializer,
@@ -65,15 +72,20 @@ class ProductRetrieveUpdateDestroyAPIView(GenericAPIViewSerializerMixin, Retriev
 
 
 # Product Video Type GET & POST
-class ProductVideoTypeListCreateAPIView(ListCreateAPIView):
+class DashboardProductVideoTypeListCreateAPIView(ListCreateAPIView):
     queryset = ProductVideoType.objects.all()
-    serializer_class = ProductVideoTypeSerializer
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['product', 'product_type']
+    ordering_fields = ['created_at']  # Specify fields allowed to be ordered
+    ordering = ['-created_at']
+    pagination_class = InfiniteScrollPagination
+    serializer_class = DashboardProductVideoTypeSerializer
 
 
 # Product Video Type GET & PUT & PATCH & DELETE
-class ProductVideoTypeRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+class DashboardProductVideoTypeRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = ProductVideoType.objects.all()
-    serializer_class = ProductVideoTypeSerializer
+    serializer_class = DashboardProductVideoTypeSerializer
 
 
 # User Product Like GET & POST
