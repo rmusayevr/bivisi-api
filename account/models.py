@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
 from phonenumber_field.modelfields import PhoneNumberField
+from services.mixins import DateMixin
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -52,7 +53,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.username
 
 
-class PhoneNumber(models.Model):
+class PhoneNumber(DateMixin):
     phone = PhoneNumberField(_('phone number'), unique=True)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='user_phone_number')
@@ -79,3 +80,18 @@ class OTPToken(models.Model):
     class Meta:
         verbose_name = _('OTP Token')
         verbose_name_plural = _('OTP Tokens')
+
+
+class Subscription(DateMixin):
+    follower = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='following')
+    follows = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='followers')
+
+    class Meta:
+        verbose_name = _('Subscription')
+        verbose_name_plural = _('Subscriptions')
+        unique_together = (('follower', 'follows'),)
+
+    def __str__(self):
+        return f"{self.follower.username} follows {self.follows.username}"

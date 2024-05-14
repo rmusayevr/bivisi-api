@@ -1,14 +1,15 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
-
-from .models import User, PhoneNumber
+from import_export.admin import ImportExportModelAdmin
+from .models import User, PhoneNumber, Subscription
 
 
 class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'email', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'avatar')}),
+        (_('Personal info'), {
+         'fields': ('first_name', 'last_name', 'avatar')}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff',
          'is_superuser', 'groups', 'user_permissions')}),
     )
@@ -28,4 +29,18 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(User, UserAdmin)
 
-admin.site.register(PhoneNumber)
+
+class PhoneNumberAdmin(ImportExportModelAdmin):
+    list_display = ('id', 'user', 'phone', 'created_at', 'updated_at')
+    search_fields = ('user__username', )
+    list_filter = ('created_at', 'updated_at')
+
+
+class SubscriptionAdmin(ImportExportModelAdmin):
+    list_display = ('id', 'follower', 'follows', 'created_at', 'updated_at')
+    search_fields = ('follower__username', 'follows__username')
+    list_filter = ('created_at', 'updated_at')
+
+
+admin.site.register(PhoneNumber, PhoneNumberAdmin)
+admin.site.register(Subscription, SubscriptionAdmin)
