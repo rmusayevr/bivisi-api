@@ -42,7 +42,8 @@ class OTPVerifyAPIView(CreateAPIView):
         otp_code = serializer.validated_data['otp_code']
 
         try:
-            otp_token = OTPToken.objects.get(user__email=email, otp_code=otp_code)
+            otp_token = OTPToken.objects.get(
+                user__email=email, otp_code=otp_code)
         except OTPToken.DoesNotExist:
             return Response(data={"message": 'Invalid email or OTP code.'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -70,7 +71,10 @@ class OTPResendAPIView(CreateAPIView):
         serializer.is_valid(raise_exception=True)
 
         email = serializer.validated_data['email']
-        user = User.objects.get(email=email)
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({'message': 'User not found.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             otp_token = OTPToken.objects.get(user=user)
@@ -112,7 +116,10 @@ class SendEmailResetPasswordAPIView(CreateAPIView):
         serializer.is_valid(raise_exception=True)
 
         email = serializer.validated_data['email']
-        user = User.objects.get(email=email)
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({'message': 'User not found.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             otp_token = OTPToken.objects.get(user=user)
@@ -144,7 +151,7 @@ class SendEmailResetPasswordAPIView(CreateAPIView):
             receiver,
             fail_silently=False,
         )
-        return Response({'message': 'Reset Password Link has been sent.'})
+        return Response({'message': 'Reset Password OTP has been sent.'})
 
 
 class ResetPasswordAPIView(CreateAPIView):
