@@ -23,8 +23,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     avatar = models.URLField(
         _("avatar"), max_length=500, null=True, blank=True)
     gender = models.CharField(
-        _('gender'), max_length=30, choices=GENDER_CHOICES)
-    birthday = models.DateField(_('birthday'))
+        _('gender'), max_length=30, choices=GENDER_CHOICES, null=True, blank=True)
+    birthday = models.DateField(_('birthday'), null=True, blank=True)
     is_active = models.BooleanField(_('active'), default=False)
     is_staff = models.BooleanField(_('staff'), default=False)
     is_superuser = models.BooleanField(_('superuser'), default=False)

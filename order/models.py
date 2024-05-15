@@ -4,17 +4,17 @@ from account.models import User
 from services.mixins import DateMixin
 
 
-class Wishlist(DateMixin):
+class Favorite(DateMixin):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="user_wishlist")
-    items = models.ManyToManyField(Product, related_name="products_wishlist")
+        User, on_delete=models.CASCADE, related_name="user_favorite")
+    items = models.ManyToManyField(Product, related_name="favorite_products")
 
     def __str__(self):
-        return f"{self.user.get_full_name()}'s wishlist item"
+        return f"{self.user.get_full_name()}'s favorite items"
 
     class Meta:
-        verbose_name = "Wishlist"
-        verbose_name_plural = "Wishlists"
+        verbose_name = "Favorite"
+        verbose_name_plural = "Favorites"
 
 
 class BasketItem(DateMixin):

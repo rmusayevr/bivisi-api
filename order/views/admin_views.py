@@ -1,9 +1,9 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from services.pagination import InfiniteScrollPagination
-from ..models import Wishlist, BasketItem, Basket
+from ..models import Favorite, BasketItem, Basket
 from ..serializers import (
-    WishlistReadSerializer,
-    WishlistCreateSerializer,
+    FavoriteReadSerializer,
+    FavoriteCreateSerializer,
     BasketItemReadSerializer,
     BasketItemCreateSerializer,
     BasketReadSerializer,
@@ -16,24 +16,24 @@ class GenericAPIViewSerializerMixin:
         return self.serializer_classes[self.request.method]
 
 
-# Wishlist GET & POST
-class WishlistListCreateAPIView(GenericAPIViewSerializerMixin, ListCreateAPIView):
-    queryset = Wishlist.objects.all()
+# Favorite GET & POST
+class FavoriteListCreateAPIView(GenericAPIViewSerializerMixin, ListCreateAPIView):
+    queryset = Favorite.objects.all()
     pagination_class = InfiniteScrollPagination
     serializer_classes = {
-        'GET': WishlistReadSerializer,
-        'POST': WishlistCreateSerializer
+        'GET': FavoriteReadSerializer,
+        'POST': FavoriteCreateSerializer
     }
 
 
-# Wishlist GET & PUT & PATCH & DELETE
-class WishlistRetrieveUpdateDestroyAPIView(GenericAPIViewSerializerMixin, RetrieveUpdateDestroyAPIView):
-    queryset = Wishlist.objects.all()
+# Favorite GET & PUT & PATCH & DELETE
+class FavoriteRetrieveUpdateDestroyAPIView(GenericAPIViewSerializerMixin, RetrieveUpdateDestroyAPIView):
+    queryset = Favorite.objects.all()
     serializer_classes = {
-        'GET': WishlistReadSerializer,
-        'PUT': WishlistCreateSerializer,
-        'PATCH': WishlistCreateSerializer,
-        'DELETE': WishlistCreateSerializer,
+        'GET': FavoriteReadSerializer,
+        'PUT': FavoriteCreateSerializer,
+        'PATCH': FavoriteCreateSerializer,
+        'DELETE': FavoriteCreateSerializer,
     }
 
 

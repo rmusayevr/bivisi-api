@@ -1,23 +1,23 @@
 from rest_framework import serializers
-from order.models import Wishlist, Basket, BasketItem
+from order.models import Favorite, Basket, BasketItem
 
 
-class WishlistReadSerializer(serializers.ModelSerializer):
+class FavoriteReadSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
     items = serializers.SerializerMethodField()
 
     class Meta:
-        model = Wishlist
+        model = Favorite
         fields = ['id', 'user', 'items']
 
     def get_items(self, obj):
         return [{'id': product.id, 'name': product.name} for product in obj.items.all()]
 
 
-class WishlistCreateSerializer(serializers.ModelSerializer):
+class FavoriteCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Wishlist
+        model = Favorite
         fields = ['id', 'user', 'items']
 
 
@@ -27,12 +27,7 @@ class BasketItemReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BasketItem
-        fields = [
-            'id',
-            'user',
-            'product',
-            'quantity'
-        ]
+        fields = ['id', 'user', 'product', 'quantity']
 
     def get_product(self, obj):
         return {'id': obj.product.id, 'name': obj.product.name}
@@ -42,12 +37,7 @@ class BasketItemCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BasketItem
-        fields = [
-            'id',
-            'user',
-            'product',
-            'quantity'
-        ]
+        fields = ['id', 'user', 'product', 'quantity']
 
 
 class BasketReadSerializer(serializers.ModelSerializer):
@@ -59,7 +49,7 @@ class BasketReadSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'items', 'is_active']
 
     def get_items(self, obj):
-        return [{'id': product.product.id, 'name': product.product.name} for product in obj.items.all()]
+        return [{'id': product.product.id, 'name': product.product.name, 'quantity': product.quantity} for product in obj.items.all()]
 
 
 class BasketCreateSerializer(serializers.ModelSerializer):

@@ -1,8 +1,13 @@
 from django.urls import path
-from .views.web_views import WishlistAPIView, BasketAPIView
+from .views.web_views import (
+    ToggleFavoriteAPIView,
+    AddBasketAPIView,
+    DeleteBasketItemAPIView,
+    DeleteBasketAPIView,
+)
 from .views.admin_views import (
-    WishlistListCreateAPIView,
-    WishlistRetrieveUpdateDestroyAPIView,
+    FavoriteListCreateAPIView,
+    FavoriteRetrieveUpdateDestroyAPIView,
     BasketItemListCreateAPIView,
     BasketItemRetrieveUpdateDestroyAPIView,
     BasketListCreateAPIView,
@@ -10,25 +15,28 @@ from .views.admin_views import (
 )
 
 urlpatterns = [
-    path('basket/', BasketAPIView.as_view(), name='api-basket'),
-    path('wishlist/', WishlistAPIView.as_view(), name="wishlists"),
-
-
-    # Wishlist URLs
-    path('admin/wishlist/', WishlistListCreateAPIView.as_view(),
-         name='wishlist_list_create'),
-    path('admin/wishlist/<int:pk>/',
-         WishlistRetrieveUpdateDestroyAPIView.as_view(), name='wishlist_detail'),
+    # Favorite URLs
+    path('favorites/', FavoriteListCreateAPIView.as_view(),
+         name='favorite_list_create'),
+    path('favorite/<int:pk>/',
+         FavoriteRetrieveUpdateDestroyAPIView.as_view(), name='favorite_detail'),
+    path('toggle_favorite/<int:pk>/',
+         ToggleFavoriteAPIView.as_view(), name='toggle_favorite'),
 
     # Basket Item URLs
-    path('admin/basket_item/', BasketItemListCreateAPIView.as_view(),
+    path('basket_item/', BasketItemListCreateAPIView.as_view(),
          name='basket_item_list_create'),
-    path('admin/basket_item/<int:pk>/',
+    path('basket_item/<int:pk>/',
          BasketItemRetrieveUpdateDestroyAPIView.as_view(), name='basket_item_detail'),
 
     # Basket URLs
-    path('admin/basket/', BasketListCreateAPIView.as_view(),
+    path('basket/', BasketListCreateAPIView.as_view(),
          name='basket_list_create'),
-    path('admin/basket/<int:pk>/',
+    path('basket/<int:pk>/',
          BasketRetrieveUpdateDestroyAPIView.as_view(), name='basket_detail'),
+    path('add_basket_item/<int:pk>/',
+         AddBasketAPIView.as_view(), name='toggle_basket_item'),
+    path('delete_basket_item/<int:pk>/',
+         DeleteBasketItemAPIView.as_view(), name='delete_basket_item'),
+    path('delete_basket/', DeleteBasketAPIView.as_view(), name='delete_basket'),
 ]
