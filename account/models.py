@@ -10,19 +10,21 @@ from services.mixins import DateMixin
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    # genders = {
-    #     'Woman': 'Woman',
-    #     'Man': 'Man',
-    #     'Other': 'Other'
-    # }
+    GENDER_CHOICES = (
+        ("Male", "Male"),
+        ("Female", "Female"),
+        ("Other", "Other")
+    )
+
     username = models.CharField(_('username'), max_length=60, unique=True)
     email = models.EmailField(_('email address'), unique=True)
     first_name = models.CharField(_('first name'), max_length=50)
     last_name = models.CharField(_('last name'), max_length=50)
     avatar = models.URLField(
         _("avatar"), max_length=500, null=True, blank=True)
-    # gender = models.CharField(_('gender'), max_length=30, choices=genders)
-    # birthday = models.DateField(_('birthday'))
+    gender = models.CharField(
+        _('gender'), max_length=30, choices=GENDER_CHOICES)
+    birthday = models.DateField(_('birthday'))
     is_active = models.BooleanField(_('active'), default=False)
     is_staff = models.BooleanField(_('staff'), default=False)
     is_superuser = models.BooleanField(_('superuser'), default=False)

@@ -82,17 +82,17 @@ class ResetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     new_password = serializers.CharField(
         write_only=True, required=True, style={"input_type": "password"}, validators=[validate_password])
-    new_password_confirm = serializers.CharField(
-        write_only=True, required=True, style={"input_type": "password"})
+    # new_password_confirm = serializers.CharField(
+    #     write_only=True, required=True, style={"input_type": "password"})
 
     def validate(self, attrs):
-        if attrs['new_password'] != attrs['new_password_confirm']:
-            raise serializers.ValidationError(
-                {"new_password": "Password fields didn't match."})
-        if not any(_.isdigit() for _ in attrs['new_password_confirm']):
+        # if attrs['new_password'] != attrs['new_password_confirm']:
+        #     raise serializers.ValidationError(
+        #         {"new_password": "Password fields didn't match."})
+        if not any(_.isdigit() for _ in attrs['new_password']):
             raise serializers.ValidationError(
                 {"error": "The password must contain at least 1 number."})
-        if not any(_.isupper() for _ in attrs['new_password_confirm']):
+        if not any(_.isupper() for _ in attrs['new_password']):
             raise serializers.ValidationError(
                 {"error": "There must be at least 1 uppercase letter in the password."})
         if attrs["email"]:

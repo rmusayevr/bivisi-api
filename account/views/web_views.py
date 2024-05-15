@@ -12,6 +12,7 @@ from ..serializers import (
     ResetPasswordSerializer,
     ChangePasswordSerializer
 )
+from django.contrib.auth import authenticate, login
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -180,8 +181,21 @@ class ResetPasswordAPIView(CreateAPIView):
 
         user.set_password(new_password)
         user.save()
+        login_user = authenticate(
+            request, username=email, password=new_password)
+        if login_user is not None:
+            login(request, user)
+            refresh = LoginTokenSerializer.get_token(user)
+            data = {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+                'username': user.username,
+                'email': user.email
+            }
+            return Response(data, status=status.HTTP_200_OK)
 
-        return Response({'message': 'Password reset successfully.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'Password reset successfully but login failed.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ChangePasswordAPIView(UpdateAPIView):

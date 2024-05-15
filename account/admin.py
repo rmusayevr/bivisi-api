@@ -7,22 +7,23 @@ from .models import User, PhoneNumber, Subscription
 
 class UserAdmin(BaseUserAdmin):
     fieldsets = (
-        (None, {'fields': ('username', 'email', 'password')}),
+        (None, {'fields': ('username', 'email', 'password',)}),
         (_('Personal info'), {
-         'fields': ('first_name', 'last_name', 'avatar')}),
+         'fields': ('first_name', 'last_name', 'gender', 'birthday', 'avatar')}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff',
          'is_superuser', 'groups', 'user_permissions')}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'email', 'first_name', 'last_name', 'avatar', 'password1', 'password2'),
+            'fields': ('username', 'email', 'first_name', 'last_name', 'avatar', 'gender', 'birthday', 'password1', 'password2'),
         }),
     )
     list_display = ('username', 'email', 'first_name',
-                    'last_name', 'is_staff', 'is_active')
-    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
-    search_fields = ('username', 'email', 'first_name', 'last_name')
+                    'last_name',  'gender', 'birthday', 'is_staff', 'is_active')
+    list_filter = ('gender', 'is_staff', 'is_superuser',
+                   'is_active', 'groups',)
+    search_fields = ('username', 'email', 'first_name', 'last_name', 'gender')
     ordering = ('username',)
     filter_horizontal = ('groups', 'user_permissions',)
 
