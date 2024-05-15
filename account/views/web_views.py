@@ -1,6 +1,5 @@
 from django.conf import settings
 from rest_framework import status
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView, UpdateAPIView
 from ..utils.otp import generate_otp
@@ -42,8 +41,10 @@ class OTPVerifyAPIView(CreateAPIView):
         email = serializer.validated_data['email']
         otp_code = serializer.validated_data['otp_code']
 
-        otp_token = OTPToken.objects.get(
-            user__email=email, otp_code=otp_code)
+        try:
+            otp_token = OTPToken.objects.get(user__email=email, otp_code=otp_code)
+        except OTPToken.DoesNotExist:
+            return Response(data={"message": 'Invalid email or OTP code.'}, status=status.HTTP_400_BAD_REQUEST)
 
         if otp_token.otp_expires_at is not None and otp_token.otp_expires_at < timezone.now():
             return Response(data={"message": 'OTP has expired. Please request a new one.'}, status=status.HTTP_403_FORBIDDEN)
