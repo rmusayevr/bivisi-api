@@ -155,11 +155,20 @@ class ResetPasswordAPIView(CreateAPIView):
         serializer.is_valid(raise_exception=True)
 
         new_password = serializer.validated_data['new_password']
+        email = serializer.validated_data["email"]
 
-        user = User.objects.get(email=serializer.validated_data["email"])
-
-        if user is None:
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
             return Response({'message': 'Invalid reset request.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            last_otp_token = OTPToken.objects.filter(
+                user=user).latest('tp_created_at')
+            if not last_otp_token.is_verified:
+                return Response({'message': 'OTP not verified.'}, status=status.HTTP_400_BAD_REQUEST)
+        except OTPToken.DoesNotExist:
+            return Response({'message': 'No OTP token found.'}, status=status.HTTP_400_BAD_REQUEST)
 
         user.set_password(new_password)
         user.save()
