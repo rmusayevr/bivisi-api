@@ -1,23 +1,27 @@
 from django.conf import settings
+from django.utils import timezone
+from django.db.models import Count
+from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import authenticate, login
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView, UpdateAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework_simplejwt.views import TokenObtainPairView
 from ..utils.otp import generate_otp
-from ..models import User, OTPToken
+from ..models import User, OTPToken, Subscription
 from ..serializers import (
     LoginTokenSerializer,
+    PopularChannelSerializer,
     RegisterSerializer,
     VerifyOTPSerializer,
     ResendOTPSerializer,
     ResetPasswordSerializer,
     ChangePasswordSerializer
 )
-from django.contrib.auth import authenticate, login
-from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework_simplejwt.views import TokenObtainPairView
-from django.utils import timezone
-from django.core.mail import send_mail
 
 
 class LoginTokenView(TokenObtainPairView):
@@ -200,5 +204,38 @@ class ResetPasswordAPIView(CreateAPIView):
 
 class ChangePasswordAPIView(UpdateAPIView):
     queryset = User.objects.all()
-    permission_classes = (IsAuthenticated, )
+    permission_classes = [IsAuthenticated]
     serializer_class = ChangePasswordSerializer
+
+
+class ToggleSubscribeAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    http_method_names = ['post']
+
+    def post(self, request, pk, *args, **kwargs):
+        follower = request.user
+        follows = get_object_or_404(User, pk=pk)
+
+        if follower == follows:
+            return Response({'error': 'You cannot subscribe to yourself.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        subscription, created = Subscription.objects.get_or_create(
+            follower=follower, follows=follows)
+
+        if created:
+            return Response({'status': 'subscribed'}, status=status.HTTP_201_CREATED)
+        else:
+            subscription.delete()
+            return Response({'status': 'unsubscribed'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class PopularChannelsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        popular_channels = User.objects.annotate(
+            followers_count=Count('followers')
+        ).order_by('-followers_count')[:5]
+
+        serializer = PopularChannelSerializer(popular_channels, many=True)
+        return Response(serializer.data)

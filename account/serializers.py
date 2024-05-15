@@ -153,3 +153,11 @@ class SubscriptionCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscription
         fields = ['id', 'follower', 'follows']
+
+
+class PopularChannelSerializer(serializers.ModelSerializer):
+    followers_count = serializers.IntegerField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'followers_count']
