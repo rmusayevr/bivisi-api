@@ -230,7 +230,6 @@ class ToggleSubscribeAPIView(APIView):
 
 
 class PopularChannelsAPIView(APIView):
-    permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         popular_channels = User.objects.annotate(
