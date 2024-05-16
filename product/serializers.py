@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Product, ProductComment, ProductCommentLike, ProductVideoType, UserProductLike
+from .models import Category, Product, ProductComment, ProductCommentLike, ProductVideoType, UserProductLike, UserProductHistory
 from django.utils.translation import gettext_lazy as _
 
 
@@ -14,14 +14,14 @@ class CategoryREADSerializer(serializers.ModelSerializer):
 
     def get_parent_name(self, obj):
         visited_ids = self.context.get('visited_ids', set())
-        
+
         # Check for cyclic relationships
         if obj.id in visited_ids or obj.parent_name is None:
             return None
-        
+
         # Add the current object to the visited IDs
         visited_ids.add(obj.id)
-        
+
         return CategoryREADSerializer(obj.parent_name, context={'visited_ids': visited_ids}).data
 
 
@@ -34,9 +34,11 @@ class CategoryCREATESerializer(serializers.ModelSerializer):
         parent = data.get('parent_name', None)
         if parent is not None and self.instance:
             if parent == self.instance:
-                raise serializers.ValidationError(_("A category cannot be its own parent."))
+                raise serializers.ValidationError(
+                    _("A category cannot be its own parent."))
             if parent.is_descendant_of(self.instance):
-                raise serializers.ValidationError(_("Invalid parent assignment to prevent recursion."))
+                raise serializers.ValidationError(
+                    _("Invalid parent assignment to prevent recursion."))
         return data
 
 # ****************************************  <<<< CATEGORY END >>>>  ****************************************
@@ -47,7 +49,8 @@ class CategoryCREATESerializer(serializers.ModelSerializer):
 class DashboardProductVideoTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVideoType
-        fields = ['id', 'product_type', 'video_url', 'cover_image_url','product', 'created_at', 'updated_at']
+        fields = ['id', 'product_type', 'video_url',
+                  'cover_image_url', 'product', 'created_at', 'updated_at']
 
 
 class ProductForTypeSerializer(serializers.ModelSerializer):
@@ -56,7 +59,8 @@ class ProductForTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'in_sale', 'percent', 'final_price', 'view_count', 'like_count', 'category', 'user', 'comment_count', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'price', 'in_sale', 'percent', 'final_price', 'view_count',
+                  'like_count', 'category', 'user', 'comment_count', 'created_at', 'updated_at']
 
     def get_user(self, obj):
         return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar if obj.user.avatar else None}
@@ -71,7 +75,8 @@ class WebProductVideoTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVideoType
-        fields = ['id', 'product_type', 'video_url', 'cover_image_url','product', 'created_at', 'updated_at']
+        fields = ['id', 'product_type', 'video_url',
+                  'cover_image_url', 'product', 'created_at', 'updated_at']
 
 # ****************************************  <<<< PRODUCT VIDEO TYPE END >>>>   ****************************************
 
@@ -81,21 +86,25 @@ class WebProductVideoTypeSerializer(serializers.ModelSerializer):
 class ProductCREATESerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent', 'final_price', 'view_count', 'like_count', 'category', 'user', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent', 'final_price',
+                  'view_count', 'like_count', 'category', 'user', 'created_at', 'updated_at']
 
     def validate_percent(self, value):
         if value is not None and not (0 <= value <= 100):
-            raise serializers.ValidationError("Percent value must be between 0 and 100.")
+            raise serializers.ValidationError(
+                "Percent value must be between 0 and 100.")
         return value
 
 
 class ProductREADSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
-    product_video_type = DashboardProductVideoTypeSerializer(many=True, read_only=True)
+    product_video_type = DashboardProductVideoTypeSerializer(
+        many=True, read_only=True)
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'product_video_type', 'price', 'in_sale', 'percent', 'final_price', 'view_count', 'like_count', 'category', 'user', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'description', 'product_video_type', 'price', 'in_sale', 'percent',
+                  'final_price', 'view_count', 'like_count', 'category', 'user', 'created_at', 'updated_at']
 
     def get_user(self, obj):
         return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar if obj.user.avatar else None}
@@ -136,7 +145,8 @@ class ProductCommentREADSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductComment
-        fields = ['id', 'comment', 'like_count', 'user', 'product', 'parent_comment', 'created_at', 'updated_at']
+        fields = ['id', 'comment', 'like_count', 'user', 'product',
+                  'parent_comment', 'created_at', 'updated_at']
 
     def get_parent_comment(self, obj):
         if obj.parent_comment:
@@ -157,15 +167,18 @@ class ProductCommentCREATESerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductComment
-        fields = ['id', 'comment', 'like_count', 'user', 'product', 'parent_comment', 'created_at', 'updated_at']
+        fields = ['id', 'comment', 'like_count', 'user', 'product',
+                  'parent_comment', 'created_at', 'updated_at']
 
     def validate(self, data):
         parent = data.get('parent_comment', None)
         if parent is not None and self.instance:
             if parent == self.instance:
-                raise serializers.ValidationError(_("A comment cannot be its own parent."))
+                raise serializers.ValidationError(
+                    _("A comment cannot be its own parent."))
             if parent.is_descendant_of(self.instance):
-                raise serializers.ValidationError(_("Invalid parent assignment to prevent recursion."))
+                raise serializers.ValidationError(
+                    _("Invalid parent assignment to prevent recursion."))
         return data
 
 
@@ -174,7 +187,8 @@ class WebProductCommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductComment
-        fields = ['id', 'comment', 'like_count', 'user', 'product', 'parent_comment', 'created_at', 'updated_at']
+        fields = ['id', 'comment', 'like_count', 'user', 'product',
+                  'parent_comment', 'created_at', 'updated_at']
 
     def get_user(self, obj):
         return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar if obj.user.avatar else None}
@@ -203,3 +217,19 @@ class ProductCommentLikeCREATESerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'product_comment', 'created_at', 'updated_at']
 
 # ****************************************  <<<< PRODUCT COMMENT LIKE END >>>>  ****************************************
+
+
+# ****************************************  <<<< USER PRODUCT HISTORY START >>>>  ****************************************
+class UserProductHistoryReadSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserProductHistory
+        fields = ['id', 'product', 'created_at']
+
+
+class UserProductHistoryCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserProductHistory
+        fields = ['id', 'product', 'user']
+# ****************************************  <<<< USER PRODUCT HISTORY END >>>>  ****************************************
