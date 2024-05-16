@@ -60,6 +60,7 @@ class OTPVerifyAPIView(CreateAPIView):
             otp_token.save()
 
             otp_token.user.is_active = True
+            otp_token.user.status = 'Active'
             otp_token.user.save()
 
             return Response({'message': 'OTP verification successful.'}, status=status.HTTP_200_OK)
@@ -169,6 +170,7 @@ class ResetPasswordAPIView(CreateAPIView):
 
         new_password = serializer.validated_data['new_password']
         email = serializer.validated_data["email"]
+        otp_code = serializer.validated_data["otp_code"]
 
         try:
             user = User.objects.get(email=email)
@@ -177,7 +179,7 @@ class ResetPasswordAPIView(CreateAPIView):
 
         try:
             last_otp_token = OTPToken.objects.filter(
-                user=user).latest('tp_created_at')
+                user__email=email, otp_code=otp_code).latest('tp_created_at')
             if not last_otp_token.is_verified:
                 return Response({'message': 'OTP not verified.'}, status=status.HTTP_400_BAD_REQUEST)
         except OTPToken.DoesNotExist:

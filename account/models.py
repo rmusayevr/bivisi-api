@@ -15,6 +15,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         ("Female", "Female"),
         ("Other", "Other")
     )
+    STATUS_CHOICES = (
+        ("Active", "Active"),
+        ("De-active", "De-active"),
+        ("Not Verified", "Not Verified")
+    )
 
     username = models.CharField(_('username'), max_length=60, unique=True)
     email = models.EmailField(_('email address'), unique=True)
@@ -25,6 +30,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     gender = models.CharField(
         _('gender'), max_length=30, choices=GENDER_CHOICES, null=True, blank=True)
     birthday = models.DateField(_('birthday'), null=True, blank=True)
+    status = models.CharField(
+        _('status'), max_length=20, choices=STATUS_CHOICES, default='Not Verified')
     is_active = models.BooleanField(_('active'), default=False)
     is_staff = models.BooleanField(_('staff'), default=False)
     is_superuser = models.BooleanField(_('superuser'), default=False)

@@ -15,9 +15,17 @@ class LoginTokenSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):
         data = super().validate(attrs)
-        user = User.objects.get(username=self.user.username)
-        data.update({'username': user.username, 'email': user.email})
-        return data
+        user = self.user
+
+        # Check the user's status
+        if user.status == 'Not Verified':
+            raise serializers.ValidationError(
+                'Please verify your account with OTP.')
+
+        # Proceed if the user is active
+        if user.status == 'Active':
+            data.update({'username': user.username, 'email': user.email})
+            return data
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -82,6 +90,7 @@ class ResetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     new_password = serializers.CharField(
         write_only=True, required=True, style={"input_type": "password"}, validators=[validate_password])
+    otp_code = serializers.CharField(max_length=6, required=True)
     # new_password_confirm = serializers.CharField(
     #     write_only=True, required=True, style={"input_type": "password"})
 

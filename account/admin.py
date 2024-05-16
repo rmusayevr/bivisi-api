@@ -10,7 +10,7 @@ class UserAdmin(BaseUserAdmin):
         (None, {'fields': ('username', 'email', 'password',)}),
         (_('Personal info'), {
          'fields': ('first_name', 'last_name', 'gender', 'birthday', 'avatar')}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff',
+        (_('Permissions'), {'fields': ('status', 'is_active', 'is_staff',
          'is_superuser', 'groups', 'user_permissions')}),
     )
     add_fieldsets = (
@@ -19,10 +19,10 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('username', 'email', 'first_name', 'last_name', 'avatar', 'gender', 'birthday', 'password1', 'password2'),
         }),
     )
-    list_display = ('username', 'email', 'first_name',
-                    'last_name',  'gender', 'birthday', 'is_staff', 'is_active')
+    list_display = ('username', 'email', 'first_name', 'last_name',
+                    'gender', 'birthday', 'is_staff', 'is_active', 'status')
     list_filter = ('gender', 'is_staff', 'is_superuser',
-                   'is_active', 'groups',)
+                   'is_active', 'status', 'groups',)
     search_fields = ('username', 'email', 'first_name', 'last_name', 'gender')
     ordering = ('username',)
     filter_horizontal = ('groups', 'user_permissions',)
