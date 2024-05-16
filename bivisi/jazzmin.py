@@ -3,7 +3,7 @@ def get_user_avatar(user):
     # Assuming you have a one-to-one relationship between User and Profile
     # and the profile model has the image field
     try:
-        return user.avatar.url  # Assuming 'Profile' is the related model and 'image' is the field
+        return user.avatar  # Assuming 'Profile' is the related model and 'image' is the field
     except:
         return '/static/image/jazzmin-admin/7309681.jpg'
 
@@ -57,7 +57,7 @@ JAZZMIN_SETTINGS = {
         {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
 
         # external url that opens in a new window (Permissions can be added)
-        {"name": "Website", "url": "https://bivisi.live/", "new_window": True},
+        {"name": "Website", "url": "http://157.230.120.254/", "new_window": True},
 
         # # model admin to link to (Permissions checked against model)
         # {"model": "Blog.Blog"},
