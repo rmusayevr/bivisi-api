@@ -59,7 +59,7 @@ class ProductForTypeSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'price', 'in_sale', 'percent', 'final_price', 'view_count', 'like_count', 'category', 'user', 'comment_count', 'created_at', 'updated_at']
 
     def get_user(self, obj):
-        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
+        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar if obj.user.avatar else None}
 
     def get_comment_count(self, obj):
         # Return the count of comments related to the product
@@ -98,7 +98,7 @@ class ProductREADSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'product_video_type', 'price', 'in_sale', 'percent', 'final_price', 'view_count', 'like_count', 'category', 'user', 'created_at', 'updated_at']
 
     def get_user(self, obj):
-        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
+        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar if obj.user.avatar else None}
 
 # ****************************************  <<<< PRODUCT END >>>>  ****************************************
 
@@ -150,7 +150,7 @@ class ProductCommentREADSerializer(serializers.ModelSerializer):
         return {'id': obj.product.id, 'name': obj.product.name}
 
     def get_user(self, obj):
-        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
+        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar if obj.user.avatar else None}
 
 
 class ProductCommentCREATESerializer(serializers.ModelSerializer):
@@ -167,6 +167,17 @@ class ProductCommentCREATESerializer(serializers.ModelSerializer):
             if parent.is_descendant_of(self.instance):
                 raise serializers.ValidationError(_("Invalid parent assignment to prevent recursion."))
         return data
+
+
+class WebProductCommentSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProductComment
+        fields = ['id', 'comment', 'like_count', 'user', 'product', 'parent_comment', 'created_at', 'updated_at']
+
+    def get_user(self, obj):
+        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar if obj.user.avatar else None}
 
 # ****************************************  <<<< PRODUCT COMMENT END >>>>  ****************************************
 

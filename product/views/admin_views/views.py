@@ -111,7 +111,8 @@ class UserProductLikeRetrieveUpdateDestroyAPIView(GenericAPIViewSerializerMixin,
 # Product Comment GET & POST
 class ProductCommentListCreateAPIView(GenericAPIViewSerializerMixin, ListCreateAPIView):
     queryset = ProductComment.objects.all()
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['user']
     search_fields = ['comment']
     pagination_class = InfiniteScrollPagination
     serializer_classes = {
