@@ -2,7 +2,7 @@ from django.urls import path
 from product.views.web_views.product_comment import ParentCommentListAPIView, SubCommentListAPIView
 from .views.web_views.product import WebProductVideoTypeListView
 from .views.web_views.product_and_comment_like import ToggleProductCommentLikeAPIView, ToggleProductLikeAPIView
-from .views.web_views.history import UserProductHistoryReadAPIView, UserProductHistoryCreateAPIView
+# from .views.web_views.history import UserProductHistoryReadAPIView, UserProductHistoryCreateAPIView
 from .views.admin_views.views import (CategoryListCreateAPIView,
                                       CategoryRetrieveUpdateDestroyAPIView,
                                       DashboardProductVideoTypeListCreateAPIView,

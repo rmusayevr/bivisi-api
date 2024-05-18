@@ -227,9 +227,9 @@ class UserProductHistoryReadSerializer(serializers.ModelSerializer):
         fields = ['id', 'product', 'created_at']
 
 
-class UserProductHistoryCreateSerializer(serializers.ModelSerializer):
+# class UserProductHistoryCreateSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = UserProductHistory
-        fields = ['id', 'product', 'user']
+#     class Meta:
+#         model = UserProductHistory
+#         fields = ['id', 'product', 'user']
 # ****************************************  <<<< USER PRODUCT HISTORY END >>>>  ****************************************

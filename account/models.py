@@ -27,6 +27,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_('last name'), max_length=50)
     avatar = models.URLField(
         _("avatar"), max_length=500, null=True, blank=True)
+    cover_image = models.URLField(
+        _("cover image"), max_length=500, null=True, blank=True)
     gender = models.CharField(
         _('gender'), max_length=30, choices=GENDER_CHOICES, null=True, blank=True)
     birthday = models.DateField(_('birthday'), null=True, blank=True)
