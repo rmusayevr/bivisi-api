@@ -75,7 +75,9 @@ urlpatterns = [
 
 
     # User Product History
-    path('history/', UserProductHistoryReadAPIView.as_view(), name='user_product_views'),
-    path('add_history/<int:product_id>/', UserProductHistoryCreateAPIView.as_view(), name='create_user_product_views')
+#     path('history/', UserProductHistoryReadAPIView.as_view(),
+#          name='user_product_views'),
+#     path('add_history/<int:product_id>/',
+#          UserProductHistoryCreateAPIView.as_view(), name='create_user_product_views')
 
 ]

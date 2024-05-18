@@ -1,6 +1,8 @@
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from ..models import Favorite, Basket, BasketItem
 from ..serializers import (
+    FavoriteReadSerializer,
     FavoriteCreateSerializer,
     BasketReadSerializer,
     BasketItemReadSerializer
@@ -10,6 +12,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
+
+
+class FavoriteWebAPIView(ListAPIView):
+    queryset = Favorite.objects.all()
+    serializer_class = FavoriteReadSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Favorite.objects.filter(user=self.request.user)
 
 
 class ToggleFavoriteAPIView(APIView):
@@ -38,6 +49,15 @@ class ToggleFavoriteAPIView(APIView):
             'message': message,
             'favorite': FavoriteCreateSerializer(favorite).data
         }, status=status.HTTP_200_OK)
+
+
+class BasketWebAPIView(ListAPIView):
+    queryset = Basket.objects.all()
+    serializer_class = BasketReadSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Basket.objects.filter(user=self.request.user)
 
 
 class AddBasketAPIView(APIView):
@@ -77,30 +97,34 @@ class AddBasketAPIView(APIView):
         }, status=status.HTTP_200_OK)
 
 
-class DeleteBasketItemAPIView(APIView):
+class ChangeBasketItemAPIView(APIView):
     permission_classes = [IsAuthenticated]
-    http_method_names = ['put', 'delete']
+    http_method_names = ['put']
 
     def put(self, request, pk, *args, **kwargs):
         user = request.user
         product = get_object_or_404(Product, pk=pk)
+        quantity = request.data.get('quantity')
+
+        if not isinstance(quantity, int) or quantity < 1:
+            return Response({'error': 'Invalid quantity provided.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             basket_item = BasketItem.objects.get(user=user, product=product)
-            if basket_item.quantity > 1:
-                basket_item.quantity -= 1
-                basket_item.save()
-                message = "Product quantity decreased in basket."
-            else:
-                basket_item.delete()
-                message = "Product removed from basket."
+            basket_item.quantity = quantity
+            basket_item.save()
         except BasketItem.DoesNotExist:
             return Response({'message': 'Product not found in basket.'}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({
-            'message': message,
+            'message': "Product quantity changed in basket.",
             'basket': BasketItemReadSerializer(basket_item).data
         }, status=status.HTTP_200_OK)
+
+
+class DeleteBasketItemAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    http_method_names = ['delete']
 
     def delete(self, request, pk, *args, **kwargs):
         user = request.user
