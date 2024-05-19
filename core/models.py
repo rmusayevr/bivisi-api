@@ -45,3 +45,15 @@ class Slider(DateMixin):
         verbose_name = _('Slider')
         verbose_name_plural = _('Sliders')
 
+
+class FAQ(DateMixin):
+    faq = models.CharField(_('faq'), max_length=300, unique=True)
+    answer = models.CharField(_('answer'), max_length=300)
+    is_active = models.BooleanField(_('is_active'), default=True)
+
+    def __str__(self):
+        return self.faq
+
+    class Meta:
+        verbose_name = _('FAQ')
+        verbose_name_plural = _('FAQ')
