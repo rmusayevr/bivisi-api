@@ -91,7 +91,9 @@ class DashboardProductVideoTypeRetrieveUpdateDestroyAPIView(RetrieveUpdateDestro
 # User Product Like GET & POST
 class UserProductLikeListCreateAPIView(GenericAPIViewSerializerMixin, ListCreateAPIView):
     queryset = UserProductLike.objects.all()
-    pagination_class = InfiniteScrollPagination
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['user']
+    search_fields = ['name']
     serializer_classes = {
         'GET' : UserProductLikeREADSerializer,
         'POST' : UserProductLikeCREATESerializer

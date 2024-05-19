@@ -39,6 +39,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(_('superuser'), default=False)
     date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
 
+    bio = models.TextField(_("About"), null=True, blank=True)
+
+    instagram = models.URLField(_("Instagram"), max_length=255, null=True, blank=True)
+    twitter = models.URLField(_("Twitter"), max_length=255, null=True, blank=True)
+    facebook = models.URLField(_("Facebook"), max_length=255, null=True, blank=True)
+
     objects = UserManager()
 
     USERNAME_FIELD = 'username'

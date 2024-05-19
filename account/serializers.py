@@ -195,3 +195,18 @@ class PopularChannelSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'avatar', 'cover_image', 'followers_count']
+
+
+class GeneralSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'gender', 'birthday']
+
+
+class ProfileInformationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'avatar', 'cover_image', 'bio', 'instagram', 'twitter', 'facebook']
+
+
+

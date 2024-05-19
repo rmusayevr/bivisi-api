@@ -1,4 +1,9 @@
 from django.urls import path
+
+from account.views.profile_settings import (
+    GeneralSettingsUpdateView,
+    ProfileInformationUpdateView
+)
 from .views.web_views import (
     PopularChannelsAPIView,
     RegisterAPIView,
@@ -46,5 +51,13 @@ urlpatterns = [
 
     path('popular-channels/', PopularChannelsAPIView.as_view(),
          name='popular_channels'),
+
+    path('general_settings/', GeneralSettingsUpdateView.as_view(),
+         name='general_settings'),
+
+    path('profile_information/', ProfileInformationUpdateView.as_view(),
+         name='profile_information'),
+
+
 
 ]
