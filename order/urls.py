@@ -43,8 +43,7 @@ urlpatterns = [
          BasketRetrieveUpdateDestroyAPIView.as_view(), name='basket_detail'),
 
     # Basket Web URLs
-    path('basket/', BasketWebAPIView.as_view(),
-         name='basket_list'),
+    path('basket/', BasketWebAPIView.as_view(), name='basket_list'),
     path('add_basket_item/<int:pk>/',
          AddBasketAPIView.as_view(), name='add_basket_item'),
     path('change_basket_item/<int:pk>/',

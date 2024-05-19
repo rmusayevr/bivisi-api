@@ -227,9 +227,15 @@ class UserProductHistoryReadSerializer(serializers.ModelSerializer):
         fields = ['id', 'product', 'created_at']
 
 
-# class UserProductHistoryCreateSerializer(serializers.ModelSerializer):
+class UserProductHistoryCreateSerializer(serializers.Serializer):
+    products = serializers.ListField(child=serializers.IntegerField())
 
-#     class Meta:
-#         model = UserProductHistory
-#         fields = ['id', 'product', 'user']
+    def validate_products(self, value):
+        for product_id in value:
+            if not Product.objects.filter(id=product_id).exists():
+                raise serializers.ValidationError(
+                    f"Product with id {product_id} does not exist.")
+        return value
+
+
 # ****************************************  <<<< USER PRODUCT HISTORY END >>>>  ****************************************

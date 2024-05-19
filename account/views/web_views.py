@@ -8,7 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.generics import CreateAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from ..utils.otp import generate_otp
@@ -20,8 +20,10 @@ from ..serializers import (
     VerifyOTPSerializer,
     ResendOTPSerializer,
     ResetPasswordSerializer,
-    ChangePasswordSerializer
+    ChangePasswordSerializer,
+    SubscriptionReadWebSerializer
 )
+from services.pagination import InfiniteScrollPagination
 
 
 class LoginTokenView(TokenObtainPairView):
@@ -208,6 +210,16 @@ class ChangePasswordAPIView(UpdateAPIView):
     queryset = User.objects.all()
     permission_classes = [IsAuthenticated]
     serializer_class = ChangePasswordSerializer
+
+
+class SubscribeWebAPIView(ListAPIView):
+    queryset = Subscription.objects.all()
+    serializer_class = SubscriptionReadWebSerializer
+    pagination_class = InfiniteScrollPagination
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Subscription.objects.filter(follower=self.request.user)
 
 
 class ToggleSubscribeAPIView(APIView):

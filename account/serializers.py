@@ -157,6 +157,31 @@ class SubscriptionReadSerializer(serializers.ModelSerializer):
         fields = ['id', 'follower', 'follows']
 
 
+class SubscriptionUserSerializer(serializers.ModelSerializer):
+    follower_count = serializers.SerializerMethodField()
+    follows_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'first_name',
+                  'last_name', 'avatar', 'cover_image',
+                  'follower_count', 'follows_count']
+
+    def get_follower_count(self, obj):
+        return obj.followers.count()
+
+    def get_follows_count(self, obj):
+        return obj.following.count()
+
+
+class SubscriptionReadWebSerializer(serializers.ModelSerializer):
+    follows = SubscriptionUserSerializer()
+
+    class Meta:
+        model = Subscription
+        fields = ['id', 'follows']
+
+
 class SubscriptionCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -169,4 +194,4 @@ class PopularChannelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'followers_count']
+        fields = ['id', 'username', 'avatar', 'cover_image', 'followers_count']

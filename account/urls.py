@@ -8,7 +8,8 @@ from .views.web_views import (
     SendEmailResetPasswordAPIView,
     ResetPasswordAPIView,
     ChangePasswordAPIView,
-    ToggleSubscribeAPIView
+    ToggleSubscribeAPIView,
+    SubscribeWebAPIView
 )
 from .views.admin_views import (
     SubscriptionListCreateAPIView,
@@ -33,10 +34,13 @@ urlpatterns = [
     path('change_password/<int:pk>/', ChangePasswordAPIView.as_view(),
          name='change-password'),
 
-    path('subscription/', SubscriptionListCreateAPIView.as_view(),
+    path('admin/subscription/', SubscriptionListCreateAPIView.as_view(),
          name='subscription_list_create'),
-    path('subscription/<int:pk>/', SubscriptionRetrieveUpdateDestroyAPIView.as_view(),
+    path('admin/subscription/<int:pk>/', SubscriptionRetrieveUpdateDestroyAPIView.as_view(),
          name='subscription_detail'),
+
+    path('subscription/', SubscribeWebAPIView.as_view(),
+         name='subscription_list'),
     path('toggle_subscribe/<int:pk>/',
          ToggleSubscribeAPIView.as_view(), name='toggle_subscribe'),
 
