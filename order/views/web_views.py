@@ -2,9 +2,9 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from ..models import Favorite, Basket, BasketItem
 from ..serializers import (
-    FavoriteReadSerializer,
+    FavoriteWebReadSerializer,
     FavoriteCreateSerializer,
-    BasketReadSerializer,
+    BasketWebReadSerializer,
     BasketItemReadSerializer
 )
 from product.models import Product
@@ -16,7 +16,7 @@ from django.shortcuts import get_object_or_404
 
 class FavoriteWebAPIView(ListAPIView):
     queryset = Favorite.objects.all()
-    serializer_class = FavoriteReadSerializer
+    serializer_class = FavoriteWebReadSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -53,7 +53,7 @@ class ToggleFavoriteAPIView(APIView):
 
 class BasketWebAPIView(ListAPIView):
     queryset = Basket.objects.all()
-    serializer_class = BasketReadSerializer
+    serializer_class = BasketWebReadSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
