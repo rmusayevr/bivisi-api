@@ -3,19 +3,19 @@ from rest_framework import filters
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from ...models import Category, Product, ProductComment, ProductCommentLike, ProductVideoType, UserProductLike
 from services.pagination import InfiniteScrollPagination
-from ...serializers import (CategoryCREATESerializer,
-                        CategoryREADSerializer,
-                        DashboardProductVideoTypeSerializer,
-                        ProductCREATESerializer,
-                        ProductCommentCREATESerializer,
-                        ProductCommentLikeCREATESerializer,
-                        ProductCommentLikeREADSerializer,
-                        ProductCommentREADSerializer,
-                        ProductREADSerializer,
-                        UserProductLikeCREATESerializer,
-                        UserProductLikeREADSerializer
-                        )
-
+from ...serializers import (
+    CategoryCREATESerializer,
+    CategoryREADSerializer,
+    DashboardProductVideoTypeSerializer,
+    ProductCREATESerializer,
+    ProductCommentCREATESerializer,
+    ProductCommentLikeCREATESerializer,
+    ProductCommentLikeREADSerializer,
+    ProductCommentREADSerializer,
+    ProductREADSerializer,
+    UserProductLikeCREATESerializer,
+    UserProductLikeREADSerializer
+)
 
 
 class GenericAPIViewSerializerMixin:
@@ -30,8 +30,8 @@ class CategoryListCreateAPIView(GenericAPIViewSerializerMixin, ListCreateAPIView
     search_fields = ['name']
     pagination_class = InfiniteScrollPagination
     serializer_classes = {
-        'GET' : CategoryREADSerializer,
-        'POST' : CategoryCREATESerializer
+        'GET': CategoryREADSerializer,
+        'POST': CategoryCREATESerializer
     }
 
 
@@ -39,9 +39,9 @@ class CategoryListCreateAPIView(GenericAPIViewSerializerMixin, ListCreateAPIView
 class CategoryRetrieveUpdateDestroyAPIView(GenericAPIViewSerializerMixin, RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_classes = {
-        'GET' : CategoryREADSerializer,
-        'PUT' : CategoryCREATESerializer,
-        'PATCH' : CategoryCREATESerializer
+        'GET': CategoryREADSerializer,
+        'PUT': CategoryCREATESerializer,
+        'PATCH': CategoryCREATESerializer
     }
 
 
@@ -49,14 +49,16 @@ class CategoryRetrieveUpdateDestroyAPIView(GenericAPIViewSerializerMixin, Retrie
 class ProductListCreateAPIView(GenericAPIViewSerializerMixin, ListCreateAPIView):
     queryset = Product.objects.all()
     pagination_class = InfiniteScrollPagination
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['category']
     search_fields = ['name']
-    ordering_fields = ['view_count', 'like_count', 'created_at']  # Specify fields allowed to be ordered
+    # Specify fields allowed to be ordered
+    ordering_fields = ['view_count', 'like_count', 'created_at']
     ordering = ['-created_at']
     serializer_classes = {
-        'GET' : ProductREADSerializer,
-        'POST' : ProductCREATESerializer
+        'GET': ProductREADSerializer,
+        'POST': ProductCREATESerializer
     }
 
 
@@ -65,16 +67,17 @@ class ProductRetrieveUpdateDestroyAPIView(GenericAPIViewSerializerMixin, Retriev
     queryset = Product.objects.all()
     pagination_class = InfiniteScrollPagination
     serializer_classes = {
-        'GET' : ProductREADSerializer,
-        'PUT' : ProductCREATESerializer,
-        'PATCH' : ProductCREATESerializer
+        'GET': ProductREADSerializer,
+        'PUT': ProductCREATESerializer,
+        'PATCH': ProductCREATESerializer
     }
 
 
 # Product Video Type GET & POST
 class DashboardProductVideoTypeListCreateAPIView(ListCreateAPIView):
     queryset = ProductVideoType.objects.all()
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['product', 'product_type']
     ordering_fields = ['created_at']  # Specify fields allowed to be ordered
     ordering = ['-created_at']
@@ -91,12 +94,13 @@ class DashboardProductVideoTypeRetrieveUpdateDestroyAPIView(RetrieveUpdateDestro
 # User Product Like GET & POST
 class UserProductLikeListCreateAPIView(GenericAPIViewSerializerMixin, ListCreateAPIView):
     queryset = UserProductLike.objects.all()
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['user']
     search_fields = ['name']
     serializer_classes = {
-        'GET' : UserProductLikeREADSerializer,
-        'POST' : UserProductLikeCREATESerializer
+        'GET': UserProductLikeREADSerializer,
+        'POST': UserProductLikeCREATESerializer
     }
 
 
@@ -104,22 +108,23 @@ class UserProductLikeListCreateAPIView(GenericAPIViewSerializerMixin, ListCreate
 class UserProductLikeRetrieveUpdateDestroyAPIView(GenericAPIViewSerializerMixin, RetrieveUpdateDestroyAPIView):
     queryset = UserProductLike.objects.all()
     serializer_classes = {
-        'GET' : UserProductLikeREADSerializer,
-        'PUT' : UserProductLikeCREATESerializer,
-        'PATCH' : UserProductLikeCREATESerializer
+        'GET': UserProductLikeREADSerializer,
+        'PUT': UserProductLikeCREATESerializer,
+        'PATCH': UserProductLikeCREATESerializer
     }
 
 
 # Product Comment GET & POST
 class ProductCommentListCreateAPIView(GenericAPIViewSerializerMixin, ListCreateAPIView):
     queryset = ProductComment.objects.all()
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['user']
     search_fields = ['comment']
     pagination_class = InfiniteScrollPagination
     serializer_classes = {
-        'GET' : ProductCommentREADSerializer,
-        'POST' : ProductCommentCREATESerializer
+        'GET': ProductCommentREADSerializer,
+        'POST': ProductCommentCREATESerializer
     }
 
 
@@ -127,9 +132,9 @@ class ProductCommentListCreateAPIView(GenericAPIViewSerializerMixin, ListCreateA
 class ProductCommentRetrieveUpdateDestroyAPIView(GenericAPIViewSerializerMixin, RetrieveUpdateDestroyAPIView):
     queryset = ProductComment.objects.all()
     serializer_classes = {
-        'GET' : ProductCommentREADSerializer,
-        'PUT' : ProductCommentCREATESerializer,
-        'PATCH' : ProductCommentCREATESerializer
+        'GET': ProductCommentREADSerializer,
+        'PUT': ProductCommentCREATESerializer,
+        'PATCH': ProductCommentCREATESerializer
     }
 
 
@@ -138,8 +143,8 @@ class ProductCommentLikeListCreateAPIView(GenericAPIViewSerializerMixin, ListCre
     queryset = ProductCommentLike.objects.all()
     pagination_class = InfiniteScrollPagination
     serializer_classes = {
-        'GET' : ProductCommentLikeREADSerializer,
-        'POST' : ProductCommentLikeCREATESerializer
+        'GET': ProductCommentLikeREADSerializer,
+        'POST': ProductCommentLikeCREATESerializer
     }
 
 
@@ -147,7 +152,7 @@ class ProductCommentLikeListCreateAPIView(GenericAPIViewSerializerMixin, ListCre
 class ProductCommentLikeRetrieveUpdateDestroyAPIView(GenericAPIViewSerializerMixin, RetrieveUpdateDestroyAPIView):
     queryset = ProductCommentLike.objects.all()
     serializer_classes = {
-        'GET' : ProductCommentLikeREADSerializer,
-        'PUT' : ProductCommentLikeCREATESerializer,
-        'PATCH' : ProductCommentLikeCREATESerializer
+        'GET': ProductCommentLikeREADSerializer,
+        'PUT': ProductCommentLikeCREATESerializer,
+        'PATCH': ProductCommentLikeCREATESerializer
     }

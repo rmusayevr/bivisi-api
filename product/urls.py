@@ -3,19 +3,21 @@ from product.views.web_views.product_comment import ParentCommentListAPIView, Su
 from .views.web_views.product import WebProductVideoTypeListView
 from .views.web_views.product_and_comment_like import ToggleProductCommentLikeAPIView, ToggleProductLikeAPIView
 from .views.web_views.history import UserProductHistoryReadAPIView, UserProductHistoryCreateAPIView
-from .views.admin_views.views import (CategoryListCreateAPIView,
-                                      CategoryRetrieveUpdateDestroyAPIView,
-                                      DashboardProductVideoTypeListCreateAPIView,
-                                      DashboardProductVideoTypeRetrieveUpdateDestroyAPIView,
-                                      ProductCommentLikeListCreateAPIView,
-                                      ProductCommentLikeRetrieveUpdateDestroyAPIView,
-                                      ProductCommentListCreateAPIView,
-                                      ProductCommentRetrieveUpdateDestroyAPIView,
-                                      ProductListCreateAPIView,
-                                      ProductRetrieveUpdateDestroyAPIView,
-                                      UserProductLikeListCreateAPIView,
-                                      UserProductLikeRetrieveUpdateDestroyAPIView,
-                                      )
+from .views.web_views.category import CategoryWebListView
+from .views.admin_views.views import (
+    CategoryListCreateAPIView,
+    CategoryRetrieveUpdateDestroyAPIView,
+    DashboardProductVideoTypeListCreateAPIView,
+    DashboardProductVideoTypeRetrieveUpdateDestroyAPIView,
+    ProductCommentLikeListCreateAPIView,
+    ProductCommentLikeRetrieveUpdateDestroyAPIView,
+    ProductCommentListCreateAPIView,
+    ProductCommentRetrieveUpdateDestroyAPIView,
+    ProductListCreateAPIView,
+    ProductRetrieveUpdateDestroyAPIView,
+    UserProductLikeListCreateAPIView,
+    UserProductLikeRetrieveUpdateDestroyAPIView,
+)
 
 
 urlpatterns = [
@@ -24,6 +26,8 @@ urlpatterns = [
          name='category_list_create'),
     path('category/<int:pk>/',
          CategoryRetrieveUpdateDestroyAPIView.as_view(), name='category_detail'),
+
+    path('categories/', CategoryWebListView.as_view(), name='category_list'),
 
     # Product URLs
     path('product/', ProductListCreateAPIView.as_view(),

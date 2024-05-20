@@ -41,6 +41,17 @@ class CategoryCREATESerializer(serializers.ModelSerializer):
                     _("Invalid parent assignment to prevent recursion."))
         return data
 
+
+class CategoryWebSerializer(serializers.ModelSerializer):
+    children = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'children']
+
+    def get_children(self, obj):
+        children = obj.parent_category_name.all()
+        return CategoryWebSerializer(children, many=True).data
 # ****************************************  <<<< CATEGORY END >>>>  ****************************************
 
 
