@@ -93,7 +93,7 @@ class AddBasketAPIView(APIView):
 
         return Response({
             'message': message,
-            'basket': BasketReadSerializer(basket).data
+            'basket': BasketWebReadSerializer(basket).data
         }, status=status.HTTP_200_OK)
 
 

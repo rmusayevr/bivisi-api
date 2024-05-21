@@ -252,3 +252,29 @@ class PopularChannelsAPIView(APIView):
 
         serializer = PopularChannelSerializer(popular_channels, many=True)
         return Response(serializer.data)
+
+
+class SubscriptionsAPIView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        sort = request.query_params.get('sort', 'followers')
+
+        subscriptions = User.objects.annotate(
+            followers_count=Count('followers')
+        )
+
+        if sort == 'a_to_z':
+            subscriptions = subscriptions.order_by('username')
+        elif sort == 'z_to_a':
+            subscriptions = subscriptions.order_by('-username')
+        elif sort == 'newest':
+            subscriptions = subscriptions.order_by('-date_joined')
+        elif sort == 'oldest':
+            subscriptions = subscriptions.order_by('date_joined')
+        else:
+            subscriptions = subscriptions.order_by('-followers_count')
+
+        subscriptions = subscriptions[:50]
+
+        serializer = PopularChannelSerializer(subscriptions, many=True)
+        return Response(serializer.data)

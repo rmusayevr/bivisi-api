@@ -24,7 +24,10 @@ class LoginTokenSerializer(TokenObtainPairSerializer):
 
         # Proceed if the user is active
         if user.status == 'Active':
-            data.update({'username': user.username, 'email': user.email})
+            data.update({
+                'username': user.username, 'email': user.email,
+                'first_name': user.first_name, 'last_name': user.last_name,
+            })
             return data
 
 
@@ -206,7 +209,5 @@ class GeneralSettingsSerializer(serializers.ModelSerializer):
 class ProfileInformationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'avatar', 'cover_image', 'bio', 'instagram', 'twitter', 'facebook']
-
-
-
+        fields = ['first_name', 'last_name', 'avatar',
+                  'cover_image', 'bio', 'instagram', 'twitter', 'facebook']
