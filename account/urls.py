@@ -15,7 +15,8 @@ from .views.web_views import (
     ChangePasswordAPIView,
     ToggleSubscribeAPIView,
     SubscribeWebAPIView,
-    SubscriptionsAPIView
+    SubscriptionsAPIView,
+    UserDetailAPIView
 )
 from .views.admin_views import (
     SubscriptionListCreateAPIView,
@@ -60,6 +61,8 @@ urlpatterns = [
 
     path('profile_information/', ProfileInformationUpdateView.as_view(),
          name='profile_information'),
+
+    path('user_detail/', UserDetailAPIView.as_view(), name='user_detail')
 
 
 

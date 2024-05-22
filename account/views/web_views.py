@@ -21,7 +21,8 @@ from ..serializers import (
     ResendOTPSerializer,
     ResetPasswordSerializer,
     ChangePasswordSerializer,
-    SubscriptionReadWebSerializer
+    SubscriptionReadWebSerializer,
+    UserDetailSerializer
 )
 from services.pagination import InfiniteScrollPagination
 
@@ -278,3 +279,13 @@ class SubscriptionsAPIView(APIView):
 
         serializer = PopularChannelSerializer(subscriptions, many=True)
         return Response(serializer.data)
+
+
+class UserDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    http_method_names = ['get']
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        serializer = UserDetailSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)

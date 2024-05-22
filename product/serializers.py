@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from order.models import BasketItem
 from .models import Category, Product, ProductComment, ProductCommentLike, ProductVideoType, UserProductLike, UserProductHistory
 from django.utils.translation import gettext_lazy as _
 
@@ -83,12 +85,32 @@ class ProductForTypeSerializer(serializers.ModelSerializer):
 
 class WebProductVideoTypeSerializer(serializers.ModelSerializer):
     product = ProductForTypeSerializer(read_only=True)
+    in_wishlist = serializers.SerializerMethodField()
+    in_basket = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
 
     class Meta:
         model = ProductVideoType
-        fields = ['id', 'product_type', 'video_url',
-                  'cover_image_url', 'product', 'created_at', 'updated_at']
+        fields = ['id', 'product_type', 'video_url', 'cover_image_url',
+                  'product', 'created_at', 'updated_at', 'in_wishlist', 'in_basket', 'is_liked']
 
+    def get_in_wishlist(self, obj):
+        request = self.context.get('request', None)
+        if request is None or not request.user.is_authenticated:
+            return False
+        return obj.product.favorite_products.filter(user=request.user).exists()
+
+    def get_in_basket(self, obj):
+        request = self.context.get('request', None)
+        if request is None or not request.user.is_authenticated:
+            return False
+        return BasketItem.objects.filter(user=request.user, product=obj.product).exists()
+
+    def get_is_liked(self, obj):
+        request = self.context.get('request', None)
+        if request is None or not request.user.is_authenticated:
+            return False
+        return obj.product.user_product_like.filter(user=request.user).exists()
 # ****************************************  <<<< PRODUCT VIDEO TYPE END >>>>   ****************************************
 
 
@@ -111,15 +133,36 @@ class ProductREADSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     product_video_type = DashboardProductVideoTypeSerializer(
         many=True, read_only=True)
+    in_wishlist = serializers.SerializerMethodField()
+    in_basket = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'product_video_type', 'price', 'in_sale', 'percent',
-                  'final_price', 'view_count', 'like_count', 'category', 'user', 'created_at', 'updated_at']
+                  'final_price', 'view_count', 'like_count', 'category', 'user',
+                  'in_wishlist', 'in_basket', 'is_liked', 'created_at', 'updated_at']
 
     def get_user(self, obj):
         return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar if obj.user.avatar else None}
 
+    def get_in_wishlist(self, obj):
+        request = self.context.get('request', None)
+        if request is None or not request.user.is_authenticated:
+            return False
+        return obj.favorite_products.filter(user=request.user).exists()
+
+    def get_in_basket(self, obj):
+        request = self.context.get('request', None)
+        if request is None or not request.user.is_authenticated:
+            return False
+        return BasketItem.objects.filter(user=request.user, product=obj).exists()
+
+    def get_is_liked(self, obj):
+        request = self.context.get('request', None)
+        if request is None or not request.user.is_authenticated:
+            return False
+        return obj.user_product_like.filter(user=request.user).exists()
 # ****************************************  <<<< PRODUCT END >>>>  ****************************************
 
 
