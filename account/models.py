@@ -9,6 +9,18 @@ from phonenumber_field.modelfields import PhoneNumberField
 from services.mixins import DateMixin
 
 
+class ChannelCategory(DateMixin):
+    name = models.CharField(_('channel category name'),
+                            max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _('Channel Category')
+        verbose_name_plural = _('Channel Categories')
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     GENDER_CHOICES = (
         ("Male", "Male"),
@@ -41,9 +53,15 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     bio = models.TextField(_("About"), null=True, blank=True)
 
-    instagram = models.URLField(_("Instagram"), max_length=255, null=True, blank=True)
-    twitter = models.URLField(_("Twitter"), max_length=255, null=True, blank=True)
-    facebook = models.URLField(_("Facebook"), max_length=255, null=True, blank=True)
+    instagram = models.URLField(
+        _("Instagram"), max_length=255, null=True, blank=True)
+    twitter = models.URLField(
+        _("Twitter"), max_length=255, null=True, blank=True)
+    facebook = models.URLField(
+        _("Facebook"), max_length=255, null=True, blank=True)
+
+    categories = models.ManyToManyField(
+        ChannelCategory, related_name='channel_categories', blank=True)
 
     objects = UserManager()
 

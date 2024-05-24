@@ -1,4 +1,4 @@
-from .models import User, PhoneNumber, Subscription
+from .models import ChannelCategory, User, PhoneNumber, Subscription
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
@@ -84,7 +84,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        exclude = ('password', )
 
 
 class VerifyOTPSerializer(serializers.Serializer):
@@ -156,6 +156,28 @@ class ChangePasswordSerializer(serializers.Serializer):
         instance.set_password(validated_data['new_password'])
         instance.save()
         return instance
+
+
+class ChannelCategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ChannelCategory
+        fields = ['id', 'name']
+
+
+class PhoneNumberReadSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+
+    class Meta:
+        model = PhoneNumber
+        fields = ['id', 'phone', 'user']
+
+
+class PhoneNumberCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PhoneNumber
+        fields = ['id', 'phone', 'user']
 
 
 class SubscriptionReadSerializer(serializers.ModelSerializer):

@@ -19,6 +19,10 @@ from .views.web_views import (
     UserDetailAPIView
 )
 from .views.admin_views import (
+    ChannelCategoryListCreateAPIView,
+    ChannelCategoryRetrieveUpdateDestroyAPIView,
+    PhoneNumberListCreateAPIView,
+    PhoneNumberRetrieveUpdateDestroyAPIView,
     SubscriptionListCreateAPIView,
     SubscriptionRetrieveUpdateDestroyAPIView,
 )
@@ -41,11 +45,6 @@ urlpatterns = [
     path('change_password/<int:pk>/', ChangePasswordAPIView.as_view(),
          name='change-password'),
 
-    path('admin/subscription/', SubscriptionListCreateAPIView.as_view(),
-         name='subscription_list_create'),
-    path('admin/subscription/<int:pk>/', SubscriptionRetrieveUpdateDestroyAPIView.as_view(),
-         name='subscription_detail'),
-
     path('your_subscribers/', SubscribeWebAPIView.as_view(),
          name='subscriber_list'),
     path('subscriptions/', SubscriptionsAPIView.as_view(),
@@ -64,6 +63,22 @@ urlpatterns = [
 
     path('user_detail/', UserDetailAPIView.as_view(), name='user_detail')
 
+]
 
 
+urlpatterns += [
+    path('admin/subscription/', SubscriptionListCreateAPIView.as_view(),
+         name='subscription_list_create'),
+    path('admin/subscription/<int:pk>/', SubscriptionRetrieveUpdateDestroyAPIView.as_view(),
+         name='subscription_detail'),
+
+    path('admin/phone_number/', PhoneNumberListCreateAPIView.as_view(),
+         name='phone_number_list_create'),
+    path('admin/phone_number/<int:pk>/', PhoneNumberRetrieveUpdateDestroyAPIView.as_view(),
+         name='phone_number_detail'),
+
+    path('admin/channel_category/', ChannelCategoryListCreateAPIView.as_view(),
+         name='channel_category_list_create'),
+    path('admin/channel_category/<int:pk>/', ChannelCategoryRetrieveUpdateDestroyAPIView.as_view(),
+         name='channel_category_detail'),
 ]
