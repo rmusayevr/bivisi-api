@@ -7,7 +7,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
 from phonenumber_field.modelfields import PhoneNumberField
 from services.mixins import DateMixin
-
+from django_countries.fields import CountryField
 
 class ChannelCategory(DateMixin):
     name = models.CharField(_('channel category name'),
@@ -62,6 +62,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     categories = models.ManyToManyField(
         ChannelCategory, related_name='channel_categories', blank=True)
+
+    country = CountryField(null=True, blank=True)
 
     objects = UserManager()
 
