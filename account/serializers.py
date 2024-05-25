@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django_countries.serializer_fields import CountryField as CountrySerializerField
 
 
 class LoginTokenSerializer(TokenObtainPairSerializer):
@@ -81,6 +82,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
+    country = CountrySerializerField()
 
     class Meta:
         model = User
