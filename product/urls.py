@@ -74,7 +74,7 @@ urlpatterns = [
     # Parent and Sub Comments
     path('parent_comments/<int:product_id>/',
          ParentCommentListAPIView.as_view(), name='parent_comments'),
-    path('sub_comments/<int:product_id>/<int:parent_comment_id>/',
+    path('sub_comments/<int:parent_comment_id>/',
          SubCommentListAPIView.as_view(), name='sub_comments'),
 
 

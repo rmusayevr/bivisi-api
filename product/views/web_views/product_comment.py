@@ -32,11 +32,9 @@ class SubCommentListAPIView(ListAPIView):
     pagination_class = InfiniteScrollPagination
 
     def get_queryset(self):
-        product_id = self.kwargs['product_id']
         parent_comment_id = self.kwargs['parent_comment_id']
         return  ProductComment.objects.filter(
                     parent_comment__id=parent_comment_id,
-                    product__id=product_id
                 ).select_related(
                     'user'
                 )
