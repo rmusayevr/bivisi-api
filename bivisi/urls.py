@@ -28,7 +28,7 @@ urlpatterns = [
     path('api/user/', include('account.urls')),
     path('api/core/', include('core.urls')),
     path('api/order/', include('order.urls')),
-
+    path('api/history/', include('history.urls')),
 ]
 
 schema_view = get_schema_view(

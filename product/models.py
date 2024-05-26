@@ -159,17 +159,3 @@ class ProductCommentLike(DateMixin):
     class Meta:
         verbose_name = _('Product Comment Like')
         verbose_name_plural = _('Product Comments Like')
-
-
-class UserProductHistory(DateMixin):
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='user_history')
-    product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, related_name='product_history')
-
-    def __str__(self):
-        return f"{self.user.username}'s history"
-
-    class Meta:
-        verbose_name = _('History')
-        verbose_name_plural = _('Histories')
