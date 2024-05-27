@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product, ProductComment, ProductCommentLike, ProductVideoType, UserProductLike, UserProductHistory
+from .models import Category, Product, ProductComment, ProductCommentLike, ProductVideoType, UserProductLike
 from import_export.admin import ImportExportModelAdmin
 
 
@@ -45,14 +45,9 @@ class ProductCommentLikeAdmin(ImportExportModelAdmin):
     filter_horizontal = ('product_comment', )
 
 
-class UserProductHistoryAdmin(ImportExportModelAdmin):
-    list_display = ('id', 'user', 'product', 'created_at')
-
-
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductVideoType, ProductVideoTypeAdmin)
 admin.site.register(UserProductLike, UserProductLikeAdmin)
 admin.site.register(ProductComment, ProductCommentAdmin)
 admin.site.register(ProductCommentLike, ProductCommentLikeAdmin)
-admin.site.register(UserProductHistory, UserProductHistoryAdmin)

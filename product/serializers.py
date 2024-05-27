@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from order.models import BasketItem
-from .models import Category, Product, ProductComment, ProductCommentLike, ProductVideoType, UserProductLike, UserProductHistory
+from .models import Category, Product, ProductComment, ProductCommentLike, ProductVideoType, UserProductLike
 from django.utils.translation import gettext_lazy as _
 
 
@@ -271,25 +271,3 @@ class ProductCommentLikeCREATESerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'product_comment', 'created_at', 'updated_at']
 
 # ****************************************  <<<< PRODUCT COMMENT LIKE END >>>>  ****************************************
-
-
-# ****************************************  <<<< USER PRODUCT HISTORY START >>>>  ****************************************
-class UserProductHistoryReadSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = UserProductHistory
-        fields = ['id', 'product', 'created_at']
-
-
-class UserProductHistoryCreateSerializer(serializers.Serializer):
-    products = serializers.ListField(child=serializers.IntegerField())
-
-    def validate_products(self, value):
-        for product_id in value:
-            if not Product.objects.filter(id=product_id).exists():
-                raise serializers.ValidationError(
-                    f"Product with id {product_id} does not exist.")
-        return value
-
-
-# ****************************************  <<<< USER PRODUCT HISTORY END >>>>  ****************************************
