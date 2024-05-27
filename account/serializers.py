@@ -81,8 +81,15 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+class CustomCountryField(CountrySerializerField):
+    def to_representation(self, value):
+        if value == '':
+            return None
+        return super().to_representation(value)
+
+
 class UserDetailSerializer(serializers.ModelSerializer):
-    country = CountrySerializerField()
+    country = CustomCountryField()
 
     class Meta:
         model = User
