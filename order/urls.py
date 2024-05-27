@@ -1,8 +1,6 @@
 from django.urls import path
 from .views.web_views import (
     FavoriteWebAPIView,
-    FavoriteVideoWebAPIView,
-    FavoriteShortsWebAPIView,
     ToggleFavoriteAPIView,
     AddBasketAPIView,
     ChangeBasketItemAPIView,
@@ -29,10 +27,6 @@ urlpatterns = [
     # Favorite Web URLs
     path('favorites/', FavoriteWebAPIView.as_view(),
          name='favorite_list'),
-    path('favorite_videos/', FavoriteVideoWebAPIView.as_view(),
-         name='favorite_videos'),
-    path('favorite_shorts/', FavoriteShortsWebAPIView.as_view(),
-         name='favorite_shorts'),
 
     path('toggle_favorite/<int:pk>/',
          ToggleFavoriteAPIView.as_view(), name='toggle_favorite'),

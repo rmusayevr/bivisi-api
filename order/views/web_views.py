@@ -17,16 +17,6 @@ from services.pagination import InfiniteScrollPagination
 
 
 class FavoriteWebAPIView(ListAPIView):
-    queryset = Favorite.objects.all()
-    serializer_class = FavoriteWebReadSerializer
-    permission_classes = [IsAuthenticated]
-    pagination_class = InfiniteScrollPagination
-
-    def get_queryset(self):
-        return Favorite.objects.filter(user=self.request.user)
-
-
-class FavoriteVideoWebAPIView(ListAPIView):
     queryset = ProductVideoType.objects.all()
     serializer_class = WebProductVideoTypeSerializer
     permission_classes = [IsAuthenticated]
@@ -34,27 +24,12 @@ class FavoriteVideoWebAPIView(ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
+        product_type = self.request.GET.get('product_type')
         favorite_product_ids = Favorite.objects.filter(
             user=user).values_list('items__id', flat=True)
         return ProductVideoType.objects.filter(
             product_id__in=favorite_product_ids,
-            product_type='Video'
-        )
-
-
-class FavoriteShortsWebAPIView(ListAPIView):
-    queryset = ProductVideoType.objects.all()
-    serializer_class = WebProductVideoTypeSerializer
-    permission_classes = [IsAuthenticated]
-    pagination_class = InfiniteScrollPagination
-
-    def get_queryset(self):
-        user = self.request.user
-        favorite_product_ids = Favorite.objects.filter(
-            user=user).values_list('items__id', flat=True)
-        return ProductVideoType.objects.filter(
-            product_id__in=favorite_product_ids,
-            product_type='Shorts'
+            product_type=product_type
         )
 
 
