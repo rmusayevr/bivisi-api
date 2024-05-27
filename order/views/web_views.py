@@ -5,9 +5,10 @@ from ..serializers import (
     FavoriteWebReadSerializer,
     FavoriteCreateSerializer,
     BasketWebReadSerializer,
-    BasketItemReadSerializer
+    BasketItemReadSerializer,
+    WebProductVideoTypeSerializer
 )
-from product.models import Product
+from product.models import Product, ProductVideoType
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -22,15 +23,39 @@ class FavoriteWebAPIView(ListAPIView):
     pagination_class = InfiniteScrollPagination
 
     def get_queryset(self):
+        return Favorite.objects.filter(user=self.request.user)
+
+
+class FavoriteVideoWebAPIView(ListAPIView):
+    queryset = ProductVideoType.objects.all()
+    serializer_class = WebProductVideoTypeSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = InfiniteScrollPagination
+
+    def get_queryset(self):
         user = self.request.user
-        queryset = Favorite.objects.filter(user=user)
+        favorite_product_ids = Favorite.objects.filter(
+            user=user).values_list('items__id', flat=True)
+        return ProductVideoType.objects.filter(
+            product_id__in=favorite_product_ids,
+            product_type='Video'
+        )
 
-        product_type = self.request.query_params.get('product_type')
-        if product_type:
-            queryset = queryset.filter(
-                items__product_video_type__product_type=product_type).distinct()
 
-        return queryset
+class FavoriteShortsWebAPIView(ListAPIView):
+    queryset = ProductVideoType.objects.all()
+    serializer_class = WebProductVideoTypeSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = InfiniteScrollPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        favorite_product_ids = Favorite.objects.filter(
+            user=user).values_list('items__id', flat=True)
+        return ProductVideoType.objects.filter(
+            product_id__in=favorite_product_ids,
+            product_type='Shorts'
+        )
 
 
 class ToggleFavoriteAPIView(APIView):
