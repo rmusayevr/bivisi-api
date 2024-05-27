@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from order.models import Favorite, Basket, BasketItem
-from product.serializers import ProductREADSerializer
+from product.models import ProductVideoType
+from product.serializers import ProductREADSerializer, WebProductVideoTypeSerializer
 
 
 class FavoriteReadSerializer(serializers.ModelSerializer):
@@ -16,12 +17,21 @@ class FavoriteReadSerializer(serializers.ModelSerializer):
 
 
 class FavoriteWebReadSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    items = ProductREADSerializer(many=True)
+    items = serializers.SerializerMethodField()
 
     class Meta:
         model = Favorite
-        fields = ['id', 'user', 'items']
+        fields = ['items']
+
+    def get_items(self, obj):
+        request = self.context.get('request')
+        product_type = request.query_params.get('product_type')
+        product_video_types = ProductVideoType.objects.filter(product__in=obj.items.all())
+
+        if product_type:
+            product_video_types = product_video_types.filter(product_type=product_type)
+
+        return WebProductVideoTypeSerializer(product_video_types, many=True).data
 
 
 class FavoriteCreateSerializer(serializers.ModelSerializer):

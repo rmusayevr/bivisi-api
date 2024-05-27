@@ -12,15 +12,25 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
+from services.pagination import InfiniteScrollPagination
 
 
 class FavoriteWebAPIView(ListAPIView):
     queryset = Favorite.objects.all()
     serializer_class = FavoriteWebReadSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = InfiniteScrollPagination
 
     def get_queryset(self):
-        return Favorite.objects.filter(user=self.request.user)
+        user = self.request.user
+        queryset = Favorite.objects.filter(user=user)
+
+        product_type = self.request.query_params.get('product_type')
+        if product_type:
+            queryset = queryset.filter(
+                items__product_video_type__product_type=product_type).distinct()
+
+        return queryset
 
 
 class ToggleFavoriteAPIView(APIView):
