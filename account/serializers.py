@@ -232,10 +232,19 @@ class SubscriptionCreateSerializer(serializers.ModelSerializer):
 
 class PopularChannelSerializer(serializers.ModelSerializer):
     followers_count = serializers.IntegerField()
+    in_subscribe = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'avatar', 'cover_image', 'followers_count']
+        fields = ['id', 'username', 'avatar', 'cover_image',
+                  'followers_count', 'in_subscribe']
+
+    def get_in_subscribe(self, obj):
+        request = self.context.get('request', None)
+        print(request)
+        if request is None or not request.user.is_authenticated:
+            return False
+        return Subscription.objects.filter(follower=obj, follows=request.user).exists()
 
 
 class GeneralSettingsSerializer(serializers.ModelSerializer):

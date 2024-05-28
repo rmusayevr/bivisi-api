@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -225,7 +226,7 @@ class SubscribeWebAPIView(ListAPIView):
 
 class ToggleSubscribeAPIView(APIView):
     permission_classes = [IsAuthenticated]
-    http_method_names = ['post']
+    http_method_names = ['post', 'delete']
 
     def post(self, request, pk, *args, **kwargs):
         follower = request.user
@@ -236,10 +237,15 @@ class ToggleSubscribeAPIView(APIView):
 
         subscription, created = Subscription.objects.get_or_create(
             follower=follower, follows=follows)
+            
+        return Response({'status': 'subscribed'}, status=status.HTTP_201_CREATED)
 
-        if created:
-            return Response({'status': 'subscribed'}, status=status.HTTP_201_CREATED)
-        else:
+    def delete(self, request, pk, *args, **kwargs):
+        follower = request.user
+        follows = get_object_or_404(User, pk=pk)
+        subscription = Subscription.objects.get(
+            follower=follower, follows=follows)
+        if subscription:
             subscription.delete()
             return Response({'status': 'unsubscribed'}, status=status.HTTP_204_NO_CONTENT)
 
@@ -255,30 +261,18 @@ class PopularChannelsAPIView(APIView):
         return Response(serializer.data)
 
 
-class SubscriptionsAPIView(APIView):
+class SubscriptionsAPIView(ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = PopularChannelSerializer
+    filter_backends = [OrderingFilter]
+    pagination_class = InfiniteScrollPagination
 
-    def get(self, request, *args, **kwargs):
-        sort = request.query_params.get('sort', 'followers')
-
+    def get_queryset(self):
         subscriptions = User.objects.annotate(
             followers_count=Count('followers')
         )
-
-        if sort == 'a_to_z':
-            subscriptions = subscriptions.order_by('username')
-        elif sort == 'z_to_a':
-            subscriptions = subscriptions.order_by('-username')
-        elif sort == 'newest':
-            subscriptions = subscriptions.order_by('-date_joined')
-        elif sort == 'oldest':
-            subscriptions = subscriptions.order_by('date_joined')
-        else:
-            subscriptions = subscriptions.order_by('-followers_count')
-
         subscriptions = subscriptions[:50]
-
-        serializer = PopularChannelSerializer(subscriptions, many=True)
-        return Response(serializer.data)
+        return subscriptions
 
 
 class UserDetailAPIView(APIView):
