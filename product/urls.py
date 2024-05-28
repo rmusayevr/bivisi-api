@@ -1,5 +1,5 @@
 from django.urls import path
-from product.views.web_views.product_comment import ParentCommentListAPIView, SubCommentListAPIView
+from product.views.web_views.product_comment import ParentCommentListAPIView, ProductCommentCreateView, SubCommentListAPIView
 from .views.web_views.product import WebProductVideoTypeListView
 from .views.web_views.product_and_comment_like import ToggleProductCommentLikeAPIView, ToggleProductLikeAPIView
 from .views.web_views.category import CategoryWebListView
@@ -75,5 +75,8 @@ urlpatterns = [
          ParentCommentListAPIView.as_view(), name='parent_comments'),
     path('sub_comments/<int:parent_comment_id>/',
          SubCommentListAPIView.as_view(), name='sub_comments'),
+
+    path('create_comment/', ProductCommentCreateView.as_view(), name='create_comment'),
+
 
 ]
