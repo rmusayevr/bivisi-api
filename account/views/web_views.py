@@ -237,17 +237,19 @@ class ToggleSubscribeAPIView(APIView):
 
         subscription, created = Subscription.objects.get_or_create(
             follower=follower, follows=follows)
-            
+
         return Response({'status': 'subscribed'}, status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk, *args, **kwargs):
         follower = request.user
         follows = get_object_or_404(User, pk=pk)
-        subscription = Subscription.objects.get(
-            follower=follower, follows=follows)
-        if subscription:
+        try:
+            subscription = Subscription.objects.get(
+                follower=follower, follows=follows)
             subscription.delete()
             return Response({'status': 'unsubscribed'}, status=status.HTTP_204_NO_CONTENT)
+        except Subscription.DoesNotExist:
+            return Response({'error': 'Subscription does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class PopularChannelsAPIView(APIView):
