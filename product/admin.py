@@ -19,7 +19,7 @@ class ProductAdmin(ImportExportModelAdmin):
 
 class ProductVideoTypeAdmin(ImportExportModelAdmin):
     list_display = ('id', 'product', 'product_type',
-                    'video_url', 'created_at', 'updated_at')
+                    'video', 'created_at', 'updated_at')
     search_fields = ('product__name', )
     list_filter = ('product', 'product_type')
 

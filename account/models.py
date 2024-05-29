@@ -37,10 +37,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
     first_name = models.CharField(_('first name'), max_length=50)
     last_name = models.CharField(_('last name'), max_length=50)
-    avatar = models.URLField(
-        _("avatar"), max_length=500, null=True)
-    cover_image = models.URLField(
-        _("cover image"), max_length=500, null=True)
+    avatar = models.ImageField(
+        _("avatar"), upload_to='account/profile_avatar_images/', max_length=500, null=True)
+    cover_image = models.ImageField(
+        _("cover image"), upload_to='account/profile_cover_images/', max_length=500, null=True)
     gender = models.CharField(
         _('gender'), max_length=30, choices=GENDER_CHOICES, null=True, blank=True)
     birthday = models.DateField(_('birthday'), null=True, blank=True)
