@@ -7,7 +7,7 @@ from .models import UserHistory
 class ProductFORHISTORYSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['name', 'description', 'price', 'in_sale', 'percent', 'final_price']
+        fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent', 'final_price']
 
 
 class ProductVideoTypeFORHISTORYSerializer(serializers.ModelSerializer):
@@ -15,7 +15,7 @@ class ProductVideoTypeFORHISTORYSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVideoType
-        fields = ['product_type', 'cover_image_url', 'video_url', 'product']
+        fields = ['id', 'product_type', 'cover_image_url', 'video_url', 'product']
 
 
 class UserHistorySerializer(serializers.ModelSerializer):
@@ -23,7 +23,7 @@ class UserHistorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserHistory
-        fields = ['user', 'watch_date', 'product_video_type']
+        fields = ['id', 'user', 'watch_date', 'product_video_type']
 
 
 class UserHistoryDeleteSerializer(serializers.Serializer):
