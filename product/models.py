@@ -84,10 +84,10 @@ class ProductVideoType(DateMixin):
         _("Product Type"), max_length=255, choices=product_types)
 
     cover_image = models.ImageField(
-        _("Cover Image"), upload_to='product/cover_images/', max_length=255, null=True, blank=True)
+        _("Cover Image"), upload_to='product/cover_images/', max_length=1000, null=True, blank=True)
 
     video = models.FileField(
-        _("Video"), upload_to='product/videos/', max_length=255)
+        _("Video"), upload_to='product/videos/', max_length=1000)
     product = models.ForeignKey(Product, verbose_name=_(
         "Product"), on_delete=models.CASCADE, related_name='product_video_type')
 

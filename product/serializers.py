@@ -62,8 +62,8 @@ class CategoryWebSerializer(serializers.ModelSerializer):
 class DashboardProductVideoTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVideoType
-        fields = ['id', 'product_type', 'video_url',
-                  'cover_image_url', 'product', 'created_at', 'updated_at']
+        fields = ['id', 'product_type', 'video',
+                  'cover_image', 'product', 'created_at', 'updated_at']
 
 
 class ProductForTypeSerializer(serializers.ModelSerializer):
@@ -91,7 +91,7 @@ class WebProductVideoTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVideoType
-        fields = ['id', 'product_type', 'video_url', 'cover_image_url',
+        fields = ['id', 'product_type', 'video', 'cover_image',
                   'product', 'created_at', 'updated_at', 'in_wishlist', 'in_basket', 'is_liked']
 
     def get_in_wishlist(self, obj):
