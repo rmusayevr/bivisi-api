@@ -15,4 +15,4 @@ class Uploader:
     # SLIDER IMAGE
     @staticmethod
     def slider_image(instance, filename):
-        return f"Slider-Image/{filename}"
+        return f"Slider/{filename}"
