@@ -16,3 +16,18 @@ class Uploader:
     @staticmethod
     def slider_image(instance, filename):
         return f"Slider/{filename}"
+
+    # Product COVER IMAGE
+    @staticmethod
+    def product_cover_image(instance, filename):
+        return f"Products/Cover-images/{filename}"
+
+    # Product ORIGINAL VIDEO
+    @staticmethod
+    def product_original_video(instance, filename):
+        return f"Products/Original-video/{filename}"
+
+    # Product COMPRESS VIDEO
+    @staticmethod
+    def product_compress_video(instance, filename):
+        return f"Products/Compress-video/{filename}"

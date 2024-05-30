@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from order.models import BasketItem
 from .models import Category, Product, ProductComment, ProductCommentLike, ProductVideoType, UserProductLike
 from django.utils.translation import gettext_lazy as _
@@ -54,6 +53,7 @@ class CategoryWebSerializer(serializers.ModelSerializer):
     def get_children(self, obj):
         children = obj.parent_category_name.all()
         return CategoryWebSerializer(children, many=True).data
+
 # ****************************************  <<<< CATEGORY END >>>>  ****************************************
 
 
@@ -62,8 +62,7 @@ class CategoryWebSerializer(serializers.ModelSerializer):
 class DashboardProductVideoTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVideoType
-        fields = ['id', 'product_type', 'video_url',
-                  'cover_image_url', 'product', 'created_at', 'updated_at']
+        fields = ['id', 'product_type', 'original_video', 'compressed_video', 'cover_image', 'product', 'created_at', 'updated_at']
 
 
 class ProductForTypeSerializer(serializers.ModelSerializer):
@@ -91,8 +90,7 @@ class WebProductVideoTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVideoType
-        fields = ['id', 'product_type', 'video_url', 'cover_image_url',
-                  'product', 'created_at', 'updated_at', 'in_wishlist', 'in_basket', 'is_liked']
+        fields = ['id', 'product_type', 'original_video', 'compressed_video', 'cover_image', 'product', 'created_at', 'updated_at', 'in_wishlist', 'in_basket', 'is_liked']
 
     def get_in_wishlist(self, obj):
         request = self.context.get('request', None)
@@ -111,6 +109,7 @@ class WebProductVideoTypeSerializer(serializers.ModelSerializer):
         if request is None or not request.user.is_authenticated:
             return False
         return obj.product.user_product_like.filter(user=request.user).exists()
+
 # ****************************************  <<<< PRODUCT VIDEO TYPE END >>>>   ****************************************
 
 
@@ -131,8 +130,7 @@ class ProductCREATESerializer(serializers.ModelSerializer):
 
 class ProductREADSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
-    product_video_type = DashboardProductVideoTypeSerializer(
-        many=True, read_only=True)
+    product_video_type = DashboardProductVideoTypeSerializer(many=True, read_only=True)
     in_wishlist = serializers.SerializerMethodField()
     in_basket = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
@@ -163,6 +161,7 @@ class ProductREADSerializer(serializers.ModelSerializer):
         if request is None or not request.user.is_authenticated:
             return False
         return obj.user_product_like.filter(user=request.user).exists()
+
 # ****************************************  <<<< PRODUCT END >>>>  ****************************************
 
 
