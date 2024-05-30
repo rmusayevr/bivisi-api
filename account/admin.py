@@ -9,25 +9,35 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'email', 'password',)}),
         (_('Personal info'), {
-         'fields': ('first_name', 'last_name', 'gender', 'birthday', 'avatar', 'country')}),
+         'fields': ('first_name', 'last_name', 'gender', 'birthday', 'avatar', 'cover_image', 'country')}),
         (_('Permissions'), {'fields': ('status', 'is_active', 'is_staff',
          'is_superuser', 'groups', 'user_permissions')}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'email', 'first_name', 'last_name', 'avatar', 'gender', 
+            'fields': ('username', 'email', 'first_name', 'last_name', 'gender', 
                        'birthday', 'country', 'password1', 'password2'),
         }),
     )
     list_display = ('username', 'email', 'first_name', 'last_name',
-                    'gender', 'birthday', 'is_staff', 'is_active', 'status')
+                    'gender', 'birthday', 'is_staff', 'is_active', 'is_superuser', 'status')
     list_filter = ('gender', 'is_staff', 'is_superuser',
                    'is_active', 'status', 'groups',)
     search_fields = ('username', 'email', 'first_name', 'last_name', 'gender')
     ordering = ('username',)
     filter_horizontal = ('groups', 'user_permissions',)
 
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            if obj.avatar:
+                obj.avatar.delete(save=False)
+
+            if obj.cover_image:
+                obj.cover_image.delete(save=False)
+
+        # Call the delete_queryset method of the parent class
+        super().delete_queryset(request, queryset)
 
 admin.site.register(User, UserAdmin)
 
