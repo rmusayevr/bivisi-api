@@ -5,14 +5,12 @@ from .models import FAQ, Slider
 
 class SliderAdmin(ImportExportModelAdmin):
     list_display = ['id', 'image', 'created_at', 'updated_at']
+    list_filter = ['created_at', 'updated_at']
 
     def delete_queryset(self, request, queryset):
         for obj in queryset:
             if obj.image:
-                storage, path = obj.image.storage, obj.image.path
-                storage.delete(path)
-
-        # Call the delete_queryset method of the parent class
+                obj.image.delete(save=False)
         super().delete_queryset(request, queryset)
 
 

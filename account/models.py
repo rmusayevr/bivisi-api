@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from services.uploader import Uploader
 from .managers import UserManager
 from django.core.mail import send_mail
 from django.utils.translation import gettext_lazy as _
@@ -8,6 +9,8 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from phonenumber_field.modelfields import PhoneNumberField
 from services.mixins import DateMixin
 from django_countries.fields import CountryField
+
+
 
 class ChannelCategory(DateMixin):
     name = models.CharField(_('channel category name'),
@@ -38,9 +41,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(_('first name'), max_length=50)
     last_name = models.CharField(_('last name'), max_length=50)
     avatar = models.ImageField(
-        _("avatar"), upload_to='account/profile_avatar_images/', max_length=500, null=True)
+        _("avatar"), upload_to=Uploader.user_avatar, max_length=500, null=True, blank=True)
     cover_image = models.ImageField(
-        _("cover image"), upload_to='account/profile_cover_images/', max_length=500, null=True)
+        _("cover image"), upload_to=Uploader.user_cover_image, max_length=500, null=True, blank=True)
     gender = models.CharField(
         _('gender'), max_length=30, choices=GENDER_CHOICES, null=True, blank=True)
     birthday = models.DateField(_('birthday'), null=True, blank=True)
@@ -95,6 +98,40 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old_instance = User.objects.get(pk=self.pk)
+
+            # Check if the avatar has been changed
+            if self.avatar != old_instance.avatar:
+                if old_instance.avatar:
+                    old_instance.avatar.delete(save=False)
+
+            # Check if the avatar has been cleared
+            if not self.avatar:
+                if old_instance.avatar:
+                    old_instance.avatar.delete(save=False)
+
+            # Check if the cover image has been changed
+            if self.cover_image != old_instance.cover_image:
+                if old_instance.cover_image:
+                    old_instance.cover_image.delete(save=False)
+
+            # Check if the cover image has been cleared
+            if not self.cover_image:
+                if old_instance.cover_image:
+                    old_instance.cover_image.delete(save=False)
+
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self.avatar:
+            self.avatar.delete(save=False)
+
+        if self.cover_image:
+            self.cover_image.delete(save=False)
+        super().delete(*args, **kwargs)
 
 
 class PhoneNumber(DateMixin):

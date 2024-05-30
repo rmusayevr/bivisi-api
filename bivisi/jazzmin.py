@@ -3,7 +3,7 @@ def get_user_avatar(user):
     # Assuming you have a one-to-one relationship between User and Profile
     # and the profile model has the image field
     try:
-        return user.avatar  # Assuming 'Profile' is the related model and 'image' is the field
+        return user.avatar.url  # Assuming 'Profile' is the related model and 'image' is the field
     except:
         return '/static/image/jazzmin-admin/7309681.jpg'
 

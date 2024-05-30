@@ -3,9 +3,10 @@ from rest_framework import filters
 from django.db.models import Count
 from rest_framework.generics import ListAPIView
 from product.filters import ProductFilter
-from product.models import Product, ProductVideoType
+from product.models import ProductVideoType
 from services.pagination import InfiniteScrollPagination
-from product.serializers import ProductForTypeSerializer, WebProductVideoTypeSerializer
+from product.serializers import WebProductVideoTypeSerializer
+from rest_framework.permissions import IsAuthenticated
 
 
 

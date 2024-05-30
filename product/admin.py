@@ -18,10 +18,19 @@ class ProductAdmin(ImportExportModelAdmin):
 
 
 class ProductVideoTypeAdmin(ImportExportModelAdmin):
-    list_display = ('id', 'product', 'product_type',
-                    'video', 'created_at', 'updated_at')
+    list_display = ('id', 'product_type', 'cover_image', 'original_video', 'compressed_video', 'product', 'created_at', 'updated_at')
     search_fields = ('product__name', )
-    list_filter = ('product', 'product_type')
+    list_filter = ('product', 'product_type', 'created_at', 'updated_at')
+
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            if obj.cover_image:
+                obj.cover_image.delete(save=False)
+
+            if obj.original_video:
+                obj.original_video.delete(save=False)
+
+        super().delete_queryset(request, queryset)
 
 
 class UserProductLikeAdmin(ImportExportModelAdmin):

@@ -5,6 +5,8 @@ from services.mixins import DateMixin
 from account.models import User
 from django.core.exceptions import ValidationError
 
+from services.uploader import Uploader
+
 
 class Category(DateMixin):
     name = models.CharField(_("Name"), max_length=255)
@@ -80,16 +82,51 @@ class ProductVideoType(DateMixin):
         ('Video', 'Video'),
         ('Shorts', 'Shorts')
     )
-    product_type = models.CharField(
-        _("Product Type"), max_length=255, choices=product_types)
+    product_type = models.CharField(_("Product Type"), max_length=255, choices=product_types)
 
-    cover_image = models.ImageField(
-        _("Cover Image"), upload_to='product/cover_images/', max_length=1000, null=True, blank=True)
+    cover_image = models.ImageField(_("Cover Image"), upload_to=Uploader.product_cover_image, max_length=500, null=True, blank=True)
 
-    video = models.FileField(
-        _("Video"), upload_to='product/videos/', max_length=1000)
-    product = models.ForeignKey(Product, verbose_name=_(
-        "Product"), on_delete=models.CASCADE, related_name='product_video_type')
+    original_video = models.FileField(_("Original Video"), upload_to=Uploader.product_original_video, max_length=500)
+    compressed_video = models.FileField(_("Compressed Video (480p)"), upload_to=Uploader.product_compress_video, max_length=500, null=True, blank=True)
+
+    product = models.ForeignKey(Product, verbose_name=_("Product"), on_delete=models.CASCADE, related_name='product_video_type')
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old_instance = ProductVideoType.objects.get(pk=self.pk)
+
+            # Check if the cover_image has been changed
+            if self.cover_image != old_instance.cover_image:
+                if old_instance.cover_image:
+                    old_instance.cover_image.delete(save=False)
+
+            # Check if the cover_image has been cleared
+            if not self.cover_image:
+                if old_instance.cover_image:
+                    old_instance.cover_image.delete(save=False)
+
+            # Check if the original_video has been changed
+            if self.original_video != old_instance.original_video:
+                if old_instance.original_video:
+                    old_instance.original_video.delete(save=False)
+
+            # Check if the original_video has been cleared
+            if not self.original_video:
+                if old_instance.original_video:
+                    old_instance.original_video.delete(save=False)
+
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self.cover_image:
+            self.cover_image.delete(save=False)
+
+        if self.original_video:
+            self.original_video.delete(save=False)
+
+        super().delete(*args, **kwargs)
+
+
 
     def __str__(self):
         return f"{self.product.name} - {self.product_type}"
