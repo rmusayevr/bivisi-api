@@ -1,0 +1,51 @@
+# Use postgres/example user/password credentials
+version: '3.9'
+
+services:
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+    depends_on:
+      - web
+    volumes:
+      - ./static/:/app/static/
+
+  db:
+    container_name: postgresql_db
+    image: postgres
+    restart: always
+    volumes:
+      - ./data/pgdb:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER : root
+      POSTGRES_PASSWORD : root123
+      POSTGRES_DB : bivisi
+
+  web:
+    build: .
+    command: gunicorn bivisi.wsgi:application --bind 0.0.0.0:8000 --timeout 600 --workers 4
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "1.0"
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4:7.1
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "info@bivisi.com"
+      PGADMIN_DEFAULT_PASSWORD: "b1v1s1Live"
+    ports:
+      - 5050:80
+    volumes:
+       - ./data/pgadmin2:/var/lib/pgadmin
