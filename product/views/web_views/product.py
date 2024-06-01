@@ -1,11 +1,11 @@
 import django_filters.rest_framework
 from rest_framework import filters
 from django.db.models import Count
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView
 from product.filters import ProductFilter
-from product.models import ProductVideoType
+from product.models import Product, ProductVideoType
 from services.pagination import InfiniteScrollPagination
-from product.serializers import WebProductVideoTypeSerializer
+from product.serializers import WebProductVideoTypeSerializer, WebUploadProductCREATESerializer
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -26,3 +26,9 @@ class WebProductVideoTypeListView(ListAPIView):
             comment_count=Count('product__product_comment')
         )
         return queryset
+
+
+class WebUploadProductCreateView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Product.objects.all()
+    serializer_class = WebUploadProductCREATESerializer
