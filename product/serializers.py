@@ -75,7 +75,7 @@ class ProductForTypeSerializer(serializers.ModelSerializer):
                   'like_count', 'category', 'user', 'comment_count', 'created_at', 'updated_at']
 
     def get_user(self, obj):
-        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar if obj.user.avatar else None}
+        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
 
     def get_comment_count(self, obj):
         # Return the count of comments related to the product
@@ -115,6 +115,52 @@ class WebProductVideoTypeSerializer(serializers.ModelSerializer):
 
 # ****************************************  <<<< PRODUCT START >>>>  ****************************************
 
+class WebUploadProductCREATESerializer(serializers.ModelSerializer):
+
+    product_type = serializers.ChoiceField(choices=ProductVideoType.product_types, write_only=True)
+    cover_image = serializers.ImageField(required=False, allow_null=True, write_only=True)
+    original_video = serializers.FileField(write_only=True)
+
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent', 'category', 'product_type', 'cover_image', 'original_video']
+        read_only_fields = ['user']
+
+    def validate_percent(self, value):
+        if value is not None and not (0 <= value <= 100):
+            raise serializers.ValidationError("Percent value must be between 0 and 100.")
+        return value
+
+    def create(self, validated_data):
+        product_type = validated_data.pop('product_type')
+        cover_image = validated_data.pop('cover_image', None)
+        original_video = validated_data.pop('original_video')
+
+        request = self.context.get('request')
+        user = request.user
+        validated_data['user'] = user
+
+        product = super().create(validated_data)
+
+        ProductVideoType.objects.create(
+            product=product,
+            product_type=product_type,
+            cover_image=cover_image,
+            original_video=original_video,
+        )
+
+        return product
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        product_video_type = instance.product_video_type.first()  # Assuming one-to-one relationship for simplicity
+        if product_video_type:
+            representation['product_type'] = product_video_type.product_type
+            representation['cover_image'] = product_video_type.cover_image.url if product_video_type.cover_image else None
+            representation['original_video'] = product_video_type.original_video.url
+        return representation
+
+
 class ProductCREATESerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
@@ -142,7 +188,7 @@ class ProductREADSerializer(serializers.ModelSerializer):
                   'in_wishlist', 'in_basket', 'is_liked', 'created_at', 'updated_at']
 
     def get_user(self, obj):
-        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar if obj.user.avatar else None}
+        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
 
     def get_in_wishlist(self, obj):
         request = self.context.get('request', None)
@@ -213,7 +259,7 @@ class ProductCommentREADSerializer(serializers.ModelSerializer):
         return {'id': obj.product.id, 'name': obj.product.name}
 
     def get_user(self, obj):
-        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar if obj.user.avatar else None}
+        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
 
 
 class ProductCommentCREATESerializer(serializers.ModelSerializer):
@@ -244,7 +290,7 @@ class WebProductCommentSerializer(serializers.ModelSerializer):
                   'parent_comment', 'created_at', 'updated_at']
 
     def get_user(self, obj):
-        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar if obj.user.avatar else None}
+        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
 
 # ****************************************  <<<< PRODUCT COMMENT END >>>>  ****************************************
 

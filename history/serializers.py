@@ -15,7 +15,7 @@ class ProductVideoTypeFORHISTORYSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVideoType
-        fields = ['id', 'product_type', 'cover_image', 'video', 'product']
+        fields = ['id', 'product_type', 'cover_image', 'original_video', 'compressed_video','product']
 
 
 class UserHistorySerializer(serializers.ModelSerializer):
