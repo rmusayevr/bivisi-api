@@ -75,7 +75,7 @@ class ProductForTypeSerializer(serializers.ModelSerializer):
                   'like_count', 'category', 'user', 'comment_count', 'created_at', 'updated_at']
 
     def get_user(self, obj):
-        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar if obj.user.avatar else None}
+        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
 
     def get_comment_count(self, obj):
         # Return the count of comments related to the product
@@ -188,7 +188,7 @@ class ProductREADSerializer(serializers.ModelSerializer):
                   'in_wishlist', 'in_basket', 'is_liked', 'created_at', 'updated_at']
 
     def get_user(self, obj):
-        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar if obj.user.avatar else None}
+        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
 
     def get_in_wishlist(self, obj):
         request = self.context.get('request', None)
@@ -259,7 +259,7 @@ class ProductCommentREADSerializer(serializers.ModelSerializer):
         return {'id': obj.product.id, 'name': obj.product.name}
 
     def get_user(self, obj):
-        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar if obj.user.avatar else None}
+        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
 
 
 class ProductCommentCREATESerializer(serializers.ModelSerializer):
@@ -290,7 +290,7 @@ class WebProductCommentSerializer(serializers.ModelSerializer):
                   'parent_comment', 'created_at', 'updated_at']
 
     def get_user(self, obj):
-        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar if obj.user.avatar else None}
+        return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
 
 # ****************************************  <<<< PRODUCT COMMENT END >>>>  ****************************************
 
