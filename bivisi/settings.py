@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from datetime import timedelta
 import os
+from datetime import timedelta
 from pathlib import Path
 from import_export.formats.base_formats import CSV, XLSX
 from bivisi.jazzmin import JAZZMIN_SETTINGS, JAZZMIN_UI_TWEAKS
@@ -24,10 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-m$pctt(_0zrns4$^cgmdgufmff(#l8)i6s0!f+d86-hy#e#iz9'
+# SECRET_KEY = 'django-insecure-m$pctt(_0zrns4$^cgmdgufmff(#l8)i6s0!f+d86-hy#e#iz9'
+
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY', 'c@dc4504**&8eq8@(w^v8u&_5vl6q34sm39^wng@jrk+m0-pp=')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False if os.environ.get('DEBUG') else True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -100,21 +103,15 @@ WSGI_APPLICATION = 'bivisi.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'bivisi',
-        'USER': 'root',
-        'PASSWORD': 'root123',
-        'HOST': 'db',
-        'PORT': '5432'
+        'ENGINE': os.environ.get('POSTGRES_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': os.environ.get('POSTGRES_NAME', 'db.sqlite3'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('POSTGRES_HOST'),
+        'PORT': os.environ.get('POSTGRES_PORT')
     }
 }
 
@@ -155,9 +152,19 @@ USE_TZ = True
 STATIC_URL = "static/"
 if DEBUG:
     STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+    MEDIA_ROOT = BASE_DIR / "media"
+    MEDIA_URL = '/media/'
 else:
-    STATIC_ROOT = os.path.join(BASE_DIR, "static")
-
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    AWS_ACCESS_KEY_ID = 'AKIATCKAOUIJN6CUS7GS'
+    AWS_SECRET_ACCESS_KEY = '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'
+    AWS_STORAGE_BUCKET_NAME = 'bivisi-media'
+    AWS_S3_SIGNATURE_NAME = 's3v4',
+    AWS_S3_REGION_NAME = 'eu-central-1'
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_DEFAULT_ACL = None
+    AWS_S3_VERITY = True
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -193,28 +200,17 @@ CORS_ALLOW_ALL_ORIGINS = True
 AUTH_USER_MODEL = 'account.User'
 AUTHENTICATION_BACKENDS = ['account.backends.EmailBackend']
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'rasmusayevhad@gmail.com'
-EMAIL_HOST_PASSWORD = 'aykusnezygsrtxgp'
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
 IMPORT_EXPORT_FORMATS = [CSV, XLSX]
 
 JAZZMIN_SETTINGS = JAZZMIN_SETTINGS
-JAZZMIN_UI_TWEAKS =JAZZMIN_UI_TWEAKS
-
-AWS_ACCESS_KEY_ID = 'AKIATCKAOUIJN6CUS7GS'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'bivisi-media'
-AWS_S3_SIGNATURE_NAME = 's3v4',
-AWS_S3_REGION_NAME = 'eu-central-1'
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL =  None
-AWS_S3_VERITY = True
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
+JAZZMIN_UI_TWEAKS = JAZZMIN_UI_TWEAKS
 
 # Maximum size of file uploads in bytes (1 GB)
 FILE_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 1024  # 1 GB
