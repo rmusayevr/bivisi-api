@@ -27,9 +27,13 @@ class FavoriteWebAPIView(ListAPIView):
         product_type = self.request.GET.get('product_type')
         favorite_product_ids = Favorite.objects.filter(
             user=user).values_list('items__id', flat=True)
+        if product_type:
+            return ProductVideoType.objects.filter(
+                product_id__in=favorite_product_ids,
+                product_type=product_type
+            )
         return ProductVideoType.objects.filter(
-            product_id__in=favorite_product_ids,
-            product_type=product_type
+            product_id__in=favorite_product_ids
         )
 
 
