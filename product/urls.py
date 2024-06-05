@@ -1,6 +1,6 @@
 from django.urls import path
 from product.views.web_views.product_comment import ParentCommentListAPIView, ProductCommentCreateView, SubCommentListAPIView
-from .views.web_views.product import WebProductVideoTypeListView, WebUploadProductCreateView
+from .views.web_views.product import ShortsDeleteAPIView, WebProductDeleteAPIView, WebProductVideoTypeListView, WebUploadProductCreateView
 from .views.web_views.product_and_comment_like import ToggleProductCommentLikeAPIView, ToggleProductLikeAPIView
 from .views.web_views.category import CategoryWebListView
 from .views.admin_views.views import (
@@ -79,5 +79,7 @@ urlpatterns = [
     path('create_comment/', ProductCommentCreateView.as_view(), name='create_comment'),
 
     path('upload_product/', WebUploadProductCreateView.as_view(), name='upload_product'),
+    path('product_delete/<int:pk>/', WebProductDeleteAPIView.as_view(), name='product_delete'),
+    path('product_shorts_delete/<int:pk>/', ShortsDeleteAPIView.as_view(), name='product_shorts_delete'),
 
 ]
