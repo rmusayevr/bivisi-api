@@ -1,12 +1,14 @@
 import django_filters.rest_framework
-from rest_framework import filters
+from rest_framework import filters, status
 from django.db.models import Count
-from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, DestroyAPIView
 from product.filters import ProductFilter
 from product.models import Product, ProductVideoType
-from services.pagination import InfiniteScrollPagination
 from product.serializers import WebProductVideoTypeSerializer, WebUploadProductCREATESerializer
+from services.pagination import InfiniteScrollPagination
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
 
 
 
@@ -32,3 +34,37 @@ class WebUploadProductCreateView(CreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Product.objects.all()
     serializer_class = WebUploadProductCREATESerializer
+
+
+
+class WebProductDeleteAPIView(DestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = WebUploadProductCREATESerializer
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        product = self.get_object()
+
+        # Ensure the product belongs to the requesting user
+        if product.user != request.user:
+            return Response({"detail": "You do not have permission to delete this product."}, status=status.HTTP_403_FORBIDDEN)
+        
+        # Perform the delete operation
+        self.perform_destroy(product)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ShortsDeleteAPIView(DestroyAPIView):
+    queryset = ProductVideoType.objects.filter(product_type='Shorts')
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        shorts = self.get_object()
+
+        # Ensure the shorts belong to a product owned by the requesting user
+        if shorts.product.user != request.user:
+            return Response({"detail": "You do not have permission to delete this shorts."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Perform the delete operation
+        self.perform_destroy(shorts)
+        return Response(status=status.HTTP_204_NO_CONTENT)
