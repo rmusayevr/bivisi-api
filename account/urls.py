@@ -1,21 +1,27 @@
 from django.urls import path
 
+from account.views.otp_views import (
+    OTPResendAPIView,
+    OTPVerifyAPIView
+)
 from account.views.profile_settings import (
     GeneralSettingsUpdateView,
     ProfileInformationUpdateView
 )
-from .views.web_views import (
-    PopularChannelsAPIView,
-    RegisterAPIView,
-    LoginTokenView,
-    OTPVerifyAPIView,
-    OTPResendAPIView,
-    SendEmailResetPasswordAPIView,
+from account.views.reset_password import (
     ResetPasswordAPIView,
-    ChangePasswordAPIView,
-    ToggleSubscribeAPIView,
+    SendEmailResetPasswordAPIView
+)
+from account.views.subscription import (
+    PopularChannelsAPIView,
     SubscribeWebAPIView,
     SubscriptionsAPIView,
+    ToggleSubscribeAPIView
+)
+from .views.web_views import (
+    RegisterAPIView,
+    LoginTokenView,
+    ChangePasswordAPIView,
     UserDetailAPIView
 )
 from .views.admin_views import (
