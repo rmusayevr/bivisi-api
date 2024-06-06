@@ -22,7 +22,8 @@ from .views.web_views import (
     RegisterAPIView,
     LoginTokenView,
     ChangePasswordAPIView,
-    UserDetailAPIView
+    UserDetailAPIView,
+    DeleteAccountAPIView
 )
 from .views.admin_views import (
     ChannelCategoryListCreateAPIView,
@@ -67,7 +68,9 @@ urlpatterns = [
     path('profile_information/', ProfileInformationUpdateView.as_view(),
          name='profile_information'),
 
-    path('user_detail/', UserDetailAPIView.as_view(), name='user_detail')
+    path('user_detail/', UserDetailAPIView.as_view(), name='user_detail'),
+
+    path('delete_account/', DeleteAccountAPIView.as_view(), name='delete_account')
 
 ]
 

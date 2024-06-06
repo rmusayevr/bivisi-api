@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from ..models import User
 from ..serializers import (
+    DeleteAccountSerializer,
     LoginTokenSerializer,
     RegisterSerializer,
     ChangePasswordSerializer,
@@ -38,3 +39,19 @@ class UserDetailAPIView(APIView):
         user = request.user
         serializer = UserDetailSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class DeleteAccountAPIView(APIView):
+    serializer_class = DeleteAccountSerializer
+    permission_classes = [IsAuthenticated]
+    http_method_names = ['post']
+
+    def post(self, request, *args, **kwargs):
+        serializer = DeleteAccountSerializer(
+            data=request.data, context={'request': request})
+
+        if serializer.is_valid():
+            serializer.delete_account()
+            return Response({"message": "Account deleted successfully."}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
