@@ -4,6 +4,8 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django_countries.serializer_fields import CountryField as CountrySerializerField
+from django.contrib.auth import authenticate
+from rest_framework.exceptions import ValidationError
 
 
 class LoginTokenSerializer(TokenObtainPairSerializer):
@@ -258,3 +260,36 @@ class ProfileInformationSerializer(serializers.ModelSerializer):
         model = User
         fields = ['first_name', 'last_name', 'avatar',
                   'cover_image', 'bio', 'instagram', 'twitter', 'facebook']
+
+
+class DeleteAccountSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(
+        write_only=True, required=True, style={"input_type": "password"}
+    )
+
+    def validate(self, attrs):
+        request = self.context.get('request')
+        user = request.user
+
+        email = attrs.get('email')
+        password = attrs.get('password')
+        
+        if user.email != email:
+            raise ValidationError("The email does not match the authenticated user's email.")
+        
+        if not user.check_password(password):
+            raise ValidationError("The password is incorrect.")
+
+        return attrs
+
+    def delete_account(self):
+        request = self.context.get('request')
+        user = request.user
+
+        if user:
+            user.delete()
+        else:
+            raise ValidationError("Unable to delete account. Please try again.")
+
+        return {"message": "Account deleted successfully."}

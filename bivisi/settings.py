@@ -30,7 +30,8 @@ SECRET_KEY = os.environ.get(
     'SECRET_KEY', 'c@dc4504**&8eq8@(w^v8u&_5vl6q34sm39^wng@jrk+m0-pp=')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False if os.environ.get('DEBUG') else True
+# DEBUG = False if os.environ.get('DEBUG') else True
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -103,17 +104,24 @@ WSGI_APPLICATION = 'bivisi.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('POSTGRES_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': os.environ.get('POSTGRES_NAME', 'db.sqlite3'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('POSTGRES_HOST'),
-        'PORT': os.environ.get('POSTGRES_PORT')
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': os.environ.get('POSTGRES_ENGINE', 'django.db.backends.sqlite3'),
+#         'NAME': os.environ.get('POSTGRES_NAME', 'db.sqlite3'),
+#         'USER': os.environ.get('POSTGRES_USER'),
+#         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+#         'HOST': os.environ.get('POSTGRES_HOST'),
+#         'PORT': os.environ.get('POSTGRES_PORT')
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
