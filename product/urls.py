@@ -1,6 +1,6 @@
 from django.urls import path
 from product.views.web_views.product_comment import ParentCommentListAPIView, ProductCommentCreateView, SubCommentListAPIView
-from .views.web_views.product import ShortsDeleteAPIView, WebProductDeleteAPIView, WebProductVideoTypeListView, WebUploadProductCreateView, WebUploadProductUpdateView
+from .views.web_views.product import ShortsDeleteAPIView, WebProductDeleteAPIView, WebProductVideoTypeListView, WebUploadProductCreateView
 from .views.web_views.product_and_comment_like import ToggleProductCommentLikeAPIView, ToggleProductLikeAPIView
 from .views.web_views.category import CategoryWebListView
 from .views.admin_views.views import (

@@ -4,7 +4,7 @@ from django.db.models import Count
 from rest_framework.generics import ListAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView
 from product.filters import ProductFilter
 from product.models import Product, ProductVideoType
-from product.serializers import WebProductVideoTypeSerializer, WebUploadProductCREATESerializer, WebUploadProductUPDATESerializer
+from product.serializers import WebProductVideoTypeSerializer, WebUploadProductCREATESerializer
 from services.pagination import InfiniteScrollPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
