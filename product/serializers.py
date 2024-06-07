@@ -62,7 +62,8 @@ class CategoryWebSerializer(serializers.ModelSerializer):
 class DashboardProductVideoTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVideoType
-        fields = ['id', 'product_type', 'original_video', 'compressed_video', 'cover_image', 'product', 'created_at', 'updated_at']
+        fields = ['id', 'product_type', 'original_video', 'compressed_video',
+                  'cover_image', 'product', 'created_at', 'updated_at']
 
 
 class ProductForTypeSerializer(serializers.ModelSerializer):
@@ -90,7 +91,8 @@ class WebProductVideoTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVideoType
-        fields = ['id', 'product_type', 'original_video', 'compressed_video', 'cover_image', 'product', 'created_at', 'updated_at', 'in_wishlist', 'in_basket', 'is_liked']
+        fields = ['id', 'product_type', 'original_video', 'compressed_video', 'cover_image',
+                  'product', 'created_at', 'updated_at', 'in_wishlist', 'in_basket', 'is_liked']
 
     def get_in_wishlist(self, obj):
         request = self.context.get('request', None)
@@ -117,18 +119,22 @@ class WebProductVideoTypeSerializer(serializers.ModelSerializer):
 
 class WebUploadProductCREATESerializer(serializers.ModelSerializer):
 
-    product_type = serializers.ChoiceField(choices=ProductVideoType.product_types, write_only=True)
-    cover_image = serializers.ImageField(required=False, allow_null=True, write_only=True)
+    product_type = serializers.ChoiceField(
+        choices=ProductVideoType.product_types, write_only=True)
+    cover_image = serializers.ImageField(
+        required=False, allow_null=True, write_only=True)
     original_video = serializers.FileField(write_only=True)
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent', 'category', 'product_type', 'cover_image', 'original_video']
+        fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent',
+                  'category', 'product_type', 'cover_image', 'original_video']
         read_only_fields = ['user']
 
     def validate_percent(self, value):
         if value is not None and not (0 <= value <= 100):
-            raise serializers.ValidationError("Percent value must be between 0 and 100.")
+            raise serializers.ValidationError(
+                "Percent value must be between 0 and 100.")
         return value
 
     def create(self, validated_data):
@@ -153,12 +159,68 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        product_video_type = instance.product_video_type.first()  # Assuming one-to-one relationship for simplicity
+        # Assuming one-to-one relationship for simplicity
+        product_video_type = instance.product_video_type.first()
         if product_video_type:
             representation['product_type'] = product_video_type.product_type
             representation['cover_image'] = product_video_type.cover_image.url if product_video_type.cover_image else None
             representation['original_video'] = product_video_type.original_video.url
         return representation
+
+
+# class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
+
+#     product_type = serializers.ChoiceField(
+#         choices=ProductVideoType.product_types, write_only=True, required=False)
+#     cover_image = serializers.ImageField(
+#         required=False, allow_null=True, write_only=True)
+#     original_video = serializers.FileField(write_only=True, required=False)
+
+#     class Meta:
+#         model = Product
+#         fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent',
+#                   'category', 'product_type', 'cover_image', 'original_video']
+#         read_only_fields = ['user']
+
+#     def validate_percent(self, value):
+#         if value is not None and not (0 <= value <= 100):
+#             raise serializers.ValidationError(
+#                 "Percent value must be between 0 and 100.")
+#         return value
+
+#     def update(self, instance, validated_data):
+#         product_type = validated_data.pop('product_type', None)
+#         cover_image = validated_data.pop('cover_image', None)
+#         original_video = validated_data.pop('original_video', None)
+
+#         request = self.context.get('request')
+#         user = request.user
+#         instance.user = user
+
+#         instance = super().update(instance, validated_data)
+
+#         product_video_type, created = ProductVideoType.objects.get_or_create(
+#             pk=instance.pk).first()
+
+#         if product_type:
+#             product_video_type.product_type = product_type
+#         if cover_image is not None:
+#             product_video_type.cover_image = cover_image
+#         if original_video is not None:
+#             product_video_type.original_video = original_video
+#         product_video_type.save()
+
+#         return instance
+
+#     def to_representation(self, instance):
+#         representation = super().to_representation(instance)
+#         # Assuming one-to-one relationship for simplicity
+#         product_video_type = instance.product_video_type.first()
+#         if product_video_type:
+#             representation['product_type'] = product_video_type.product_type
+#             representation['cover_image'] = product_video_type.cover_image.url if product_video_type.cover_image else None
+#             representation['original_video'] = product_video_type.original_video.url
+#         return representation
 
 
 class ProductCREATESerializer(serializers.ModelSerializer):
@@ -176,7 +238,8 @@ class ProductCREATESerializer(serializers.ModelSerializer):
 
 class ProductREADSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
-    product_video_type = DashboardProductVideoTypeSerializer(many=True, read_only=True)
+    product_video_type = DashboardProductVideoTypeSerializer(
+        many=True, read_only=True)
     in_wishlist = serializers.SerializerMethodField()
     in_basket = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()

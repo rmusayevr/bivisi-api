@@ -26,7 +26,7 @@ def create_token(sender, instance, created, **kwargs):
                                     http://localhost:5173/user/verify-otp
 
                                     """
-            sender = settings.AUTH_USER_MODEL
+            sender = settings.DEFAULT_FROM_EMAIL
             receiver = [instance.email, ]
 
             send_mail(
