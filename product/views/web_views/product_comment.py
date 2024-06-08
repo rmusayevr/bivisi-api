@@ -1,20 +1,24 @@
 import django_filters.rest_framework
 from rest_framework import filters
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
-from product.models import ProductComment
+from rest_framework.generics import ListAPIView, DestroyAPIView
+from product.models import ProductComment, ProductCommentLike
 from product.serializers import ProductCommentCREATESerializer, WebProductCommentSerializer
 from services.pagination import InfiniteScrollPagination
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
 from rest_framework import status
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 # Product Comments only parent comment null
+
+
 class ParentCommentListAPIView(ListAPIView):
     serializer_class = WebProductCommentSerializer
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['user']
     search_fields = ['comment']
     pagination_class = InfiniteScrollPagination
@@ -22,27 +26,28 @@ class ParentCommentListAPIView(ListAPIView):
     def get_queryset(self):
         product_id = self.kwargs['product_id']
         return ProductComment.objects.filter(
-                    parent_comment__isnull=True,
-                    product__id=product_id
-                ).select_related(
-                    'user'
-                )
+            parent_comment__isnull=True,
+            product__id=product_id
+        ).select_related(
+            'user'
+        )
 
 
 class SubCommentListAPIView(ListAPIView):
     serializer_class = WebProductCommentSerializer
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['user']
     search_fields = ['comment']
     pagination_class = InfiniteScrollPagination
 
     def get_queryset(self):
         parent_comment_id = self.kwargs['parent_comment_id']
-        return  ProductComment.objects.filter(
-                    parent_comment__id=parent_comment_id,
-                ).select_related(
-                    'user'
-                )
+        return ProductComment.objects.filter(
+            parent_comment__id=parent_comment_id,
+        ).select_related(
+            'user'
+        )
 
 
 class ProductCommentCreateView(APIView):
@@ -63,8 +68,7 @@ class ProductCommentCreateView(APIView):
             201: openapi.Response('Created', ProductCommentCREATESerializer),
             400: 'Bad Request'
         }
-    )   
-
+    )
     def post(self, request, *args, **kwargs):
         data = request.data.copy()
         data['user'] = self.request.user.pk
@@ -78,3 +82,20 @@ class ProductCommentCreateView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ProductCommentDeleteView(DestroyAPIView):
+    queryset = ProductComment.objects.all()
+    serializer_class = WebProductCommentSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+
+    def perform_destroy(self, instance):
+        if instance.user != self.request.user:
+            raise PermissionDenied(
+                "You do not have permission to delete this comment like.")
+        super().perform_destroy(instance)
+    
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"detail": "Product comment successfully deleted."}, status=status.HTTP_204_NO_CONTENT)
