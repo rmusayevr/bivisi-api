@@ -2,6 +2,7 @@ from rest_framework import serializers
 from order.models import BasketItem
 from .models import Category, Product, ProductComment, ProductCommentLike, ProductVideoType, UserProductLike
 from django.utils.translation import gettext_lazy as _
+from phonenumber_field.serializerfields import PhoneNumberField
 
 
 # ****************************************  <<<< CATEGORY START >>>>  ****************************************
@@ -124,11 +125,13 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
     cover_image = serializers.ImageField(
         required=False, allow_null=True, write_only=True)
     original_video = serializers.FileField(write_only=True)
+    phone_number = PhoneNumberField()
 
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent',
-                  'category', 'product_type', 'cover_image', 'original_video']
+                  'phone_number', 'category', 'product_type', 'cover_image',
+                  'original_video']
         read_only_fields = ['user']
 
     def validate_percent(self, value):
@@ -171,11 +174,12 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
     cover_image = serializers.ImageField(
         required=False, allow_null=True, write_only=True)
     original_video = serializers.FileField(write_only=True, required=False)
+    phone_number = PhoneNumberField()
 
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent',
-                  'category', 'cover_image', 'original_video']
+                  'phone_number', 'category', 'cover_image', 'original_video']
         read_only_fields = ['user', 'product_type']
 
     def validate_percent(self, value):
@@ -183,7 +187,7 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "Percent value must be between 0 and 100.")
         return value
-    
+
     def update(self, instance, validated_data):
         product_type_id = self.context['request'].parser_context['kwargs']['product_type_id']
         cover_image = validated_data.pop('cover_image', None)
@@ -191,7 +195,8 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
 
         instance = super().update(instance, validated_data)
 
-        product_video_type = ProductVideoType.objects.get(pk=product_type_id)  # Assuming this is the related name
+        product_video_type = ProductVideoType.objects.get(
+            pk=product_type_id)  # Assuming this is the related name
         if product_video_type:
             if cover_image is not None:
                 product_video_type.cover_image = cover_image
@@ -204,7 +209,7 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         product_type_id = self.context['request'].parser_context['kwargs']['product_type_id']
-        product_video_type = ProductVideoType.objects.get(pk=product_type_id) 
+        product_video_type = ProductVideoType.objects.get(pk=product_type_id)
         if product_video_type:
             representation['product_type'] = product_video_type.product_type
             representation['cover_image'] = product_video_type.cover_image.url if product_video_type.cover_image else None
@@ -213,10 +218,13 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
 
 
 class ProductCREATESerializer(serializers.ModelSerializer):
+    phone_number = PhoneNumberField()
+
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent', 'final_price',
-                  'view_count', 'like_count', 'category', 'user', 'created_at', 'updated_at']
+                  'phone_number', 'view_count', 'like_count', 'category', 'user', 'created_at',
+                  'updated_at']
 
     def validate_percent(self, value):
         if value is not None and not (0 <= value <= 100):
@@ -236,7 +244,7 @@ class ProductREADSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'product_video_type', 'price', 'in_sale', 'percent',
-                  'final_price', 'view_count', 'like_count', 'category', 'user',
+                  'final_price', 'phone_number', 'view_count', 'like_count', 'category', 'user',
                   'in_wishlist', 'in_basket', 'is_liked', 'created_at', 'updated_at']
 
     def get_user(self, obj):

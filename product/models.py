@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from services.mixins import DateMixin
 from account.models import User
 from django.core.exceptions import ValidationError
-
+from phonenumber_field.modelfields import PhoneNumberField
 from services.uploader import Uploader
 
 
@@ -49,6 +49,8 @@ class Product(DateMixin):
 
     view_count = models.PositiveIntegerField(_("View Count"), default=0)
     like_count = models.PositiveIntegerField(_("Like Count"), default=0)
+
+    phone_number = PhoneNumberField(_('phone number'), null=True, blank=True)
 
     category = models.ManyToManyField(Category, verbose_name=_(
         "Category"), related_name='product_categories')
