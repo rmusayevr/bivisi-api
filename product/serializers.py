@@ -159,7 +159,6 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        # Assuming one-to-one relationship for simplicity
         product_video_type = instance.product_video_type.first()
         if product_video_type:
             representation['product_type'] = product_video_type.product_type
@@ -168,59 +167,49 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
         return representation
 
 
-# class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
+class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
+    cover_image = serializers.ImageField(
+        required=False, allow_null=True, write_only=True)
+    original_video = serializers.FileField(write_only=True, required=False)
 
-#     product_type = serializers.ChoiceField(
-#         choices=ProductVideoType.product_types, write_only=True, required=False)
-#     cover_image = serializers.ImageField(
-#         required=False, allow_null=True, write_only=True)
-#     original_video = serializers.FileField(write_only=True, required=False)
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent',
+                  'category', 'cover_image', 'original_video']
+        read_only_fields = ['user', 'product_type']
 
-#     class Meta:
-#         model = Product
-#         fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent',
-#                   'category', 'product_type', 'cover_image', 'original_video']
-#         read_only_fields = ['user']
+    def validate_percent(self, value):
+        if value is not None and not (0 <= value <= 100):
+            raise serializers.ValidationError(
+                "Percent value must be between 0 and 100.")
+        return value
+    
+    def update(self, instance, validated_data):
+        product_type_id = self.context['request'].parser_context['kwargs']['product_type_id']
+        cover_image = validated_data.pop('cover_image', None)
+        original_video = validated_data.pop('original_video', None)
 
-#     def validate_percent(self, value):
-#         if value is not None and not (0 <= value <= 100):
-#             raise serializers.ValidationError(
-#                 "Percent value must be between 0 and 100.")
-#         return value
+        instance = super().update(instance, validated_data)
 
-#     def update(self, instance, validated_data):
-#         product_type = validated_data.pop('product_type', None)
-#         cover_image = validated_data.pop('cover_image', None)
-#         original_video = validated_data.pop('original_video', None)
+        product_video_type = ProductVideoType.objects.get(pk=product_type_id)  # Assuming this is the related name
+        if product_video_type:
+            if cover_image is not None:
+                product_video_type.cover_image = cover_image
+            if original_video is not None:
+                product_video_type.original_video = original_video
+            product_video_type.save()
 
-#         request = self.context.get('request')
-#         user = request.user
-#         instance.user = user
+        return instance
 
-#         instance = super().update(instance, validated_data)
-
-#         product_video_type, created = ProductVideoType.objects.get_or_create(
-#             pk=instance.pk).first()
-
-#         if product_type:
-#             product_video_type.product_type = product_type
-#         if cover_image is not None:
-#             product_video_type.cover_image = cover_image
-#         if original_video is not None:
-#             product_video_type.original_video = original_video
-#         product_video_type.save()
-
-#         return instance
-
-#     def to_representation(self, instance):
-#         representation = super().to_representation(instance)
-#         # Assuming one-to-one relationship for simplicity
-#         product_video_type = instance.product_video_type.first()
-#         if product_video_type:
-#             representation['product_type'] = product_video_type.product_type
-#             representation['cover_image'] = product_video_type.cover_image.url if product_video_type.cover_image else None
-#             representation['original_video'] = product_video_type.original_video.url
-#         return representation
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        product_type_id = self.context['request'].parser_context['kwargs']['product_type_id']
+        product_video_type = ProductVideoType.objects.get(pk=product_type_id) 
+        if product_video_type:
+            representation['product_type'] = product_video_type.product_type
+            representation['cover_image'] = product_video_type.cover_image.url if product_video_type.cover_image else None
+            representation['original_video'] = product_video_type.original_video.url
+        return representation
 
 
 class ProductCREATESerializer(serializers.ModelSerializer):
@@ -294,24 +283,6 @@ class UserProductLikeCREATESerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProductLike
         fields = ['id', 'user', 'product', 'created_at', 'updated_at']
-
-
-class UserProductLikeWebReadSerializer(serializers.ModelSerializer):
-    product = serializers.SerializerMethodField()
-
-    class Meta:
-        model = UserProductLike
-        fields = ['product']
-
-    def get_product(self, obj):
-        request = self.context.get('request')
-        product_type = request.query_params.get('product_type')
-        product_video_types = ProductVideoType.objects.filter(product__in=obj.product.all())
-
-        if product_type:
-            product_video_types = product_video_types.filter(product_type=product_type)
-
-        return WebProductVideoTypeSerializer(product_video_types, many=True).data
 
 # ****************************************  <<<< PRODUCT END >>>>  ****************************************
 

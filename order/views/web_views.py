@@ -1,12 +1,11 @@
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
+from product.serializers import WebProductVideoTypeSerializer
 from ..models import Favorite, Basket, BasketItem
 from ..serializers import (
-    FavoriteWebReadSerializer,
     FavoriteCreateSerializer,
     BasketWebReadSerializer,
-    BasketItemReadSerializer,
-    WebProductVideoTypeSerializer
+    BasketItemReadSerializer
 )
 from product.models import Product, ProductVideoType
 from rest_framework.response import Response

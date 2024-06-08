@@ -1,6 +1,7 @@
 import django_filters.rest_framework
 from rest_framework import filters, status
 from django.db.models import Count
+from django.http import Http404
 from rest_framework.generics import (
     ListAPIView,
     CreateAPIView,
@@ -16,7 +17,7 @@ from product.models import (
 from product.serializers import (
     WebProductVideoTypeSerializer,
     WebUploadProductCREATESerializer,
-    UserProductLikeWebReadSerializer,
+    WebUploadProductUPDATESerializer,
 )
 from services.pagination import InfiniteScrollPagination
 from rest_framework.permissions import IsAuthenticated
@@ -60,12 +61,18 @@ class WebUploadProductCreateView(CreateAPIView):
     serializer_class = WebUploadProductCREATESerializer
 
 
-# class WebUploadProductUpdateView(UpdateAPIView):
-#     permission_classes = [IsAuthenticated]
-#     queryset = Product.objects.all()
-#     serializer_class = WebUploadProductUPDATESerializer
-#     lookup_field = 'pk'
+class WebUploadProductUpdateView(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Product.objects.all()
+    serializer_class = WebUploadProductUPDATESerializer
+    lookup_field = 'pk'
 
+    def update(self, request, *args, **kwargs):
+        product_instance = self.get_object()
+        product_serializer = self.get_serializer(product_instance, data=request.data, partial=True)
+        product_serializer.is_valid(raise_exception=True)
+        product_serializer.save()
+        return Response(product_serializer.data)
 
 class WebProductDeleteAPIView(DestroyAPIView):
     queryset = Product.objects.all()

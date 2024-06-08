@@ -11,7 +11,8 @@ from .views.web_views.product import (
     WebProductVideoTypeListView,
     WebUploadProductCreateView,
     UserProductLikeWebAPIView,
-    UserWebProductTypeListView
+    UserWebProductTypeListView,
+    WebUploadProductUpdateView
 )
 from .views.web_views.product_and_comment_like import (
     ToggleProductCommentLikeAPIView,
@@ -105,7 +106,8 @@ urlpatterns = [
 
     path('upload_product/', WebUploadProductCreateView.as_view(),
          name='upload_product'),
-    #     path('update_product/<int:pk>/', WebUploadProductUpdateView.as_view(), name='update_product'),
+    path('update_product/<int:pk>/<int:product_type_id>/',
+         WebUploadProductUpdateView.as_view(), name='update_product'),
     path('product_delete/<int:pk>/',
          WebProductDeleteAPIView.as_view(), name='product_delete'),
     path('product_shorts_delete/<int:pk>/',
