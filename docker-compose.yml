@@ -24,7 +24,7 @@ services:
       POSTGRES_USER : root
       POSTGRES_PASSWORD : root123
       POSTGRES_DB : bivisi
-    env_file: .env
+    env_file: ./.env
 
   web:
     build: .
@@ -38,7 +38,7 @@ services:
         limits:
           memory: 2G
           cpus: "1.0"
-    env_file: .env
+    env_file: ./.env
 
   pgadmin:
     container_name: pgadmin_container
