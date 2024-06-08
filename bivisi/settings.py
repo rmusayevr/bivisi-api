@@ -208,14 +208,14 @@ CORS_ALLOW_ALL_ORIGINS = True
 AUTH_USER_MODEL = 'account.User'
 AUTHENTICATION_BACKENDS = ['account.backends.EmailBackend']
 
-EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST="mail.bivisi.com"
-EMAIL_HOST_USER='support@bivisi.com'
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-EMAIL_HOST_PASSWORD='+EsEs)i%AAoP'
-EMAIL_PORT=465
-EMAIL_USE_TLS=False
-EMAIL_USE_SSL=True
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
+EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL')
 
 IMPORT_EXPORT_FORMATS = [CSV, XLSX]
 
