@@ -1,7 +1,21 @@
 from django.urls import path
-from product.views.web_views.product_comment import ParentCommentListAPIView, ProductCommentCreateView, SubCommentListAPIView
-from .views.web_views.product import ShortsDeleteAPIView, WebProductDeleteAPIView, WebProductVideoTypeListView, WebUploadProductCreateView
-from .views.web_views.product_and_comment_like import ToggleProductCommentLikeAPIView, ToggleProductLikeAPIView
+from product.views.web_views.product_comment import (
+    ParentCommentListAPIView,
+    ProductCommentCreateView,
+    SubCommentListAPIView
+)
+from .views.web_views.product import (
+    ShortsDeleteAPIView,
+    WebProductDeleteAPIView,
+    WebProductVideoTypeListView,
+    WebUploadProductCreateView,
+    UserProductLikeWebAPIView,
+    UserWebProductTypeListView
+)
+from .views.web_views.product_and_comment_like import (
+    ToggleProductCommentLikeAPIView,
+    ToggleProductLikeAPIView
+)
 from .views.web_views.category import CategoryWebListView
 from .views.admin_views.views import (
     CategoryListCreateAPIView,
@@ -44,11 +58,17 @@ urlpatterns = [
     path('web_products/', WebProductVideoTypeListView.as_view(),
          name='web_products_list'),
 
+    path('user_web_products/', UserWebProductTypeListView.as_view(),
+         name='user_web_products'),
+
     # User Product Like URLs
     path('user_product_like/', UserProductLikeListCreateAPIView.as_view(),
          name='user_product_like_list_create'),
     path('user_product_like/<int:pk>/',
          UserProductLikeRetrieveUpdateDestroyAPIView.as_view(), name='user_product_like_detail'),
+
+    path('liked_products/', UserProductLikeWebAPIView.as_view(),
+         name='liked_products'),
 
     # Product Comment URLs
     path('product_comment/', ProductCommentListCreateAPIView.as_view(),
@@ -76,11 +96,15 @@ urlpatterns = [
     path('sub_comments/<int:parent_comment_id>/',
          SubCommentListAPIView.as_view(), name='sub_comments'),
 
-    path('create_comment/', ProductCommentCreateView.as_view(), name='create_comment'),
+    path('create_comment/', ProductCommentCreateView.as_view(),
+         name='create_comment'),
 
-    path('upload_product/', WebUploadProductCreateView.as_view(), name='upload_product'),
-#     path('update_product/<int:pk>/', WebUploadProductUpdateView.as_view(), name='update_product'),
-    path('product_delete/<int:pk>/', WebProductDeleteAPIView.as_view(), name='product_delete'),
-    path('product_shorts_delete/<int:pk>/', ShortsDeleteAPIView.as_view(), name='product_shorts_delete'),
+    path('upload_product/', WebUploadProductCreateView.as_view(),
+         name='upload_product'),
+    #     path('update_product/<int:pk>/', WebUploadProductUpdateView.as_view(), name='update_product'),
+    path('product_delete/<int:pk>/',
+         WebProductDeleteAPIView.as_view(), name='product_delete'),
+    path('product_shorts_delete/<int:pk>/',
+         ShortsDeleteAPIView.as_view(), name='product_shorts_delete'),
 
 ]

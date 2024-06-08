@@ -1,10 +1,23 @@
 import django_filters.rest_framework
 from rest_framework import filters, status
 from django.db.models import Count
-from rest_framework.generics import ListAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView
+from rest_framework.generics import (
+    ListAPIView,
+    CreateAPIView,
+    DestroyAPIView,
+    UpdateAPIView
+)
 from product.filters import ProductFilter
-from product.models import Product, ProductVideoType
-from product.serializers import WebProductVideoTypeSerializer, WebUploadProductCREATESerializer
+from product.models import (
+    Product,
+    ProductVideoType,
+    UserProductLike
+)
+from product.serializers import (
+    WebProductVideoTypeSerializer,
+    WebUploadProductCREATESerializer,
+    UserProductLikeWebReadSerializer,
+)
 from services.pagination import InfiniteScrollPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -27,6 +40,18 @@ class WebProductVideoTypeListView(ListAPIView):
             comment_count=Count('product__product_comment')
         )
         return queryset
+
+
+class UserWebProductTypeListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = WebProductVideoTypeSerializer
+    pagination_class = InfiniteScrollPagination
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+    filterset_class = ProductFilter
+
+    def get_queryset(self):
+        return ProductVideoType.objects.filter(product__user=self.request.user)
 
 
 class WebUploadProductCreateView(CreateAPIView):
@@ -73,3 +98,24 @@ class ShortsDeleteAPIView(DestroyAPIView):
         # Perform the delete operation
         self.perform_destroy(shorts)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UserProductLikeWebAPIView(ListAPIView):
+    queryset = ProductVideoType.objects.all()
+    serializer_class = WebProductVideoTypeSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = InfiniteScrollPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        product_type = self.request.GET.get('product_type')
+        liked_product_ids = UserProductLike.objects.filter(
+            user=user).values_list('product__id', flat=True)
+        if product_type:
+            return ProductVideoType.objects.filter(
+                product_id__in=liked_product_ids,
+                product_type=product_type
+            )
+        return ProductVideoType.objects.filter(
+            product_id__in=liked_product_ids
+        )

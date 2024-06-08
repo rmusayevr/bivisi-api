@@ -295,6 +295,24 @@ class UserProductLikeCREATESerializer(serializers.ModelSerializer):
         model = UserProductLike
         fields = ['id', 'user', 'product', 'created_at', 'updated_at']
 
+
+class UserProductLikeWebReadSerializer(serializers.ModelSerializer):
+    product = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserProductLike
+        fields = ['product']
+
+    def get_product(self, obj):
+        request = self.context.get('request')
+        product_type = request.query_params.get('product_type')
+        product_video_types = ProductVideoType.objects.filter(product__in=obj.product.all())
+
+        if product_type:
+            product_video_types = product_video_types.filter(product_type=product_type)
+
+        return WebProductVideoTypeSerializer(product_video_types, many=True).data
+
 # ****************************************  <<<< PRODUCT END >>>>  ****************************************
 
 
