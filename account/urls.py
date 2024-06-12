@@ -19,7 +19,6 @@ from account.views.subscription import (
     ToggleSubscribeAPIView
 )
 from .views.web_views import (
-    ChannelDetailAPIView,
     RegisterAPIView,
     LoginTokenView,
     ChangePasswordAPIView,
@@ -72,9 +71,6 @@ urlpatterns = [
     path('user_detail/', UserDetailAPIView.as_view(), name='user_detail'),
 
     path('delete_account/', DeleteAccountAPIView.as_view(), name='delete_account'),
-
-    path('channel_detail/<str:username>/',
-         ChannelDetailAPIView.as_view(), name='channel_detail'),
 
 ]
 

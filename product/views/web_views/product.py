@@ -55,6 +55,17 @@ class UserWebProductTypeListView(ListAPIView):
         return ProductVideoType.objects.filter(product__user=self.request.user)
 
 
+class ChannelWebProductTypeListView(ListAPIView):
+    serializer_class = WebProductVideoTypeSerializer
+    pagination_class = InfiniteScrollPagination
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+    filterset_class = ProductFilter
+
+    def get_queryset(self):
+        return ProductVideoType.objects.filter(product__user__username=self.kwargs['username'])
+
+
 class WebUploadProductCreateView(CreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Product.objects.all()
@@ -69,14 +80,16 @@ class WebUploadProductUpdateView(UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         product_instance = self.get_object()
-        
+
         if product_instance.user != request.user:
             return Response("You don't have permission to update this product.", status=status.HTTP_403_FORBIDDEN)
 
-        product_serializer = self.get_serializer(product_instance, data=request.data, partial=True)
+        product_serializer = self.get_serializer(
+            product_instance, data=request.data, partial=True)
         product_serializer.is_valid(raise_exception=True)
         product_serializer.save()
         return Response(product_serializer.data)
+
 
 class WebProductDeleteAPIView(DestroyAPIView):
     queryset = Product.objects.all()

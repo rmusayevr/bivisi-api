@@ -6,6 +6,7 @@ from product.views.web_views.product_comment import (
     SubCommentListAPIView
 )
 from .views.web_views.product import (
+    ChannelWebProductTypeListView,
     ShortsDeleteAPIView,
     WebProductDeleteAPIView,
     WebProductVideoTypeListView,
@@ -62,6 +63,8 @@ urlpatterns = [
 
     path('user_web_products/', UserWebProductTypeListView.as_view(),
          name='user_web_products'),
+    path('channel_web_products/<str:username>/',
+         ChannelWebProductTypeListView.as_view(), name='channel_products'),
 
     # User Product Like URLs
     path('user_product_like/', UserProductLikeListCreateAPIView.as_view(),
