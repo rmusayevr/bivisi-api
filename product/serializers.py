@@ -375,3 +375,10 @@ class ProductCommentLikeCREATESerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'product_comment', 'created_at', 'updated_at']
 
 # ****************************************  <<<< PRODUCT COMMENT LIKE END >>>>  ****************************************
+
+
+class ProductPremiumUpdateSerializer(serializers.Serializer):
+    product_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True
+    )

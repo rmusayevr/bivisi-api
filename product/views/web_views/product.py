@@ -1,7 +1,8 @@
 import django_filters.rest_framework
 from rest_framework import filters, status
 from django.db.models import Count
-from django.http import Http404
+from rest_framework.views import APIView
+from django.shortcuts import get_list_or_404
 from rest_framework.generics import (
     ListAPIView,
     CreateAPIView,
@@ -15,6 +16,7 @@ from product.models import (
     UserProductLike
 )
 from product.serializers import (
+    ProductPremiumUpdateSerializer,
     WebProductVideoTypeSerializer,
     WebUploadProductCREATESerializer,
     WebUploadProductUPDATESerializer,
@@ -143,3 +145,19 @@ class UserProductLikeWebAPIView(ListAPIView):
         return ProductVideoType.objects.filter(
             product_id__in=liked_product_ids
         )
+
+
+# class UpdateProductPremiumView(CreateAPIView):
+#     queryset = Product.objects.all()
+#     serializer_class = ProductPremiumUpdateSerializer
+#     permission_classes = [IsAuthenticated]
+#     http_method_names = ['post']
+
+#     def post(self, request, *args, **kwargs):
+#         serializer = ProductPremiumUpdateSerializer(data=request.data)
+#         if serializer.is_valid():
+#             product_ids = serializer.validated_data['product_ids']
+#             products = get_list_or_404(Product, id__in=product_ids)
+#             products.update(is_premium=True)
+#             return Response({'message': 'Products updated successfully'}, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

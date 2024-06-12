@@ -8,6 +8,7 @@ from product.views.web_views.product_comment import (
 from .views.web_views.product import (
     ChannelWebProductTypeListView,
     ShortsDeleteAPIView,
+    UpdateProductPremiumView,
     WebProductDeleteAPIView,
     WebProductVideoTypeListView,
     WebUploadProductCreateView,
@@ -115,5 +116,9 @@ urlpatterns = [
          WebProductDeleteAPIView.as_view(), name='product_delete'),
     path('product_shorts_delete/<int:pk>/',
          ShortsDeleteAPIView.as_view(), name='product_shorts_delete'),
+
+#     path('update_premium_products/', UpdateProductPremiumView.as_view(),
+#          name='update-premium-products'),
+
 
 ]

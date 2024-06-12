@@ -50,9 +50,12 @@ class Product(DateMixin):
     view_count = models.PositiveIntegerField(_("View Count"), default=0)
     like_count = models.PositiveIntegerField(_("Like Count"), default=0)
 
+    is_premium = models.BooleanField('is premium', default=False)
+
     phone_number = PhoneNumberField(_('phone number'), null=True, blank=True)
 
-    product_link = models.CharField(_('product link'), max_length=255, null=True, blank=True)
+    product_link = models.CharField(
+        _('product link'), max_length=255, null=True, blank=True)
 
     category = models.ManyToManyField(Category, verbose_name=_(
         "Category"), related_name='product_categories')
