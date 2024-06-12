@@ -8,7 +8,7 @@ from product.views.web_views.product_comment import (
 from .views.web_views.product import (
     ChannelWebProductTypeListView,
     ShortsDeleteAPIView,
-    UpdateProductPremiumView,
+#     UpdateProductPremiumView,
     WebProductDeleteAPIView,
     WebProductVideoTypeListView,
     WebUploadProductCreateView,
