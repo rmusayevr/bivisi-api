@@ -52,6 +52,8 @@ class Product(DateMixin):
 
     phone_number = PhoneNumberField(_('phone number'), null=True, blank=True)
 
+    product_link = models.CharField(_('product link'), max_length=255, null=True, blank=True)
+
     category = models.ManyToManyField(Category, verbose_name=_(
         "Category"), related_name='product_categories')
     user = models.ForeignKey(User, verbose_name=_(
@@ -72,6 +74,8 @@ class Product(DateMixin):
                 1) - Decimal(self.percent) / Decimal(100)
             self.final_price = self.price * discount_multiplier
 
+        self.product_link = f"product_detail/{self.pk}"
+
         super().save(*args, **kwargs)
 
     class Meta:
@@ -84,14 +88,19 @@ class ProductVideoType(DateMixin):
         ('Video', 'Video'),
         ('Shorts', 'Shorts')
     )
-    product_type = models.CharField(_("Product Type"), max_length=255, choices=product_types)
+    product_type = models.CharField(
+        _("Product Type"), max_length=255, choices=product_types)
 
-    cover_image = models.ImageField(_("Cover Image"), upload_to=Uploader.product_cover_image, max_length=500, null=True, blank=True)
+    cover_image = models.ImageField(
+        _("Cover Image"), upload_to=Uploader.product_cover_image, max_length=500, null=True, blank=True)
 
-    original_video = models.FileField(_("Original Video"), upload_to=Uploader.product_original_video, max_length=500)
-    compressed_video = models.FileField(_("Compressed Video (480p)"), upload_to=Uploader.product_compress_video, max_length=500, null=True, blank=True)
+    original_video = models.FileField(
+        _("Original Video"), upload_to=Uploader.product_original_video, max_length=500)
+    compressed_video = models.FileField(
+        _("Compressed Video (480p)"), upload_to=Uploader.product_compress_video, max_length=500, null=True, blank=True)
 
-    product = models.ForeignKey(Product, verbose_name=_("Product"), on_delete=models.CASCADE, related_name='product_video_type')
+    product = models.ForeignKey(Product, verbose_name=_(
+        "Product"), on_delete=models.CASCADE, related_name='product_video_type')
 
     def save(self, *args, **kwargs):
         if self.pk:
@@ -127,8 +136,6 @@ class ProductVideoType(DateMixin):
             self.original_video.delete(save=False)
 
         super().delete(*args, **kwargs)
-
-
 
     def __str__(self):
         return f"{self.product.name} - {self.product_type}"
