@@ -95,7 +95,8 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ('password', )
+        exclude = ('password', 'groups', 'user_permissions', 'status',
+                   'is_superuser', 'is_staff', 'is_active', 'date_joined')
 
 
 class VerifyOTPSerializer(serializers.Serializer):
@@ -274,10 +275,11 @@ class DeleteAccountSerializer(serializers.Serializer):
 
         email = attrs.get('email')
         password = attrs.get('password')
-        
+
         if user.email != email:
-            raise ValidationError("The email does not match the authenticated user's email.")
-        
+            raise ValidationError(
+                "The email does not match the authenticated user's email.")
+
         if not user.check_password(password):
             raise ValidationError("The password is incorrect.")
 
@@ -290,6 +292,7 @@ class DeleteAccountSerializer(serializers.Serializer):
         if user:
             user.delete()
         else:
-            raise ValidationError("Unable to delete account. Please try again.")
+            raise ValidationError(
+                "Unable to delete account. Please try again.")
 
         return {"message": "Account deleted successfully."}

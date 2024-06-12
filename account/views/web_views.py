@@ -41,6 +41,15 @@ class UserDetailAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class ChannelDetailAPIView(APIView):
+    http_method_names = ['get']
+
+    def get(self, request, *args, **kwargs):
+        user = User.objects.get(username=self.kwargs['username'])
+        serializer = UserDetailSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class DeleteAccountAPIView(APIView):
     serializer_class = DeleteAccountSerializer
     permission_classes = [IsAuthenticated]
