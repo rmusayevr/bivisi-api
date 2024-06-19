@@ -53,11 +53,12 @@ class ToggleSubscribeAPIView(APIView):
 
 
 class PopularChannelsAPIView(APIView):
+    pagination_class = InfiniteScrollPagination
 
     def get(self, request, *args, **kwargs):
         popular_channels = User.objects.annotate(
             followers_count=Count('followers')
-        ).order_by('-followers_count')[:5]
+        ).order_by('-followers_count')
 
         serializer = PopularChannelSerializer(popular_channels, many=True)
         return Response(serializer.data)

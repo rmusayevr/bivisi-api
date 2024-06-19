@@ -92,11 +92,15 @@ class CustomCountryField(CountrySerializerField):
 
 class UserDetailSerializer(serializers.ModelSerializer):
     country = CustomCountryField()
+    subscribers_count = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         exclude = ('password', 'groups', 'user_permissions', 'status',
                    'is_superuser', 'is_staff', 'is_active', 'date_joined')
+
+    def get_subscribers_count(self, obj):
+        return Subscription.objects.filter(follows=obj).count()
 
 
 class VerifyOTPSerializer(serializers.Serializer):
@@ -208,7 +212,7 @@ class SubscriptionUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'first_name',
-                  'last_name', 'avatar', 'cover_image',
+                  'last_name', 'bio', 'avatar', 'cover_image',
                   'follower_count', 'follows_count']
 
     def get_follower_count(self, obj):
@@ -239,8 +243,8 @@ class PopularChannelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'avatar', 'cover_image',
-                  'followers_count', 'in_subscribe']
+        fields = ['id', 'username', 'avatar', 'bio',
+                  'cover_image', 'followers_count', 'in_subscribe']
 
     def get_in_subscribe(self, obj):
         request = self.context.get('request', None)
