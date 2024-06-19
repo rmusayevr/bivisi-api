@@ -26,11 +26,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-m$pctt(_0zrns4$^cgmdgufmff(#l8)i6s0!f+d86-hy#e#iz9'
 
-SECRET_KEY = os.environ.get(
-    'SECRET_KEY', 'c@dc4504**&8eq8@(w^v8u&_5vl6q34sm39^wng@jrk+m0-pp=')
+SECRET_KEY = os.getenv('SECRET_KEY', 'c@dc4504**&8eq8@(w^v8u&_5vl6q34sm39^wng@jrk+m0-pp=')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False if os.environ.get('DEBUG') else True
+DEBUG = os.getenv('DEBUG', True)
 # DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
@@ -114,12 +113,12 @@ WSGI_APPLICATION = 'bivisi.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('POSTGRES_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': os.environ.get('POSTGRES_NAME', 'db.sqlite3'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('POSTGRES_HOST'),
-        'PORT': os.environ.get('POSTGRES_PORT')
+        'ENGINE': os.getenv('POSTGRES_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': os.getenv('POSTGRES_NAME', 'db.sqlite3'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': os.getenv('POSTGRES_HOST'),
+        'PORT': os.getenv('POSTGRES_PORT')
     }
 }
 

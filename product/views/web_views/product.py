@@ -29,16 +29,15 @@ from rest_framework.response import Response
 class WebProductVideoTypeListView(ListAPIView):
     serializer_class = WebProductVideoTypeSerializer
     pagination_class = InfiniteScrollPagination
-    # queryset = ProductVideoType.objects.select_related('product').all()  # Use select_related to optimize the query
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter]
-    # filterset_fields = ['product', 'product_type', 'product__category']
+    filter_backends = [
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
     filterset_class = ProductFilter
-    # ordering_fields = ['created_at']  # Specify fields allowed to be ordered
-    # ordering = ['-created_at']
+    search_fields = ['product__name']
 
     def get_queryset(self):
-        # Annotate the queryset with the comment count for each product
         queryset = ProductVideoType.objects.select_related('product').annotate(
             comment_count=Count('product__product_comment')
         )
@@ -49,9 +48,13 @@ class UserWebProductTypeListView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = WebProductVideoTypeSerializer
     pagination_class = InfiniteScrollPagination
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
     filterset_class = ProductFilter
+    search_fields = ['product__name']
 
     def get_queryset(self):
         return ProductVideoType.objects.filter(product__user=self.request.user)
@@ -60,9 +63,13 @@ class UserWebProductTypeListView(ListAPIView):
 class ChannelWebProductTypeListView(ListAPIView):
     serializer_class = WebProductVideoTypeSerializer
     pagination_class = InfiniteScrollPagination
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
     filterset_class = ProductFilter
+    search_fields = ['product__name']
 
     def get_queryset(self):
         return ProductVideoType.objects.filter(product__user__username=self.kwargs['username'])
