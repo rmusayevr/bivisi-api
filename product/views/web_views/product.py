@@ -20,6 +20,7 @@ from product.serializers import (
     WebProductVideoTypeSerializer,
     WebUploadProductCREATESerializer,
     WebUploadProductUPDATESerializer,
+    ProductREADSerializer,
 )
 from services.pagination import InfiniteScrollPagination
 from rest_framework.permissions import IsAuthenticated
@@ -154,7 +155,15 @@ class UserProductLikeWebAPIView(ListAPIView):
         )
 
 
-# class UpdateProductPremiumView(CreateAPIView):
+class TrendingAPIView(ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductREADSerializer
+    pagination_class = InfiniteScrollPagination
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['view_count']
+    ordering = ['-view_count']
+
+# class UpdateProductPremiumView(UpdateAPIView):
 #     queryset = Product.objects.all()
 #     serializer_class = ProductPremiumUpdateSerializer
 #     permission_classes = [IsAuthenticated]
