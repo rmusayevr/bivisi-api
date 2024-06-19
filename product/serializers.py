@@ -380,5 +380,10 @@ class ProductCommentLikeCREATESerializer(serializers.ModelSerializer):
 class ProductPremiumUpdateSerializer(serializers.Serializer):
     product_ids = serializers.ListField(
         child=serializers.IntegerField(),
-        write_only=True
+        allow_empty=False
     )
+
+    def validate_product_ids(self, value):
+        if not value:
+            raise serializers.ValidationError("The product_ids list cannot be empty.")
+        return value

@@ -9,7 +9,7 @@ from .views.web_views.product import (
     ChannelWebProductTypeListView,
     ShortsDeleteAPIView,
     TrendingAPIView,
-    #     UpdateProductPremiumView,
+    UpdateProductPremiumView,
     WebProductDeleteAPIView,
     WebProductVideoTypeListView,
     WebUploadProductCreateView,
@@ -118,8 +118,8 @@ urlpatterns = [
     path('product_shorts_delete/<int:pk>/',
          ShortsDeleteAPIView.as_view(), name='product_shorts_delete'),
 
-    #     path('update_premium_products/', UpdateProductPremiumView.as_view(),
-    #          name='update-premium-products'),
+    path('update_premium_products/', UpdateProductPremiumView.as_view(),
+         name='update-premium-products'),
 
     path('trending_videos/', TrendingAPIView.as_view(),
          name='trending_videos'),

@@ -163,17 +163,21 @@ class TrendingAPIView(ListAPIView):
     ordering_fields = ['view_count']
     ordering = ['-view_count']
 
-# class UpdateProductPremiumView(UpdateAPIView):
-#     queryset = Product.objects.all()
-#     serializer_class = ProductPremiumUpdateSerializer
-#     permission_classes = [IsAuthenticated]
-#     http_method_names = ['post']
 
-#     def post(self, request, *args, **kwargs):
-#         serializer = ProductPremiumUpdateSerializer(data=request.data)
-#         if serializer.is_valid():
-#             product_ids = serializer.validated_data['product_ids']
-#             products = get_list_or_404(Product, id__in=product_ids)
-#             products.update(is_premium=True)
-#             return Response({'message': 'Products updated successfully'}, status=status.HTTP_200_OK)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class UpdateProductPremiumView(UpdateAPIView):
+    serializer_class = ProductPremiumUpdateSerializer
+    permission_classes = [IsAuthenticated]
+    http_method_names = ['put']
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        product_ids = serializer.validated_data.get('product_ids')
+        updated_count = Product.objects.filter(
+            id__in=product_ids).update(is_premium=True)
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
