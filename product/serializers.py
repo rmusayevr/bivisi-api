@@ -343,14 +343,19 @@ class ProductCommentCREATESerializer(serializers.ModelSerializer):
 
 class WebProductCommentSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
+    count = serializers.SerializerMethodField()
 
     class Meta:
         model = ProductComment
         fields = ['id', 'comment', 'like_count', 'user', 'product',
-                  'parent_comment', 'created_at', 'updated_at']
+                  'parent_comment', 'count', 'created_at', 'updated_at']
 
     def get_user(self, obj):
         return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
+
+    def get_count(self, obj):
+        return obj.comment_child.count()
+
 # ****************************************  <<<< PRODUCT COMMENT END >>>>  ****************************************
 
 
