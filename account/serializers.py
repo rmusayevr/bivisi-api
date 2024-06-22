@@ -205,31 +205,6 @@ class SubscriptionReadSerializer(serializers.ModelSerializer):
         fields = ['id', 'follower', 'follows']
 
 
-class SubscriptionUserSerializer(serializers.ModelSerializer):
-    follower_count = serializers.SerializerMethodField()
-    follows_count = serializers.SerializerMethodField()
-
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'first_name',
-                  'last_name', 'bio', 'avatar', 'cover_image',
-                  'follower_count', 'follows_count']
-
-    def get_follower_count(self, obj):
-        return obj.followers.count()
-
-    def get_follows_count(self, obj):
-        return obj.following.count()
-
-
-class SubscriptionReadWebSerializer(serializers.ModelSerializer):
-    follows = SubscriptionUserSerializer()
-
-    class Meta:
-        model = Subscription
-        fields = ['id', 'follows']
-
-
 class SubscriptionCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -237,21 +212,27 @@ class SubscriptionCreateSerializer(serializers.ModelSerializer):
         fields = ['id', 'follower', 'follows']
 
 
-class PopularChannelSerializer(serializers.ModelSerializer):
-    followers_count = serializers.IntegerField()
+class SubscriptionSerializer(serializers.ModelSerializer):
     in_subscribe = serializers.SerializerMethodField()
+    follower_count = serializers.SerializerMethodField()
+    follows_count = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'avatar', 'bio',
-                  'cover_image', 'followers_count', 'in_subscribe']
+        fields = ['id', 'username', 'first_name', 'last_name', 'avatar', 'bio',
+                  'cover_image', 'follower_count', 'follows_count', 'in_subscribe']
 
     def get_in_subscribe(self, obj):
         request = self.context.get('request', None)
-        print(request)
         if request is None or not request.user.is_authenticated:
             return False
-        return Subscription.objects.filter(follower=obj, follows=request.user).exists()
+        return Subscription.objects.filter(follower=request.user, follows=obj).exists()
+
+    def get_follower_count(self, obj):
+        return obj.followers.count()
+
+    def get_follows_count(self, obj):
+        return obj.following.count()
 
 
 class GeneralSettingsSerializer(serializers.ModelSerializer):

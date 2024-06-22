@@ -8,20 +8,25 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from ..models import User, Subscription
 from ..serializers import (
-    PopularChannelSerializer,
-    SubscriptionReadWebSerializer,
+    SubscriptionSerializer,
 )
 from services.pagination import InfiniteScrollPagination
 
 
 class SubscribeWebAPIView(ListAPIView):
-    queryset = Subscription.objects.all()
-    serializer_class = SubscriptionReadWebSerializer
+    queryset = User.objects.all()
+    serializer_class = SubscriptionSerializer
     pagination_class = InfiniteScrollPagination
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Subscription.objects.filter(follower=self.request.user)
+        following = Subscription.objects.filter(
+            follower=self.request.user).first()
+
+        if not following:
+            return User.objects.none()
+
+        return User.objects.filter(id=following.follows.id)
 
 
 class ToggleSubscribeAPIView(APIView):
@@ -52,27 +57,19 @@ class ToggleSubscribeAPIView(APIView):
             return Response({'error': 'Subscription does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
 
-class PopularChannelsAPIView(APIView):
+class PopularChannelsAPIView(ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = SubscriptionSerializer
     pagination_class = InfiniteScrollPagination
+    filter_backends = [OrderingFilter]
+    ordering_fields = ['follower_count']
 
-    def get(self, request, *args, **kwargs):
-        popular_channels = User.objects.annotate(
-            followers_count=Count('followers')
-        ).order_by('-followers_count')
-
-        serializer = PopularChannelSerializer(popular_channels, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        return User.objects.annotate(follower_count=Count('followers')).order_by('-follower_count')
 
 
 class SubscriptionsAPIView(ListAPIView):
     queryset = User.objects.all()
-    serializer_class = PopularChannelSerializer
+    serializer_class = SubscriptionSerializer
     filter_backends = [OrderingFilter]
     pagination_class = InfiniteScrollPagination
-
-    def get_queryset(self):
-        subscriptions = User.objects.annotate(
-            followers_count=Count('followers')
-        )
-        subscriptions = subscriptions[:50]
-        return subscriptions
