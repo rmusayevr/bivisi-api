@@ -69,7 +69,7 @@ class PopularChannelsAPIView(ListAPIView):
 
 
 class SubscriptionsAPIView(ListAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.filter(status="Active")
     serializer_class = SubscriptionSerializer
     filter_backends = [OrderingFilter]
     pagination_class = InfiniteScrollPagination
