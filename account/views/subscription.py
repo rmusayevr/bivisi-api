@@ -21,12 +21,12 @@ class SubscribeWebAPIView(ListAPIView):
 
     def get_queryset(self):
         following = Subscription.objects.filter(
-            follower=self.request.user).first()
+            follower=self.request.user)
 
-        if not following:
+        if not following.exists():
             return User.objects.none()
 
-        return User.objects.filter(id=following.follows.id)
+        return User.objects.filter(id__in=following.values_list('follows_id', flat=True))
 
 
 class ToggleSubscribeAPIView(APIView):
