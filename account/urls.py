@@ -49,7 +49,7 @@ urlpatterns = [
          name='send-email-reset-password'),
     path('reset_password/', ResetPasswordAPIView.as_view(),
          name='reset-password'),
-    path('change_password/<int:pk>/', ChangePasswordAPIView.as_view(),
+    path('change_password/', ChangePasswordAPIView.as_view(),
          name='change-password'),
 
     path('your_subscribers/', SubscribeWebAPIView.as_view(),

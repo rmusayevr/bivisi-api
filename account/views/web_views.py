@@ -29,6 +29,7 @@ class ChangePasswordAPIView(UpdateAPIView):
     queryset = User.objects.all()
     permission_classes = [IsAuthenticated]
     serializer_class = ChangePasswordSerializer
+    lookup_field = None
 
 
 class UserDetailAPIView(APIView):
