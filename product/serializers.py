@@ -74,7 +74,7 @@ class ProductForTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'name', 'price', 'in_sale', 'percent', 'final_price', 'view_count', 'product_link',
-                  'like_count', 'category', 'user', 'comment_count', 'created_at', 'updated_at']
+                  'like_count', 'category', 'user', 'comment_count', 'is_premium', 'created_at', 'updated_at']
 
     def get_user(self, obj):
         return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
@@ -130,8 +130,8 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent',
-                  'phone_number', 'category', 'product_type', 'cover_image',
-                  'original_video']
+                  'phone_number', 'category', 'product_type', 'is_premium',
+                  'cover_image', 'original_video']
         read_only_fields = ['user']
 
     def validate_percent(self, value):
