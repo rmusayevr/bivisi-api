@@ -150,15 +150,23 @@ class UserProductLikeWebAPIView(ListAPIView):
 
 
 class TrendingAPIView(ListAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductREADSerializer
+    queryset = ProductVideoType.objects.select_related('product').all()
+    serializer_class = WebProductVideoTypeSerializer
     pagination_class = InfiniteScrollPagination
     filter_backends = [
         django_filters.rest_framework.DjangoFilterBackend,
         filters.OrderingFilter,
     ]
-    ordering_fields = ['view_count']
-    ordering = ['-view_count']
+    ordering_fields = ['product__view_count']
+    ordering = ['-product__view_count']
+
+    def get_queryset(self):
+        product_type = self.request.GET.get('product_type')
+        if product_type:
+            return ProductVideoType.objects.filter(
+                product_type=product_type
+            )
+        return self.queryset
 
 
 class UpdateProductPremiumView(UpdateAPIView):
