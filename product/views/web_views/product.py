@@ -7,7 +7,7 @@ from rest_framework.generics import (
     DestroyAPIView,
     UpdateAPIView
 )
-from product.filters import ProductFilter, ProductVideoTypeFilter
+from product.filters import ProductFilter
 from product.models import (
     Product,
     ProductVideoType,
