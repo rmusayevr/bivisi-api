@@ -169,6 +169,18 @@ class TrendingAPIView(ListAPIView):
         return self.queryset
 
 
+class WebTrendingAPIView(ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductREADSerializer
+    pagination_class = InfiniteScrollPagination
+    filter_backends = [
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter,
+    ]
+    ordering_fields = ['view_count']
+    ordering = ['-view_count']
+
+
 class UpdateProductPremiumView(UpdateAPIView):
     serializer_class = ProductPremiumUpdateSerializer
     permission_classes = [IsAuthenticated]

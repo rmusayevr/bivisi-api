@@ -12,6 +12,7 @@ from .views.web_views.product import (
     UpdateProductPremiumView,
     WebProductDeleteAPIView,
     WebProductVideoTypeListView,
+    WebTrendingAPIView,
     WebUploadProductCreateView,
     UserProductLikeWebAPIView,
     UserWebProductTypeListView,
@@ -123,7 +124,8 @@ urlpatterns = [
 
     path('trending_videos/', TrendingAPIView.as_view(),
          name='trending_videos'),
-
+    path('web_trending_videos/', WebTrendingAPIView.as_view(),
+         name='web_trending_videos'),
 
 
 ]
