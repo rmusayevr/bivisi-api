@@ -111,14 +111,25 @@ WSGI_APPLICATION = 'bivisi.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': os.getenv('POSTGRES_ENGINE', 'django.db.backends.sqlite3'),
+#         'NAME': os.getenv('POSTGRES_NAME', 'db.sqlite3'),
+#         'USER': os.getenv('POSTGRES_USER'),
+#         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+#         'HOST': os.getenv('POSTGRES_HOST'),
+#         'PORT': os.getenv('POSTGRES_PORT')
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('POSTGRES_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': os.getenv('POSTGRES_NAME', 'db.sqlite3'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('POSTGRES_HOST'),
-        'PORT': os.getenv('POSTGRES_PORT')
+        'ENGINE':'django.db.backends.postgresql',
+        'NAME': 'bivisi',
+        'USER': 'root',
+        'PASSWORD': 'root123',
+        'HOST': 'db',
+        'PORT': 5432
     }
 }
 

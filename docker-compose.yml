@@ -11,14 +11,12 @@ services:
 
   db:
     container_name: postgresql_db
-    image: postgres
+    image: postgres:latest
     restart: always
     volumes:
       - ./data/pgdb:/var/lib/postgresql/data
     ports:
       - 5432:5432
-    env_file: 
-      - ./.env
     environment:
       POSTGRES_USER : root
       POSTGRES_PASSWORD : root123
@@ -31,8 +29,6 @@ services:
       - 8000:8000
     depends_on:
       - db
-    env_file: 
-      - ./.env
     deploy:
       resources:
         limits:
