@@ -4,12 +4,15 @@ from product.models import ProductVideoType
 
 
 class ProductFilter(django_filters.FilterSet):
-    min_price = django_filters.NumberFilter(field_name='price', method='filter_min_price')
-    max_price = django_filters.NumberFilter(field_name='price', method='filter_max_price')
+    min_price = django_filters.NumberFilter(
+        field_name='price', method='filter_min_price')
+    max_price = django_filters.NumberFilter(
+        field_name='price', method='filter_max_price')
 
     class Meta:
         model = ProductVideoType
-        fields = ['min_price', 'max_price', 'product__in_sale', 'product', 'product_type', 'product__category']
+        fields = ['min_price', 'max_price', 'product__in_sale',
+                  'product', 'product_type', 'product__category']
 
     def filter_min_price(self, queryset, name, value):
         return queryset.filter(

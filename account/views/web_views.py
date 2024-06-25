@@ -41,7 +41,7 @@ class UserDetailAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class DeleteAccountAPIView(APIView):
+class DeleteAccountAPIView(CreateAPIView):
     serializer_class = DeleteAccountSerializer
     permission_classes = [IsAuthenticated]
     http_method_names = ['post']

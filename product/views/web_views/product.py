@@ -1,15 +1,13 @@
 import django_filters.rest_framework
 from rest_framework import filters, status
 from django.db.models import Count
-from rest_framework.views import APIView
-from django.shortcuts import get_list_or_404
 from rest_framework.generics import (
     ListAPIView,
     CreateAPIView,
     DestroyAPIView,
     UpdateAPIView
 )
-from product.filters import ProductFilter
+from product.filters import ProductFilter, ProductVideoTypeFilter
 from product.models import (
     Product,
     ProductVideoType,
@@ -109,11 +107,9 @@ class WebProductDeleteAPIView(DestroyAPIView):
     def delete(self, request, *args, **kwargs):
         product = self.get_object()
 
-        # Ensure the product belongs to the requesting user
         if product.user != request.user:
             return Response({"detail": "You do not have permission to delete this product."}, status=status.HTTP_403_FORBIDDEN)
 
-        # Perform the delete operation
         self.perform_destroy(product)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -125,11 +121,9 @@ class ShortsDeleteAPIView(DestroyAPIView):
     def delete(self, request, *args, **kwargs):
         shorts = self.get_object()
 
-        # Ensure the shorts belong to a product owned by the requesting user
         if shorts.product.user != request.user:
             return Response({"detail": "You do not have permission to delete this shorts."}, status=status.HTTP_403_FORBIDDEN)
 
-        # Perform the delete operation
         self.perform_destroy(shorts)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -159,7 +153,10 @@ class TrendingAPIView(ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductREADSerializer
     pagination_class = InfiniteScrollPagination
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter,
+    ]
     ordering_fields = ['view_count']
     ordering = ['-view_count']
 
