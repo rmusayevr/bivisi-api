@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from order.models import BasketItem
-from .models import Category, Product, ProductComment, ProductCommentLike, ProductVideoType, UserProductLike
+from .models import Category, Product, ProductComment, ProductCommentLike, ProductPropertyAndValue, ProductVideoType, UserProductLike
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.serializerfields import PhoneNumberField
 
@@ -115,6 +115,16 @@ class WebProductVideoTypeSerializer(serializers.ModelSerializer):
 
 # ****************************************  <<<< PRODUCT VIDEO TYPE END >>>>   ****************************************
 
+# ****************************************  <<<< PRODUCT PROPERTY AND VALUE START >>>>   ****************************************
+
+class ProductPropertyAndValueSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
+
+    class Meta:
+        model = ProductPropertyAndValue
+        fields = ['id', 'product_property', 'property_value']
+
+# ****************************************  <<<< PRODUCT PROPERTY AND VALUE END >>>>  ****************************************
 
 # ****************************************  <<<< PRODUCT START >>>>  ****************************************
 
@@ -126,12 +136,13 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
         required=False, allow_null=True, write_only=True)
     original_video = serializers.FileField(write_only=True)
     phone_number = PhoneNumberField()
+    properties = ProductPropertyAndValueSerializer(many=True, write_only=True)
 
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent',
                   'phone_number', 'category', 'product_type', 'is_premium',
-                  'cover_image', 'original_video']
+                  'original_video', 'cover_image', 'properties']
         read_only_fields = ['user']
 
     def validate_percent(self, value):
@@ -144,6 +155,7 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
         product_type = validated_data.pop('product_type')
         cover_image = validated_data.pop('cover_image', None)
         original_video = validated_data.pop('original_video')
+        properties_data = validated_data.pop('properties')
 
         request = self.context.get('request')
         user = request.user
@@ -157,6 +169,9 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
             cover_image=cover_image,
             original_video=original_video,
         )
+
+        for property_data in properties_data:
+            ProductPropertyAndValue.objects.create(product=product, **property_data)
 
         return product
 
@@ -175,11 +190,12 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
         required=False, allow_null=True, write_only=True)
     original_video = serializers.FileField(write_only=True, required=False)
     phone_number = PhoneNumberField()
+    properties = ProductPropertyAndValueSerializer(many=True, write_only=True, required=False)
 
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent',
-                  'phone_number', 'category', 'cover_image', 'original_video']
+                  'phone_number', 'category', 'cover_image', 'original_video', 'properties']
         read_only_fields = ['user', 'product_type']
 
     def validate_percent(self, value):
@@ -193,6 +209,8 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
         cover_image = validated_data.pop('cover_image', None)
         original_video = validated_data.pop('original_video', None)
 
+        properties_data = validated_data.pop('properties', None)
+
         instance = super().update(instance, validated_data)
 
         product_video_type = ProductVideoType.objects.get(
@@ -204,6 +222,18 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
                 product_video_type.original_video = original_video
             product_video_type.save()
 
+        if properties_data is not None:
+            for property_data in properties_data:
+                property_id = property_data.get('id')
+                if property_id:
+                    property_instance = ProductPropertyAndValue.objects.get(id=property_id, product=instance)
+                    property_instance.product_property = property_data.get('product_property', property_instance.product_property)
+                    property_instance.property_value = property_data.get('property_value', property_instance.property_value)
+                    property_instance.save()
+                else:
+                    print('no')
+                    ProductPropertyAndValue.objects.create(product=instance, **property_data)
+
         return instance
 
     def to_representation(self, instance):
@@ -214,6 +244,8 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
             representation['product_type'] = product_video_type.product_type
             representation['cover_image'] = product_video_type.cover_image.url if product_video_type.cover_image else None
             representation['original_video'] = product_video_type.original_video.url
+        representation['properties'] = ProductPropertyAndValueSerializer(instance.product_property_and_values.all(), many=True).data
+
         return representation
 
 

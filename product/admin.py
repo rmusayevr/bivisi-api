@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product, ProductComment, ProductCommentLike, ProductVideoType, UserProductLike
+from .models import Category, Product, ProductComment, ProductCommentLike, ProductPropertyAndValue, ProductVideoType, UserProductLike
 from import_export.admin import ImportExportModelAdmin
 
 
@@ -54,9 +54,18 @@ class ProductCommentLikeAdmin(ImportExportModelAdmin):
     filter_horizontal = ('product_comment', )
 
 
+class ProductPropertyAndValueAdmin(ImportExportModelAdmin):
+    list_display = ('id', 'product_property', 'property_value', 'product', 'created_at', 'updated_at')
+    list_display_links = ('id', 'product_property')
+    search_fields = ('product_property', )
+    list_filter = ('product', 'created_at', 'updated_at')
+
+
+
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductVideoType, ProductVideoTypeAdmin)
 admin.site.register(UserProductLike, UserProductLikeAdmin)
 admin.site.register(ProductComment, ProductCommentAdmin)
 admin.site.register(ProductCommentLike, ProductCommentLikeAdmin)
+admin.site.register(ProductPropertyAndValue, ProductPropertyAndValueAdmin)

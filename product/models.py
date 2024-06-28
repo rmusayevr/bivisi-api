@@ -209,3 +209,16 @@ class ProductCommentLike(DateMixin):
     class Meta:
         verbose_name = _('Product Comment Like')
         verbose_name_plural = _('Product Comments Like')
+
+
+class ProductPropertyAndValue(DateMixin):
+    product = models.ForeignKey(Product, verbose_name=_("Product"), on_delete=models.CASCADE, related_name='product_property_and_values')
+    product_property = models.CharField(_("Property"), max_length=255)
+    property_value = models.CharField(_("Property Value"), max_length=255)
+
+    def __str__(self):
+        return f"{self.product.name} {self.product_property} {self.property_value}"
+
+    class Meta:
+        verbose_name = _('Product Property & Value')
+        verbose_name_plural = _('Product Property & Value')
