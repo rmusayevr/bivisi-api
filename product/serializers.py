@@ -227,9 +227,13 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
             product_video_type.save()
 
         if properties_data is not None:
+            existing_property_ids = [prop.id for prop in instance.product_property_and_values.all()]
+            updated_property_ids = []
+
             for property_data in properties_data:
                 property_id = property_data.get('id')
                 if property_id:
+                    updated_property_ids.append(property_id)
                     property_instance = ProductPropertyAndValue.objects.get(
                         id=property_id, product=instance)
                     property_instance.product_property = property_data.get(
@@ -242,6 +246,10 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
                     ProductPropertyAndValue.objects.create(
                         product=instance, **property_data)
 
+            # Delete properties that were not included in the update
+            for property_id in existing_property_ids:
+                if property_id not in updated_property_ids:
+                    ProductPropertyAndValue.objects.filter(id=property_id).delete()
         return instance
 
     def to_representation(self, instance):
