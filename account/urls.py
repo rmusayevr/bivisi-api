@@ -23,6 +23,7 @@ from .views.web_views import (
     LoginTokenView,
     ChangePasswordAPIView,
     UserDetailAPIView,
+    UserListAPIView,
     DeleteAccountAPIView
 )
 from .views.admin_views import (
@@ -69,6 +70,7 @@ urlpatterns = [
          name='profile_information'),
 
     path('user_detail/', UserDetailAPIView.as_view(), name='user_detail'),
+    path('users/', UserListAPIView.as_view(), name='users'),
 
     path('delete_account/', DeleteAccountAPIView.as_view(), name='delete_account'),
 
