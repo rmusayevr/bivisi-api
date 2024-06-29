@@ -6,6 +6,7 @@ from account.models import User
 from django.core.exceptions import ValidationError
 from phonenumber_field.modelfields import PhoneNumberField
 from services.uploader import Uploader
+from django.core.validators import URLValidator
 
 
 class Category(DateMixin):
@@ -56,6 +57,13 @@ class Product(DateMixin):
 
     product_link = models.CharField(
         _('product link'), max_length=255, null=True, blank=True)
+
+    location = models.CharField(
+        _("Location"), max_length=255,
+    )
+    location_url = models.TextField(
+        _("Location URL"), validators=[URLValidator()],
+    )
 
     category = models.ManyToManyField(Category, verbose_name=_(
         "Category"), related_name='product_categories')
@@ -212,7 +220,8 @@ class ProductCommentLike(DateMixin):
 
 
 class ProductPropertyAndValue(DateMixin):
-    product = models.ForeignKey(Product, verbose_name=_("Product"), on_delete=models.CASCADE, related_name='product_property_and_values')
+    product = models.ForeignKey(Product, verbose_name=_(
+        "Product"), on_delete=models.CASCADE, related_name='product_property_and_values')
     product_property = models.CharField(_("Property"), max_length=255)
     property_value = models.CharField(_("Property Value"), max_length=255)
 

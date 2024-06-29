@@ -73,8 +73,8 @@ class ProductForTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'in_sale', 'percent', 'final_price', 'view_count', 'product_link',
-                  'like_count', 'category', 'user', 'comment_count', 'is_premium', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'price', 'in_sale', 'percent', 'final_price', 'view_count', 'product_link', 'location',
+                  'location_url', 'like_count', 'category', 'user', 'comment_count', 'is_premium', 'created_at', 'updated_at']
 
     def get_user(self, obj):
         return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
@@ -117,6 +117,7 @@ class WebProductVideoTypeSerializer(serializers.ModelSerializer):
 
 # ****************************************  <<<< PRODUCT PROPERTY AND VALUE START >>>>   ****************************************
 
+
 class ProductPropertyAndValueSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=False)
 
@@ -127,6 +128,7 @@ class ProductPropertyAndValueSerializer(serializers.ModelSerializer):
 # ****************************************  <<<< PRODUCT PROPERTY AND VALUE END >>>>  ****************************************
 
 # ****************************************  <<<< PRODUCT START >>>>  ****************************************
+
 
 class WebUploadProductCREATESerializer(serializers.ModelSerializer):
 
@@ -142,7 +144,7 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
         model = Product
         fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent',
                   'phone_number', 'category', 'product_type', 'is_premium',
-                  'original_video', 'cover_image', 'properties']
+                  'location', 'location_url', 'original_video', 'cover_image', 'properties']
         read_only_fields = ['user']
 
     def validate_percent(self, value):
@@ -171,7 +173,8 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
         )
 
         for property_data in properties_data:
-            ProductPropertyAndValue.objects.create(product=product, **property_data)
+            ProductPropertyAndValue.objects.create(
+                product=product, **property_data)
 
         return product
 
@@ -190,12 +193,13 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
         required=False, allow_null=True, write_only=True)
     original_video = serializers.FileField(write_only=True, required=False)
     phone_number = PhoneNumberField()
-    properties = ProductPropertyAndValueSerializer(many=True, write_only=True, required=False)
+    properties = ProductPropertyAndValueSerializer(
+        many=True, write_only=True, required=False)
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent',
-                  'phone_number', 'category', 'cover_image', 'original_video', 'properties']
+        fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent', 'phone_number', 'category',
+                  'location', 'location_url', 'cover_image', 'original_video', 'properties']
         read_only_fields = ['user', 'product_type']
 
     def validate_percent(self, value):
@@ -226,13 +230,17 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
             for property_data in properties_data:
                 property_id = property_data.get('id')
                 if property_id:
-                    property_instance = ProductPropertyAndValue.objects.get(id=property_id, product=instance)
-                    property_instance.product_property = property_data.get('product_property', property_instance.product_property)
-                    property_instance.property_value = property_data.get('property_value', property_instance.property_value)
+                    property_instance = ProductPropertyAndValue.objects.get(
+                        id=property_id, product=instance)
+                    property_instance.product_property = property_data.get(
+                        'product_property', property_instance.product_property)
+                    property_instance.property_value = property_data.get(
+                        'property_value', property_instance.property_value)
                     property_instance.save()
                 else:
                     print('no')
-                    ProductPropertyAndValue.objects.create(product=instance, **property_data)
+                    ProductPropertyAndValue.objects.create(
+                        product=instance, **property_data)
 
         return instance
 
@@ -244,7 +252,8 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
             representation['product_type'] = product_video_type.product_type
             representation['cover_image'] = product_video_type.cover_image.url if product_video_type.cover_image else None
             representation['original_video'] = product_video_type.original_video.url
-        representation['properties'] = ProductPropertyAndValueSerializer(instance.product_property_and_values.all(), many=True).data
+        representation['properties'] = ProductPropertyAndValueSerializer(
+            instance.product_property_and_values.all(), many=True).data
 
         return representation
 
@@ -255,8 +264,8 @@ class ProductCREATESerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent', 'final_price',
-                  'phone_number', 'view_count', 'like_count', 'category', 'user', 'created_at',
-                  'updated_at']
+                  'phone_number', 'view_count', 'like_count', 'location', 'location_url',
+                  'category', 'user', 'created_at', 'updated_at']
 
     def validate_percent(self, value):
         if value is not None and not (0 <= value <= 100):
@@ -275,9 +284,9 @@ class ProductREADSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'product_video_type', 'price', 'in_sale', 'percent',
-                  'final_price', 'phone_number', 'view_count', 'like_count', 'category', 'user',
-                  'product_link', 'in_wishlist', 'in_basket', 'is_liked', 'is_premium', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'description', 'product_video_type', 'price', 'in_sale', 'percent', 'final_price', 
+                  'phone_number', 'view_count', 'like_count', 'category', 'user', 'product_link', 'location', 
+                  'location_url', 'in_wishlist', 'in_basket', 'is_liked', 'is_premium', 'created_at', 'updated_at']
 
     def get_user(self, obj):
         return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
@@ -377,7 +386,7 @@ class WebProductCommentSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     count = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = ProductComment
         fields = ['id', 'comment', 'like_count', 'user', 'is_liked', 'product',
@@ -429,5 +438,6 @@ class ProductPremiumUpdateSerializer(serializers.Serializer):
 
     def validate_product_ids(self, value):
         if not value:
-            raise serializers.ValidationError("The product_ids list cannot be empty.")
+            raise serializers.ValidationError(
+                "The product_ids list cannot be empty.")
         return value
