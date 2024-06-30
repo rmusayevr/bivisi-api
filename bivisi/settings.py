@@ -26,7 +26,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-m$pctt(_0zrns4$^cgmdgufmff(#l8)i6s0!f+d86-hy#e#iz9'
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'c@dc4504**&8eq8@(w^v8u&_5vl6q34sm39^wng@jrk+m0-pp=')
+SECRET_KEY = os.getenv(
+    'SECRET_KEY', 'c@dc4504**&8eq8@(w^v8u&_5vl6q34sm39^wng@jrk+m0-pp=')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', True)
@@ -37,6 +38,7 @@ ALLOWED_HOSTS = ["*"]
 
 # Application definition
 INSTALLED_APPS = [
+    'daphne',
     'jazzmin',
 
     'django.contrib.admin',
@@ -64,6 +66,7 @@ INSTALLED_APPS = [
     'product.apps.ProductConfig',
     'order.apps.OrderConfig',
     'history.apps.HistoryConfig',
+    'notification.apps.NotificationConfig',
 
 ]
 
@@ -98,7 +101,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'bivisi.wsgi.application'
-
+ASGI_APPLICATION = 'bivisi.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -124,7 +127,7 @@ WSGI_APPLICATION = 'bivisi.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE':'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'bivisi',
         'USER': 'root',
         'PASSWORD': 'root123',
@@ -218,14 +221,14 @@ CORS_ALLOW_ALL_ORIGINS = True
 AUTH_USER_MODEL = 'account.User'
 AUTHENTICATION_BACKENDS = ['account.backends.EmailBackend']
 
-EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST="mail.bivisi.com"
-EMAIL_HOST_USER='support@bivisi.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "mail.bivisi.com"
+EMAIL_HOST_USER = 'support@bivisi.com'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-EMAIL_HOST_PASSWORD='+EsEs)i%AAoP'
-EMAIL_PORT=465
-EMAIL_USE_TLS=False
-EMAIL_USE_SSL=True
+EMAIL_HOST_PASSWORD = '+EsEs)i%AAoP'
+EMAIL_PORT = 465
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
 
 IMPORT_EXPORT_FORMATS = [CSV, XLSX]
 
@@ -235,3 +238,12 @@ JAZZMIN_UI_TWEAKS = JAZZMIN_UI_TWEAKS
 # Maximum size of file uploads in bytes (1 GB)
 FILE_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 1024  # 1 GB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 1024  # 1 GB
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
