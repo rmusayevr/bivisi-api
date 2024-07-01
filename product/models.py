@@ -56,7 +56,7 @@ class Product(DateMixin):
     phone_number = PhoneNumberField(_('phone number'), null=True, blank=True)
 
     product_link = models.CharField(
-        _('product link'), max_length=255, null=True, blank=True)
+        _('product link'), max_length=254, null=True, blank=True)
 
     location = models.CharField(
         _("Location"), max_length=255,
