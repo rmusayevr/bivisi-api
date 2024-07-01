@@ -26,15 +26,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-m$pctt(_0zrns4$^cgmdgufmff(#l8)i6s0!f+d86-hy#e#iz9'
 
-SECRET_KEY = os.getenv(
-    'SECRET_KEY', 'c@dc4504**&8eq8@(w^v8u&_5vl6q34sm39^wng@jrk+m0-pp=')
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY', 'django-insecure-m$pctt(_0zrns4$^cgmdgufmff(#l8)i6s0!f+d86-hy#e#iz9')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', True)
-# DEBUG = True
+DEBUG = int(os.environ.get("DEBUG", default=1))
+PROD = int(os.environ.get("PROD", default=0))
 
-ALLOWED_HOSTS = ["*"]
 
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 
 # Application definition
 INSTALLED_APPS = [
@@ -114,27 +114,27 @@ ASGI_APPLICATION = 'bivisi.asgi.application'
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': os.getenv('POSTGRES_ENGINE', 'django.db.backends.sqlite3'),
-#         'NAME': os.getenv('POSTGRES_NAME', 'db.sqlite3'),
-#         'USER': os.getenv('POSTGRES_USER'),
-#         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-#         'HOST': os.getenv('POSTGRES_HOST'),
-#         'PORT': os.getenv('POSTGRES_PORT')
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bivisi',
-        'USER': 'root',
-        'PASSWORD': 'root123',
-        'HOST': 'db',
-        'PORT': 5432
+        'ENGINE': os.environ.get('POSTGRES_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': os.environ.get('POSTGRES_NAME', BASE_DIR / 'db.sqlite3'),
+        'USER': os.environ.get('POSTGRES_USER', ''),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
+        'HOST': os.environ.get('POSTGRES_HOST', ''),
+        'PORT': os.environ.get('POSTGRES_PORT', '')
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'bivisi',
+#         'USER': 'root',
+#         'PASSWORD': 'root123',
+#         'HOST': 'db',
+#         'PORT': 5432
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -171,21 +171,21 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
-# if DEBUG:
-#     STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-#     MEDIA_ROOT = BASE_DIR / "media"
-#     MEDIA_URL = '/media/'
-# else:
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-AWS_ACCESS_KEY_ID = 'AKIATCKAOUIJN6CUS7GS'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'bivisi-media'
-AWS_S3_SIGNATURE_NAME = 's3v4',
-AWS_S3_REGION_NAME = 'eu-central-1'
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
-AWS_S3_VERITY = True
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+if PROD:
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+    MEDIA_ROOT = BASE_DIR / "media"
+    MEDIA_URL = '/media/'
+else:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    AWS_ACCESS_KEY_ID = 'AKIATCKAOUIJN6CUS7GS'
+    AWS_SECRET_ACCESS_KEY = '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'
+    AWS_STORAGE_BUCKET_NAME = 'bivisi-media'
+    AWS_S3_SIGNATURE_NAME = 's3v4',
+    AWS_S3_REGION_NAME = 'eu-central-1'
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_DEFAULT_ACL = None
+    AWS_S3_VERITY = True
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -221,14 +221,15 @@ CORS_ALLOW_ALL_ORIGINS = True
 AUTH_USER_MODEL = 'account.User'
 AUTHENTICATION_BACKENDS = ['account.backends.EmailBackend']
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "mail.bivisi.com"
-EMAIL_HOST_USER = 'support@bivisi.com'
+EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_PORT = os.environ.get("EMAIL_PORT", 587)
+EMAIL_USE_TLS = int(os.environ.get("EMAIL_USE_TLS", default=1))
+EMAIL_USE_SSL = int(os.environ.get("EMAIL_USE_SSL", default=0))
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "rasmusayevhad@gmail.com")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "djupquhlwhdykhmi")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-EMAIL_HOST_PASSWORD = '+EsEs)i%AAoP'
-EMAIL_PORT = 465
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
+
 
 IMPORT_EXPORT_FORMATS = [CSV, XLSX]
 
@@ -243,7 +244,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [("redis", 6379)],
         },
     },
 }
