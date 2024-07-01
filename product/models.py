@@ -58,12 +58,12 @@ class Product(DateMixin):
     product_link = models.CharField(
         _('product link'), max_length=254, null=True, blank=True)
 
-    location = models.CharField(
-        _("Location"), max_length=255,
-    )
-    location_url = models.TextField(
-        _("Location URL"), validators=[URLValidator()],
-    )
+    # location = models.CharField(
+    #     _("Location"), max_length=255,
+    # )
+    # location_url = models.TextField(
+    #     _("Location URL"), validators=[URLValidator()],
+    # )
 
     category = models.ManyToManyField(Category, verbose_name=_(
         "Category"), related_name='product_categories')
