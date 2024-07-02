@@ -1,39 +1,75 @@
 services:
 
   nginx:
+    container_name: nginx
+    restart: always
     build: ./nginx
     ports:
       - 80:80
     depends_on:
-      - web
+      - wsgiserver
+      - asgiserver
     volumes:
       - ./static/:/app/static/
 
   db:
     container_name: postgresql_db
-    image: postgres:latest
     restart: always
+    image: postgres:latest
     volumes:
       - ./data/pgdb:/var/lib/postgresql/data
     ports:
       - 5432:5432
-    environment:
-      POSTGRES_USER : root
-      POSTGRES_PASSWORD : root123
-      POSTGRES_DB : bivisi
+    env_file:
+      - ./.env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  web:
+  redis:
+    container_name: redis
+    image: redis:latest
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  wsgiserver:
     build: .
+    container_name: wsgiserver
     command: gunicorn bivisi.wsgi:application --bind 0.0.0.0:8000 --timeout 600 --workers 4
+    env_file:
+      - ./.env
     ports:
       - 8000:8000
     depends_on:
       - db
+      - redis
+    expose:
+      - 8000
     deploy:
       resources:
         limits:
           memory: 2G
           cpus: "1.0"
+
+  asgiserver:
+    build: .
+    container_name: asgiserver
+    command: daphne bivisi.asgi:application -b 0.0.0.0 -p 9000
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+      - redis
+    expose:
+      - 9000
 
   pgadmin:
     container_name: pgadmin_container
