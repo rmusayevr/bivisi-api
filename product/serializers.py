@@ -185,6 +185,8 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
             representation['product_type'] = product_video_type.product_type
             representation['cover_image'] = product_video_type.cover_image.url if product_video_type.cover_image else None
             representation['original_video'] = product_video_type.original_video.url
+        representation['properties'] = ProductPropertyAndValueSerializer(
+            instance.product_property_and_values.all(), many=True).data
         return representation
 
 
