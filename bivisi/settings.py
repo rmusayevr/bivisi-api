@@ -30,9 +30,9 @@ SECRET_KEY = os.environ.get(
     'SECRET_KEY', 'django-insecure-m$pctt(_0zrns4$^cgmdgufmff(#l8)i6s0!f+d86-hy#e#iz9')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(os.environ.get("DEBUG", default=1))
+# DEBUG = int(os.environ.get("DEBUG", default=1))
 PROD = int(os.environ.get("PROD", default=0))
-
+DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 
@@ -64,6 +64,8 @@ THIRD_PARTY_APPS = [
     "phonenumber_field",
     "import_export",
     "storages",
+    # "allauth.socialaccount",
+    # "allauth.socialaccount.providers.google",
 ]
 
 MY_APPS = [
@@ -244,16 +246,11 @@ CHANNEL_LAYERS = {
     },
 }
 
-# AUTHENTICATION_BACKENDS = [
-#     'social_core.backends.facebook.FacebookAppOAuth2',
-#     'social_core.backends.facebook.FacebookOAuth2',
+AUTHENTICATION_BACKENDS = [
+    # 'allauth.account.auth_backends.AuthenticationBackend',
 
-#     'social_core.backends.google.GoogleOAuth2',
-
-#     'drf_social_oauth2.backends.DjangoOAuth2',
-
-#     'account.backends.EmailBackend',
-# ]
+    'account.backends.EmailBackend',
+]
 
 # SOCIAL_AUTH_JSONFIELD_ENABLED = True
 
