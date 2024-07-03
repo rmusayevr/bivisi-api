@@ -64,9 +64,6 @@ THIRD_PARTY_APPS = [
     "phonenumber_field",
     "import_export",
     "storages",
-    'oauth2_provider',
-    'social_django',
-    'drf_social_oauth2',
 ]
 
 MY_APPS = [
@@ -218,7 +215,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 AUTH_USER_MODEL = 'account.User'
 
-EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
+
+EMAIL_BACKEND = os.environ.get(
+    "EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
 EMAIL_PORT = os.environ.get("EMAIL_PORT", 587)
 EMAIL_USE_TLS = int(os.environ.get("EMAIL_USE_TLS", default=1))
@@ -226,7 +225,6 @@ EMAIL_USE_SSL = int(os.environ.get("EMAIL_USE_SSL", default=0))
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "rasmusayevhad@gmail.com")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "djupquhlwhdykhmi")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
 
 IMPORT_EXPORT_FORMATS = [CSV, XLSX]
 
@@ -245,3 +243,32 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+# AUTHENTICATION_BACKENDS = [
+#     'social_core.backends.facebook.FacebookAppOAuth2',
+#     'social_core.backends.facebook.FacebookOAuth2',
+
+#     'social_core.backends.google.GoogleOAuth2',
+
+#     'drf_social_oauth2.backends.DjangoOAuth2',
+
+#     'account.backends.EmailBackend',
+# ]
+
+# SOCIAL_AUTH_JSONFIELD_ENABLED = True
+
+# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '205866087663-pbrcdfpn3io5d9m5ejlt940k1n46ji8k.apps.googleusercontent.com'
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
+
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+#     'https://www.googleapis.com/auth/userinfo.email',
+#     'https://www.googleapis.com/auth/userinfo.profile',
+# ]
+
+# SOCIAL_AUTH_FACEBOOK_KEY = '1018574332965285'
+# SOCIAL_AUTH_FACEBOOK_SECRET = '7669c0e1a0c175c3db501b8421e2a04e'
+
+# SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+# SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+#     'fields': 'id, name, email'
+# }
