@@ -37,38 +37,48 @@ PROD = int(os.environ.get("PROD", default=0))
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 
 # Application definition
-INSTALLED_APPS = [
-    'daphne',
-    'jazzmin',
-
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
-    'mptt',
-    'rest_framework',
-    'django_filters',
-    'parler',
-    'corsheaders',
-    'rest_framework_simplejwt',
-    'rest_framework_swagger',
-    'drf_yasg',
-    'django_rest_passwordreset',
-    "phonenumber_field",
-    'import_export',
-    'storages',
-
-    'account.apps.AccountConfig',
-    'core.apps.CoreConfig',
-    'product.apps.ProductConfig',
-    'order.apps.OrderConfig',
-    'history.apps.HistoryConfig',
-    'notification.apps.NotificationConfig',
-
+INITIAL_APPS = [
+    "daphne",
+    "jazzmin",
 ]
+
+BASE_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+]
+
+THIRD_PARTY_APPS = [
+    "mptt",
+    "rest_framework",
+    "django_filters",
+    "parler",
+    "corsheaders",
+    "rest_framework_simplejwt",
+    "rest_framework_swagger",
+    "drf_yasg",
+    "django_rest_passwordreset",
+    "phonenumber_field",
+    "import_export",
+    "storages",
+    'oauth2_provider',
+    'social_django',
+    'drf_social_oauth2',
+]
+
+MY_APPS = [
+    "account.apps.AccountConfig",
+    "core.apps.CoreConfig",
+    "product.apps.ProductConfig",
+    "order.apps.OrderConfig",
+    "history.apps.HistoryConfig",
+    "notification.apps.NotificationConfig",
+]
+
+INSTALLED_APPS = INITIAL_APPS + BASE_APPS + THIRD_PARTY_APPS + MY_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -106,14 +116,6 @@ ASGI_APPLICATION = 'bivisi.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('POSTGRES_ENGINE', 'django.db.backends.sqlite3'),
@@ -124,17 +126,13 @@ DATABASES = {
         'PORT': os.environ.get('POSTGRES_PORT', '')
     }
 }
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'bivisi',
-#         'USER': 'root',
-#         'PASSWORD': 'root123',
-#         'HOST': 'db',
-#         'PORT': 5432
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -196,7 +194,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication'
+        'rest_framework.authentication.SessionAuthentication',
     )
 }
 
@@ -219,7 +217,6 @@ SIMPLE_JWT = {
 CORS_ALLOW_ALL_ORIGINS = True
 
 AUTH_USER_MODEL = 'account.User'
-AUTHENTICATION_BACKENDS = ['account.backends.EmailBackend']
 
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")

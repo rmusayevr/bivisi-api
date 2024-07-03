@@ -158,7 +158,7 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
         product_type = validated_data.pop('product_type')
         cover_image = validated_data.pop('cover_image', None)
         original_video = validated_data.pop('original_video')
-        properties_data = validated_data.pop('properties')
+        properties_data = validated_data.pop('properties', None)
 
         request = self.context.get('request')
         user = request.user
@@ -172,10 +172,10 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
             cover_image=cover_image,
             original_video=original_video,
         )
-
-        for property_data in properties_data:
-            ProductPropertyAndValue.objects.create(
-                product=product, **property_data)
+        if properties_data:
+            for property_data in properties_data:
+                ProductPropertyAndValue.objects.create(
+                    product=product, **property_data)
 
         return product
 
