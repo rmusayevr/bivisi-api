@@ -27,18 +27,18 @@ class BasketItem(DateMixin):
     def __str__(self):
         return f"{self.user.get_full_name()}'s basket item"
 
-    def get_total(self):
+    def get_item_total(self):
         if self.product.in_sale:
             total = self.product.final_price*self.quantity
         else:
             total = self.product.price*self.quantity
         return total
 
-    def get_subtotal(self):
+    def get_item_subtotal(self):
         return self.product.price*self.quantity
 
-    def get_sale(self):
-        return self.get_subtotal() - self.get_total()
+    def get_item_sale(self):
+        return self.get_item_subtotal() - self.get_item_total()
 
     class Meta:
         verbose_name = "Basket Item"
@@ -57,3 +57,18 @@ class Basket(DateMixin):
     class Meta:
         verbose_name = "Basket"
         verbose_name_plural = "Baskets"
+
+
+class Order(DateMixin):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='user_order',)
+    basket = models.ForeignKey(
+        Basket, on_delete=models.CASCADE, related_name='order_products')
+    address = models.TextField()
+
+    def __str__(self):
+        return f"{self.user.get_full_name()}'s order"
+    
+    class Meta:
+        verbose_name = "Order"
+        verbose_name_plural = "Orders"

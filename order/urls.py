@@ -1,12 +1,14 @@
 from django.urls import path
 from .views.web_views import (
     FavoriteWebAPIView,
+    OrderCreateView,
     ToggleFavoriteAPIView,
     AddBasketAPIView,
     ChangeBasketItemAPIView,
     DeleteBasketItemAPIView,
     DeleteBasketAPIView,
-    BasketWebAPIView
+    BasketWebAPIView,
+    OrderListView
 )
 from .views.admin_views import (
     FavoriteListCreateAPIView,
@@ -52,4 +54,8 @@ urlpatterns = [
     path('delete_basket_item/<int:pk>/',
          DeleteBasketItemAPIView.as_view(), name='delete_basket_item'),
     path('delete_basket/', DeleteBasketAPIView.as_view(), name='delete_basket'),
+
+    # Order Web URLs
+    path('orders/', OrderListView.as_view(), name='order-list'),
+    path('orders/create/', OrderCreateView.as_view(), name='order-create'),
 ]
