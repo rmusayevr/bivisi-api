@@ -17,6 +17,8 @@ from .views.admin_views import (
     BasketItemRetrieveUpdateDestroyAPIView,
     BasketListCreateAPIView,
     BasketRetrieveUpdateDestroyAPIView,
+    OrderListCreateAPIView,
+    OrderRetrieveUpdateDestroyAPIView,
 )
 
 urlpatterns = [
@@ -54,6 +56,12 @@ urlpatterns = [
     path('delete_basket_item/<int:pk>/',
          DeleteBasketItemAPIView.as_view(), name='delete_basket_item'),
     path('delete_basket/', DeleteBasketAPIView.as_view(), name='delete_basket'),
+
+    # Order Admin URLs
+    path('admin/order/', OrderListCreateAPIView.as_view(),
+         name='order_list_create'),
+    path('admin/order/<int:pk>/',
+         OrderRetrieveUpdateDestroyAPIView.as_view(), name='order_detail'),
 
     # Order Web URLs
     path('orders/', OrderListView.as_view(), name='order-list'),

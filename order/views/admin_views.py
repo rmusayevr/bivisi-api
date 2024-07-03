@@ -1,13 +1,15 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from services.pagination import InfiniteScrollPagination
-from ..models import Favorite, BasketItem, Basket
+from ..models import BasketItem, Basket, Favorite, Order
 from ..serializers import (
     FavoriteReadSerializer,
     FavoriteCreateSerializer,
     BasketItemReadSerializer,
     BasketItemCreateSerializer,
     BasketReadSerializer,
-    BasketCreateSerializer
+    BasketCreateSerializer,
+    OrderCreateSerializer,
+    OrderReadSerializer
 )
 
 
@@ -76,4 +78,24 @@ class BasketRetrieveUpdateDestroyAPIView(GenericAPIViewSerializerMixin, Retrieve
         'PUT': BasketCreateSerializer,
         'PATCH': BasketCreateSerializer,
         'DELETE': BasketCreateSerializer,
+    }
+
+# Order GET & POST
+class OrderListCreateAPIView(GenericAPIViewSerializerMixin, ListCreateAPIView):
+    queryset = Order.objects.all()
+    pagination_class = InfiniteScrollPagination
+    serializer_classes = {
+        'GET': OrderReadSerializer,
+        'POST': OrderCreateSerializer
+    }
+
+
+# Order GET & PUT & PATCH & DELETE
+class OrderRetrieveUpdateDestroyAPIView(GenericAPIViewSerializerMixin, RetrieveUpdateDestroyAPIView):
+    queryset = Order.objects.all()
+    serializer_classes = {
+        'GET': OrderReadSerializer,
+        'PUT': OrderCreateSerializer,
+        'PATCH': OrderCreateSerializer,
+        'DELETE': OrderCreateSerializer,
     }

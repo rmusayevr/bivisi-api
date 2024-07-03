@@ -104,6 +104,14 @@ class BasketCreateSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'items', 'is_active']
 
 
+class OrderReadSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+
+    class Meta:
+        model = Order
+        fields = ['id', 'user', 'basket', 'address']
+
+
 class OrderListSerializer(serializers.ModelSerializer):
     basket = BasketWebReadSerializer()
     user = serializers.StringRelatedField()
