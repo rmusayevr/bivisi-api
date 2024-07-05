@@ -62,7 +62,6 @@ THIRD_PARTY_APPS = [
     "rest_framework_simplejwt",
     "rest_framework_swagger",
     "drf_yasg",
-    "django_rest_passwordreset",
     "phonenumber_field",
     "import_export",
     "storages",
