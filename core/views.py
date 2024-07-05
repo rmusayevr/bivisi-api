@@ -1,6 +1,7 @@
 import django_filters.rest_framework
 from rest_framework import filters
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.exceptions import NotFound
 
 from services.pagination import InfiniteScrollPagination
 from .serializers import FAQSerializer, SliderSerializer, StreamSerializer
@@ -47,3 +48,9 @@ class StreamListCreateAPIView(ListCreateAPIView):
 class StreamRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Stream.objects.all()
     serializer_class = StreamSerializer
+
+    def get_object(self):
+        try:
+            return Stream.objects.get(room_id=self.kwargs.get('room_id'))
+        except Stream.DoesNotExist:
+            raise NotFound('Stream not found')

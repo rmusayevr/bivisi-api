@@ -22,7 +22,7 @@ urlpatterns = [
 
     # FAQ URLs
     path('stream/', StreamListCreateAPIView.as_view(), name='stream_list_create'),
-    path('stream/delete/<int:pk>/',
+    path('stream/delete/<str:room_id>/',
          StreamRetrieveUpdateDestroyAPIView.as_view(), name='stream_delete'),
 
 ]
