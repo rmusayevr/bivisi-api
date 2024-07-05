@@ -6,10 +6,9 @@ from .utils.otp import generate_otp
 from django.core.mail import send_mail
 from django.utils import timezone
 
-
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_token(sender, instance, created, **kwargs):
-    if created:
+    if created and instance.sign_up_method == 'email':
         if instance.is_superuser:
             pass
         else:

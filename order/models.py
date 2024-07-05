@@ -1,6 +1,6 @@
 from django.db import models
 from product.models import Product
-from account.models import User
+from user.models import User
 from services.mixins import DateMixin
 
 

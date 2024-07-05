@@ -1,5 +1,5 @@
 from django.db import models
-from account.models import User
+from user.models import User
 
 
 class Notification(models.Model):

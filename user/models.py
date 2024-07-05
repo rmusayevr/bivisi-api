@@ -35,11 +35,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         ("De-active", "De-active"),
         ("Not Verified", "Not Verified")
     )
+    sign_up_method = models.CharField(_('sign up method'), max_length=30, default='email')
 
     username = models.CharField(_('username'), max_length=60, unique=True)
     email = models.EmailField(_('email address'), unique=True)
     first_name = models.CharField(_('first name'), max_length=50)
-    last_name = models.CharField(_('last name'), max_length=50)
+    last_name = models.CharField(_('last name'), max_length=60)
     avatar = models.ImageField(
         _("avatar"), upload_to=Uploader.user_avatar, max_length=500, null=True, blank=True)
     cover_image = models.ImageField(

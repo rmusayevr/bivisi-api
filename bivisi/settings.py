@@ -30,9 +30,9 @@ SECRET_KEY = os.environ.get(
     'SECRET_KEY', 'django-insecure-m$pctt(_0zrns4$^cgmdgufmff(#l8)i6s0!f+d86-hy#e#iz9')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = int(os.environ.get("DEBUG", default=1))
+DEBUG = int(os.environ.get("DEBUG", default=1))
 PROD = int(os.environ.get("PROD", default=0))
-DEBUG = True
+# DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 
@@ -49,11 +49,13 @@ BASE_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
 ]
 
 THIRD_PARTY_APPS = [
     "mptt",
     "rest_framework",
+    "rest_framework.authtoken",
     "django_filters",
     "parler",
     "corsheaders",
@@ -64,12 +66,17 @@ THIRD_PARTY_APPS = [
     "phonenumber_field",
     "import_export",
     "storages",
-    # "allauth.socialaccount",
-    # "allauth.socialaccount.providers.google",
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.facebook",
+    "allauth.socialaccount.providers.google",
 ]
 
 MY_APPS = [
-    "account.apps.AccountConfig",
+    "user.apps.UserConfig",
     "core.apps.CoreConfig",
     "product.apps.ProductConfig",
     "order.apps.OrderConfig",
@@ -78,6 +85,8 @@ MY_APPS = [
 ]
 
 INSTALLED_APPS = INITIAL_APPS + BASE_APPS + THIRD_PARTY_APPS + MY_APPS
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -89,6 +98,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'bivisi.urls'
@@ -104,6 +114,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
             ],
         },
     },
@@ -197,6 +208,9 @@ REST_FRAMEWORK = {
     )
 }
 
+REST_AUTH = {
+    'USE_JWT': True,
+}
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
@@ -215,8 +229,7 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-AUTH_USER_MODEL = 'account.User'
-
+AUTH_USER_MODEL = 'user.User'
 
 EMAIL_BACKEND = os.environ.get(
     "EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
@@ -247,25 +260,39 @@ CHANNEL_LAYERS = {
 }
 
 AUTHENTICATION_BACKENDS = [
-    # 'allauth.account.auth_backends.AuthenticationBackend',
-
-    'account.backends.EmailBackend',
+    'user.backends.EmailBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-# SOCIAL_AUTH_JSONFIELD_ENABLED = True
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': '205866087663-pbrcdfpn3io5d9m5ejlt940k1n46ji8k.apps.googleusercontent.com',
+            'secret': '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',
+            'key': ''
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+    },
+    'facebook': {
+        'APP': {
+            'client_id': '1018574332965285',
+            'secret': '7669c0e1a0c175c3db501b8421e2a04e',
+            'key': ''
+        },
+        'SCOPE': [
+            'email',
+        ],
+    }
+}
 
-# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '205866087663-pbrcdfpn3io5d9m5ejlt940k1n46ji8k.apps.googleusercontent.com'
-# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+# ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_ADAPTER = 'user.adapters.CustomAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'user.adapters.CustomSocialAccountAdapter'
 
-# SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
-#     'https://www.googleapis.com/auth/userinfo.email',
-#     'https://www.googleapis.com/auth/userinfo.profile',
-# ]
-
-# SOCIAL_AUTH_FACEBOOK_KEY = '1018574332965285'
-# SOCIAL_AUTH_FACEBOOK_SECRET = '7669c0e1a0c175c3db501b8421e2a04e'
-
-# SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
-# SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
-#     'fields': 'id, name, email'
-# }
+# LOGIN_REDIRECT_URL='/api/user/login/'

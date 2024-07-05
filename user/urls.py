@@ -1,18 +1,19 @@
 from django.urls import path
 
-from account.views.otp_views import (
+from user.views.otp_views import (
     OTPResendAPIView,
     OTPVerifyAPIView
 )
-from account.views.profile_settings import (
+from user.views.profile_settings import (
     GeneralSettingsUpdateView,
     ProfileInformationUpdateView
 )
-from account.views.reset_password import (
+from user.views.reset_password import (
     ResetPasswordAPIView,
     SendEmailResetPasswordAPIView
 )
-from account.views.subscription import (
+from user.views.social_views import FacebookLogin, GoogleLogin
+from user.views.subscription import (
     PopularChannelsAPIView,
     SubscribeWebAPIView,
     SubscriptionsAPIView,
@@ -40,6 +41,8 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path('login/', LoginTokenView.as_view(), name='token_obtain_pair'),
+    path('login/facebook/', FacebookLogin.as_view(), name='fb_login'),
+    path('login/google/', GoogleLogin.as_view(), name='google_login'),
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     path('register/', RegisterAPIView.as_view(), name='register'),
@@ -75,7 +78,6 @@ urlpatterns = [
     path('delete_account/', DeleteAccountAPIView.as_view(), name='delete_account'),
 
 ]
-
 
 urlpatterns += [
     path('admin/subscription/', SubscriptionListCreateAPIView.as_view(),
