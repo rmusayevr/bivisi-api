@@ -1,6 +1,6 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
-from .models import FAQ, Slider
+from .models import FAQ, Slider, Stream
 
 
 class SliderAdmin(ImportExportModelAdmin):
@@ -30,3 +30,4 @@ class FAQAdmin(ImportExportModelAdmin):
 
 admin.site.register(FAQ, FAQAdmin)
 admin.site.register(Slider, SliderAdmin)
+admin.site.register(Stream)
