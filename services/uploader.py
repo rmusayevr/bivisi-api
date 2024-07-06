@@ -16,6 +16,11 @@ class Uploader:
     @staticmethod
     def slider_image(instance, filename):
         return f"Slider/{filename}"
+    
+    # Stream IMAGE
+    @staticmethod
+    def stream_image(instance, filename):
+        return f"Stream/{filename}"
 
     # Product COVER IMAGE
     @staticmethod
