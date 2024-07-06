@@ -53,9 +53,8 @@ class Stream(DateMixin):
     room_id = models.CharField(_('room id'), max_length=100, unique=True)
     room_name = models.CharField(_('room name'), max_length=255)
     user_name = models.CharField(_('user name'), max_length=255)
-    cover_image = models.TextField(
-        _('cover image'), validators=[URLValidator()], null=True, blank=True
-    )
+    cover_image = models.ImageField(
+        _('cover image'), upload_to=Uploader.stream_image, max_length=500)
 
     def __str__(self):
         return f"{self.room_id} - {self.room_name} - {self.user_name}"
