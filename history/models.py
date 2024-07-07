@@ -1,5 +1,5 @@
 from django.db import models
-from account.models import User
+from user.models import User
 from product.models import ProductVideoType
 from services.mixins import DateMixin
 from django.utils.translation import gettext_lazy as _

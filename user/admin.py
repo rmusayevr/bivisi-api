@@ -9,7 +9,7 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'email', 'password',)}),
         (_('Personal info'), {
-         'fields': ('first_name', 'last_name', 'gender', 'birthday', 'avatar', 'cover_image', 'country')}),
+         'fields': ('first_name', 'last_name', 'gender', 'birthday', 'avatar', 'cover_image', 'country', 'sign_up_method')}),
         (_('Permissions'), {'fields': ('status', 'is_active', 'is_staff',
          'is_superuser', 'groups', 'user_permissions')}),
     )
@@ -20,11 +20,11 @@ class UserAdmin(BaseUserAdmin):
                        'birthday', 'country', 'password1', 'password2'),
         }),
     )
-    list_display = ('username', 'email', 'first_name', 'last_name',
+    list_display = ('username', 'email', 'first_name', 'last_name', 'sign_up_method',
                     'gender', 'birthday', 'is_staff', 'is_active', 'is_superuser', 'status')
     list_filter = ('gender', 'is_staff', 'is_superuser',
-                   'is_active', 'status', 'groups',)
-    search_fields = ('username', 'email', 'first_name', 'last_name', 'gender')
+                   'is_active', 'status', 'groups', 'sign_up_method')
+    search_fields = ('username', 'email', 'first_name', 'last_name', 'gender', 'sign_up_method')
     ordering = ('username',)
     filter_horizontal = ('groups', 'user_permissions',)
 

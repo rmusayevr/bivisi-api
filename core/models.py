@@ -1,12 +1,13 @@
-import os
 from django.db import models
+from django.core.validators import URLValidator
 from django.utils.translation import gettext_lazy as _
 from services.mixins import DateMixin
 from services.uploader import Uploader
 
 
 class Slider(DateMixin):
-    image = models.ImageField(_("Image"), upload_to=Uploader.slider_image, max_length=500)
+    image = models.ImageField(
+        _("Image"), upload_to=Uploader.slider_image, max_length=500)
 
     def save(self, *args, **kwargs):
         if self.pk:
@@ -46,3 +47,18 @@ class FAQ(DateMixin):
     class Meta:
         verbose_name = _('FAQ')
         verbose_name_plural = _('FAQ')
+
+
+class Stream(DateMixin):
+    room_id = models.CharField(_('room id'), max_length=100, unique=True)
+    room_name = models.CharField(_('room name'), max_length=255)
+    user_name = models.CharField(_('user name'), max_length=255)
+    cover_image = models.ImageField(
+        _('cover image'), upload_to=Uploader.stream_image, max_length=500)
+
+    def __str__(self):
+        return f"{self.room_id} - {self.room_name} - {self.user_name}"
+
+    class Meta:
+        verbose_name = _('Stream')
+        verbose_name_plural = _('Streams')

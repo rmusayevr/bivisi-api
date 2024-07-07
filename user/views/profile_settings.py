@@ -1,8 +1,8 @@
-from account.models import User
+from user.models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import UpdateAPIView
-from account.serializers import (
+from user.serializers import (
     GeneralSettingsSerializer, ProfileInformationSerializer
 )
 

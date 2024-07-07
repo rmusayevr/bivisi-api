@@ -138,7 +138,8 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
         required=False, allow_null=True, write_only=True)
     original_video = serializers.FileField(write_only=True)
     phone_number = PhoneNumberField()
-    properties = ProductPropertyAndValueSerializer(many=True, write_only=True)
+    properties = ProductPropertyAndValueSerializer(
+        many=True, write_only=True, required=False)
 
     class Meta:
         model = Product
@@ -157,7 +158,7 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
         product_type = validated_data.pop('product_type')
         cover_image = validated_data.pop('cover_image', None)
         original_video = validated_data.pop('original_video')
-        properties_data = validated_data.pop('properties')
+        properties_data = validated_data.pop('properties', None)
 
         request = self.context.get('request')
         user = request.user
@@ -171,10 +172,10 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
             cover_image=cover_image,
             original_video=original_video,
         )
-
-        for property_data in properties_data:
-            ProductPropertyAndValue.objects.create(
-                product=product, **property_data)
+        if properties_data:
+            for property_data in properties_data:
+                ProductPropertyAndValue.objects.create(
+                    product=product, **property_data)
 
         return product
 
@@ -229,7 +230,8 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
             product_video_type.save()
 
         if properties_data is not None:
-            existing_property_ids = [prop.id for prop in instance.product_property_and_values.all()]
+            existing_property_ids = [
+                prop.id for prop in instance.product_property_and_values.all()]
             updated_property_ids = []
 
             for property_data in properties_data:
@@ -251,7 +253,8 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
             # Delete properties that were not included in the update
             for property_id in existing_property_ids:
                 if property_id not in updated_property_ids:
-                    ProductPropertyAndValue.objects.filter(id=property_id).delete()
+                    ProductPropertyAndValue.objects.filter(
+                        id=property_id).delete()
         return instance
 
     def to_representation(self, instance):
@@ -294,8 +297,8 @@ class ProductREADSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'product_video_type', 'price', 'in_sale', 'percent', 'final_price', 
-                  'phone_number', 'view_count', 'like_count', 'category', 'user', 'product_link', 'location', 
+        fields = ['id', 'name', 'description', 'product_video_type', 'price', 'in_sale', 'percent', 'final_price',
+                  'phone_number', 'view_count', 'like_count', 'category', 'user', 'product_link', 'location',
                   'location_url', 'in_wishlist', 'in_basket', 'is_liked', 'is_premium', 'created_at', 'updated_at']
 
     def get_user(self, obj):

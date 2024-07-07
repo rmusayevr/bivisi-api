@@ -2,7 +2,7 @@ from decimal import Decimal
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from services.mixins import DateMixin
-from account.models import User
+from user.models import User
 from django.core.exceptions import ValidationError
 from phonenumber_field.modelfields import PhoneNumberField
 from services.uploader import Uploader

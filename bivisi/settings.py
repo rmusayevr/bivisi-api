@@ -32,43 +32,60 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.environ.get("DEBUG", default=1))
 PROD = int(os.environ.get("PROD", default=0))
-
+# DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 
 # Application definition
-INSTALLED_APPS = [
-    'daphne',
-    'jazzmin',
-
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
-    'mptt',
-    'rest_framework',
-    'django_filters',
-    'parler',
-    'corsheaders',
-    'rest_framework_simplejwt',
-    'rest_framework_swagger',
-    'drf_yasg',
-    'django_rest_passwordreset',
-    "phonenumber_field",
-    'import_export',
-    'storages',
-
-    'account.apps.AccountConfig',
-    'core.apps.CoreConfig',
-    'product.apps.ProductConfig',
-    'order.apps.OrderConfig',
-    'history.apps.HistoryConfig',
-    'notification.apps.NotificationConfig',
-
+INITIAL_APPS = [
+    "daphne",
+    "jazzmin",
 ]
+
+BASE_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.sites",
+]
+
+THIRD_PARTY_APPS = [
+    "mptt",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "django_filters",
+    "parler",
+    "corsheaders",
+    "rest_framework_simplejwt",
+    "rest_framework_swagger",
+    "drf_yasg",
+    "phonenumber_field",
+    "import_export",
+    "storages",
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.facebook",
+    "allauth.socialaccount.providers.google",
+]
+
+MY_APPS = [
+    "user.apps.UserConfig",
+    "core.apps.CoreConfig",
+    "product.apps.ProductConfig",
+    "order.apps.OrderConfig",
+    "history.apps.HistoryConfig",
+    "notification.apps.NotificationConfig",
+]
+
+INSTALLED_APPS = INITIAL_APPS + BASE_APPS + THIRD_PARTY_APPS + MY_APPS
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -80,6 +97,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'bivisi.urls'
@@ -95,6 +113,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
             ],
         },
     },
@@ -106,14 +125,6 @@ ASGI_APPLICATION = 'bivisi.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('POSTGRES_ENGINE', 'django.db.backends.sqlite3'),
@@ -124,17 +135,13 @@ DATABASES = {
         'PORT': os.environ.get('POSTGRES_PORT', '')
     }
 }
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'bivisi',
-#         'USER': 'root',
-#         'PASSWORD': 'root123',
-#         'HOST': 'db',
-#         'PORT': 5432
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -196,10 +203,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication'
+        'rest_framework.authentication.SessionAuthentication',
     )
 }
 
+REST_AUTH = {
+    'USE_JWT': True,
+}
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
@@ -218,10 +228,10 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-AUTH_USER_MODEL = 'account.User'
-AUTHENTICATION_BACKENDS = ['account.backends.EmailBackend']
+AUTH_USER_MODEL = 'user.User'
 
-EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
+EMAIL_BACKEND = os.environ.get(
+    "EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
 EMAIL_PORT = os.environ.get("EMAIL_PORT", 587)
 EMAIL_USE_TLS = int(os.environ.get("EMAIL_USE_TLS", default=1))
@@ -229,7 +239,6 @@ EMAIL_USE_SSL = int(os.environ.get("EMAIL_USE_SSL", default=0))
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "rasmusayevhad@gmail.com")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "djupquhlwhdykhmi")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
 
 IMPORT_EXPORT_FORMATS = [CSV, XLSX]
 
@@ -248,3 +257,41 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+AUTHENTICATION_BACKENDS = [
+    'user.backends.EmailBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': '205866087663-pbrcdfpn3io5d9m5ejlt940k1n46ji8k.apps.googleusercontent.com',
+            'secret': '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',
+            'key': ''
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+    },
+    'facebook': {
+        'APP': {
+            'client_id': '1018574332965285',
+            'secret': '7669c0e1a0c175c3db501b8421e2a04e',
+            'key': ''
+        },
+        'SCOPE': [
+            'email',
+        ],
+    }
+}
+
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+# ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_ADAPTER = 'user.adapters.CustomAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'user.adapters.CustomSocialAccountAdapter'
+
+# LOGIN_REDIRECT_URL='/api/user/login/'

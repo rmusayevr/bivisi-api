@@ -41,7 +41,7 @@ JAZZMIN_SETTINGS = {
 
     # List of model admins to search from the search bar, search bar omitted if excluded
     # If you want to use a single search field you dont need to use a list, you can use a simple string 
-    "search_model": ["account.User", "product.Product"],
+    "search_model": ["user.User", "product.Product"],
 
     # Field name on user model that contains avatar ImageField/URLField/Charfield or a callable that receives the user
     "user_avatar": get_user_avatar,
@@ -95,7 +95,7 @@ JAZZMIN_SETTINGS = {
     # "hide_models": ['Blog.Blog'],
 
     # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
-    "order_with_respect_to": ["account", "product"],
+    "order_with_respect_to": ["user", "product"],
 
     # Custom links to append to app groups, keyed on app name
     # "custom_links": {
@@ -111,9 +111,9 @@ JAZZMIN_SETTINGS = {
     # for the full list of 5.13.0 free icon classes
     "icons": {
 
-        "account": "fas fa-users-cog",
-        "account.User": "fas fa-users",
-        "account.PhoneNumber": "fas fa-phone",
+        "user": "fas fa-users-cog",
+        "user.User": "fas fa-users",
+        "user.PhoneNumber": "fas fa-phone",
 
         # # About
         # "About": "fas fa-info-circle",

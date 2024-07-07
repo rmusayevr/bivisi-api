@@ -1,11 +1,13 @@
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView
 from product.serializers import WebProductVideoTypeSerializer
-from ..models import Favorite, Basket, BasketItem
+from ..models import Basket, BasketItem, Favorite, Order
 from ..serializers import (
-    FavoriteCreateSerializer,
+    BasketItemReadSerializer,
     BasketWebReadSerializer,
-    BasketItemReadSerializer
+    FavoriteCreateSerializer,
+    OrderCreateSerializer,
+    OrderListSerializer,
 )
 from product.models import Product, ProductVideoType
 from rest_framework.response import Response
@@ -70,7 +72,7 @@ class BasketWebAPIView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Basket.objects.filter(user=self.request.user)
+        return Basket.objects.filter(user=self.request.user, is_active=True)
 
 
 class AddBasketAPIView(APIView):
@@ -166,3 +168,20 @@ class DeleteBasketAPIView(APIView):
             return Response({'message': message}, status=status.HTTP_200_OK)
         except Basket.DoesNotExist:
             return Response({'message': 'Basket not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class OrderListView(ListAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user)
+
+class OrderCreateView(CreateAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderCreateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
