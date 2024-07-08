@@ -302,12 +302,13 @@ class ProductREADSerializer(serializers.ModelSerializer):
     in_wishlist = serializers.SerializerMethodField()
     in_basket = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
+    properties = ProductPropertyAndValueSerializer(source='product_property_and_values', many=True, read_only=True)
 
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'product_video_type', 'price', 'in_sale', 'percent', 'final_price',
                   'phone_number', 'view_count', 'like_count', 'category', 'user', 'product_link', 'location',
-                  'location_url', 'in_wishlist', 'in_basket', 'is_liked', 'is_premium', 'created_at', 'updated_at']
+                  'location_url', 'properties', 'in_wishlist', 'in_basket', 'is_liked', 'is_premium', 'created_at', 'updated_at']
 
     def get_user(self, obj):
         return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
