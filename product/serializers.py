@@ -59,6 +59,17 @@ class CategoryWebSerializer(serializers.ModelSerializer):
 
 # ****************************************  <<<< CATEGORY END >>>>  ****************************************
 
+# ****************************************  <<<< PRODUCT PROPERTY AND VALUE START >>>>   ****************************************
+
+
+class ProductPropertyAndValueSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
+
+    class Meta:
+        model = ProductPropertyAndValue
+        fields = ['id', 'product_property', 'property_value']
+
+# ****************************************  <<<< PRODUCT PROPERTY AND VALUE END >>>>  ****************************************
 
 # ****************************************  <<<< PRODUCT VIDEO TYPE START >>>>  ****************************************
 
@@ -72,11 +83,12 @@ class DashboardProductVideoTypeSerializer(serializers.ModelSerializer):
 class ProductForTypeSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     comment_count = serializers.SerializerMethodField()  # Add this line
+    properties = ProductPropertyAndValueSerializer(source='product_property_and_values', many=True, read_only=True)
 
     class Meta:
         model = Product
         fields = ['id', 'name', 'price', 'in_sale', 'percent', 'final_price', 'view_count', 'product_link', 'location',
-                  'location_url', 'like_count', 'category', 'user', 'comment_count', 'is_premium', 'created_at', 'updated_at']
+                  'location_url', 'properties', 'like_count', 'category', 'user', 'comment_count', 'is_premium', 'created_at', 'updated_at']
 
     def get_user(self, obj):
         return {'id': obj.user.id, 'name': obj.user.username, 'avatar': obj.user.avatar.url if obj.user.avatar else None}
@@ -116,18 +128,6 @@ class WebProductVideoTypeSerializer(serializers.ModelSerializer):
         return obj.product.user_product_like.filter(user=request.user).exists()
 
 # ****************************************  <<<< PRODUCT VIDEO TYPE END >>>>   ****************************************
-
-# ****************************************  <<<< PRODUCT PROPERTY AND VALUE START >>>>   ****************************************
-
-
-class ProductPropertyAndValueSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(required=False)
-
-    class Meta:
-        model = ProductPropertyAndValue
-        fields = ['id', 'product_property', 'property_value']
-
-# ****************************************  <<<< PRODUCT PROPERTY AND VALUE END >>>>  ****************************************
 
 # ****************************************  <<<< PRODUCT START >>>>  ****************************************
 
