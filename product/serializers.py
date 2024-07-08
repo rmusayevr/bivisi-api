@@ -1,8 +1,10 @@
+import json
 from rest_framework import serializers
 from order.models import BasketItem
 from .models import Category, Product, ProductComment, ProductCommentLike, ProductPropertyAndValue, ProductVideoType, UserProductLike
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.serializerfields import PhoneNumberField
+from django.core.exceptions import ValidationError
 
 
 # ****************************************  <<<< CATEGORY START >>>>  ****************************************
@@ -138,8 +140,7 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
         required=False, allow_null=True, write_only=True)
     original_video = serializers.FileField(write_only=True)
     phone_number = PhoneNumberField()
-    properties = ProductPropertyAndValueSerializer(
-        many=True, write_only=True, required=False)
+    properties = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = Product
@@ -158,11 +159,17 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
         product_type = validated_data.pop('product_type')
         cover_image = validated_data.pop('cover_image', None)
         original_video = validated_data.pop('original_video')
-        properties_data = validated_data.pop('properties', None)
+        properties_data = validated_data.pop('properties', '[]')
 
         request = self.context.get('request')
         user = request.user
         validated_data['user'] = user
+
+        # Deserialize JSON properties_data
+        try:
+            properties_data = json.loads(properties_data)
+        except json.JSONDecodeError:
+            raise ValidationError("Invalid properties data format")
 
         product = super().create(validated_data)
 
@@ -172,6 +179,7 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
             cover_image=cover_image,
             original_video=original_video,
         )
+
         if properties_data:
             for property_data in properties_data:
                 ProductPropertyAndValue.objects.create(
