@@ -204,8 +204,8 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
         required=False, allow_null=True, write_only=True)
     original_video = serializers.FileField(write_only=True, required=False)
     phone_number = PhoneNumberField()
-    properties = ProductPropertyAndValueSerializer(
-        many=True, write_only=True, required=False)
+    properties = serializers.CharField(write_only=True, required=False)
+
 
     class Meta:
         model = Product
@@ -224,18 +224,23 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
         cover_image = validated_data.pop('cover_image', None)
         original_video = validated_data.pop('original_video', None)
 
-        properties_data = validated_data.pop('properties', None)
+        properties_data = validated_data.pop('properties', '[]')
 
         instance = super().update(instance, validated_data)
 
-        product_video_type = ProductVideoType.objects.get(
-            pk=product_type_id)  # Assuming this is the related name
+        product_video_type = ProductVideoType.objects.get(pk=product_type_id)  # Assuming this is the related name
         if product_video_type:
             if cover_image is not None:
                 product_video_type.cover_image = cover_image
             if original_video is not None:
                 product_video_type.original_video = original_video
             product_video_type.save()
+
+        # Deserialize JSON properties_data
+        try:
+            properties_data = json.loads(properties_data)
+        except json.JSONDecodeError:
+            raise serializers.ValidationError("Invalid properties data format")
 
         if properties_data is not None:
             existing_property_ids = [
