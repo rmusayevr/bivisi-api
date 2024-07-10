@@ -18,4 +18,5 @@ class FAQSerializer(serializers.ModelSerializer):
 class StreamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stream
-        fields = ['room_id', 'room_name', 'user_name', 'cover_image']
+        fields = ['room_id', 'room_name',
+                  'user_name', 'cover_image', 'product']
