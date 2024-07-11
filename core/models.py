@@ -57,7 +57,7 @@ class Stream(DateMixin):
     cover_image = models.ImageField(
         _('cover image'), upload_to=Uploader.stream_image, max_length=500)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name=_(
-        'product'), related_name="stream_products")
+        'product'), related_name="stream_products", null=True, blank=True)
 
     def __str__(self):
         return f"{self.room_id} - {self.room_name} - {self.user_name} - {self.product}"

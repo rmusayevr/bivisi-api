@@ -1,4 +1,7 @@
 from rest_framework import serializers
+
+from product.models import Product
+from product.serializers import ProductStreamSerializer
 from .models import FAQ, Slider, Stream
 
 
@@ -16,7 +19,14 @@ class FAQSerializer(serializers.ModelSerializer):
 
 
 class StreamSerializer(serializers.ModelSerializer):
+    product = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(),
+        write_only=True,
+        required=False
+    )
+    product_detail = ProductStreamSerializer(source='product', read_only=True)
+
     class Meta:
         model = Stream
-        fields = ['room_id', 'room_name',
-                  'user_name', 'cover_image', 'product']
+        fields = ['room_id', 'room_name', 'user_name',
+                  'cover_image', 'product', 'product_detail']

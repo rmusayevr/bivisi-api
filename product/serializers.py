@@ -73,6 +73,7 @@ class ProductPropertyAndValueSerializer(serializers.ModelSerializer):
 
 # ****************************************  <<<< PRODUCT VIDEO TYPE START >>>>  ****************************************
 
+
 class DashboardProductVideoTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVideoType
@@ -83,7 +84,8 @@ class DashboardProductVideoTypeSerializer(serializers.ModelSerializer):
 class ProductForTypeSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     comment_count = serializers.SerializerMethodField()  # Add this line
-    properties = ProductPropertyAndValueSerializer(source='product_property_and_values', many=True, read_only=True)
+    properties = ProductPropertyAndValueSerializer(
+        source='product_property_and_values', many=True, read_only=True)
 
     class Meta:
         model = Product
@@ -206,7 +208,6 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
     phone_number = PhoneNumberField()
     properties = serializers.CharField(write_only=True, required=False)
 
-
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent', 'phone_number', 'category',
@@ -228,7 +229,8 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
 
         instance = super().update(instance, validated_data)
 
-        product_video_type = ProductVideoType.objects.get(pk=product_type_id)  # Assuming this is the related name
+        product_video_type = ProductVideoType.objects.get(
+            pk=product_type_id)  # Assuming this is the related name
         if product_video_type:
             if cover_image is not None:
                 product_video_type.cover_image = cover_image
@@ -307,7 +309,8 @@ class ProductREADSerializer(serializers.ModelSerializer):
     in_wishlist = serializers.SerializerMethodField()
     in_basket = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
-    properties = ProductPropertyAndValueSerializer(source='product_property_and_values', many=True, read_only=True)
+    properties = ProductPropertyAndValueSerializer(
+        source='product_property_and_values', many=True, read_only=True)
 
     class Meta:
         model = Product
@@ -335,6 +338,27 @@ class ProductREADSerializer(serializers.ModelSerializer):
         if request is None or not request.user.is_authenticated:
             return False
         return obj.user_product_like.filter(user=request.user).exists()
+
+
+class ProductStreamSerializer(serializers.ModelSerializer):
+    price = serializers.SerializerMethodField()
+    cover_image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'price', 'cover_image']
+
+    def get_price(self, obj):
+        if obj.final_price is not None:
+            return obj.final_price
+        return obj.price
+
+    def get_cover_image(self, obj):
+        video_type = ProductVideoType.objects.filter(
+            product=obj, product_type='Video').first()
+        if video_type:
+            return video_type.cover_image.url if video_type.cover_image else None
+        return None
 
 # ****************************************  <<<< PRODUCT END >>>>  ****************************************
 
