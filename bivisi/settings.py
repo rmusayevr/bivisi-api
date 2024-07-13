@@ -26,8 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-m$pctt(_0zrns4$^cgmdgufmff(#l8)i6s0!f+d86-hy#e#iz9'
 
-SECRET_KEY = os.environ.get(
-    'SECRET_KEY', 'django-insecure-m$pctt(_0zrns4$^cgmdgufmff(#l8)i6s0!f+d86-hy#e#iz9')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-m$pctt(_0zrns4$^cgmdgufmff(#l8)i6s0!f+d86-hy#e#iz9')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.environ.get("DEBUG", default=1))
@@ -226,7 +225,14 @@ SIMPLE_JWT = {
     "TOKEN_TYPE_CLAIM": "token_type",
 }
 
-CORS_ALLOW_ALL_ORIGINS = True
+if PROD:
+    CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "http://*,https://*").split(",")
+else:
+    CORS_ALLOW_ALL_ORIGINS: True
+
+
+if PROD:
+    CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://*,https://*").split(",")
 
 AUTH_USER_MODEL = 'user.User'
 
