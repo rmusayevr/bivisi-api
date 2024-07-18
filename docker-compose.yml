@@ -6,11 +6,13 @@ services:
     build: ./nginx
     ports:
       - 80:80
+      - 443:443
     depends_on:
       - wsgiserver
       - asgiserver
     volumes:
       - ./static/:/app/static/
+      - /etc/letsencrypt:/etc/letsencrypt:ro
 
   db:
     container_name: postgresql_db

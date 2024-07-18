@@ -31,7 +31,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-m$pctt(_0zrns4$^cgmdg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.environ.get("DEBUG", default=1))
 PROD = int(os.environ.get("PROD", default=0))
-# DEBUG = True
+
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 
@@ -228,7 +228,7 @@ SIMPLE_JWT = {
 if PROD:
     CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "http://*,https://*").split(",")
 else:
-    CORS_ALLOW_ALL_ORIGINS: True
+    CORS_ALLOW_ALL_ORIGINS = True
 
 
 if PROD:
