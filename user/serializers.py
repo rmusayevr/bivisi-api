@@ -17,19 +17,29 @@ class LoginTokenSerializer(TokenObtainPairSerializer):
         return token
 
     def validate(self, attrs):
-        data = super().validate(attrs)
-        user = self.user
+        username = attrs.get('username')
+        password = attrs.get('password')
+
+        try:
+            user = User.objects.get(username=username)
+            if not user.check_password(password):
+                raise serializers.ValidationError('Incorrect credentials')
+        except User.DoesNotExist:
+            raise serializers.ValidationError('No user found with this username.')
 
         # Check the user's status
-        if user.status == 'Not Verified' and not user.is_active:
+        if user.status == 'Not Verified':
             raise serializers.ValidationError(
                 'Please verify your account with OTP.')
 
         # Proceed if the user is active
         if user.status == 'Active':
+            data = super().validate(attrs)
             data.update({
-                'username': user.username, 'email': user.email,
-                'first_name': user.first_name, 'last_name': user.last_name,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
             })
             return data
 
