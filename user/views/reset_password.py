@@ -50,7 +50,7 @@ class SendEmailResetPasswordAPIView(CreateAPIView):
                                 http://157.230.120.254/user/verify-otp
 
                                 """
-        sender = settings.AUTH_USER_MODEL
+        sender = settings.DEFAULT_FROM_EMAIL
         receiver = [email, ]
 
         send_mail(
