@@ -10,9 +10,15 @@ from django.core.validators import URLValidator
 
 
 class Category(DateMixin):
-    name = models.CharField(_("Name"), max_length=255)
-    parent_name = models.ForeignKey("Category", verbose_name=_(
-        "Parent Name"), on_delete=models.CASCADE, related_name='parent_category_name', null=True, blank=True)
+    name = models.CharField(_("Name"), max_length=255, db_index=True)
+    parent_name = models.ForeignKey(
+        "Category",
+        verbose_name=_("Parent Name"),
+        on_delete=models.CASCADE,
+        related_name='parent_category_name',
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
         return self.name
@@ -35,11 +41,13 @@ class Category(DateMixin):
     class Meta:
         verbose_name = _('Category')
         verbose_name_plural = _('Categories')
+        indexes = [
+            models.Index(fields=['name']),
+        ]
 
 
 class Product(DateMixin):
-
-    name = models.CharField(_("Name"), max_length=255)
+    name = models.CharField(_("Name"), max_length=255, db_index=True)
     description = models.TextField(_("Description"))
 
     price = models.DecimalField(_("Price"), max_digits=10, decimal_places=2)
@@ -84,6 +92,7 @@ class Product(DateMixin):
             discount_multiplier = Decimal(
                 1) - Decimal(self.percent) / Decimal(100)
             self.final_price = self.price * discount_multiplier
+        super().save(*args, **kwargs)
 
         self.product_link = f"product_detail/{self.pk}"
 
@@ -92,16 +101,19 @@ class Product(DateMixin):
     class Meta:
         verbose_name = _('Product')
         verbose_name_plural = _('Products')
+        indexes = [
+            models.Index(fields=['name']),
+        ]
 
 
 class ProductVideoType(DateMixin):
-    product_types = (
-        ('Video', 'Video'),
-        ('Shorts', 'Shorts')
-    )
-    product_type = models.CharField(
-        _("Product Type"), max_length=255, choices=product_types)
+    class ProductTypeChoices(models.TextChoices):
+        VIDEO = 'Video', _('Video')
+        SHORTS = 'Shorts', _('Shorts')
 
+    product_type = models.CharField(
+        _("Product Type"), max_length=255, choices=ProductTypeChoices.choices, db_index=True
+    )
     cover_image = models.ImageField(
         _("Cover Image"), upload_to=Uploader.product_cover_image, max_length=500, null=True, blank=True)
 
@@ -111,7 +123,8 @@ class ProductVideoType(DateMixin):
         _("Compressed Video (480p)"), upload_to=Uploader.product_compress_video, max_length=500, null=True, blank=True)
 
     product = models.ForeignKey(Product, verbose_name=_(
-        "Product"), on_delete=models.CASCADE, related_name='product_video_type')
+        "Product"), on_delete=models.CASCADE, related_name='product_video_type', db_index=True,
+    )
 
     def save(self, *args, **kwargs):
         if self.pk:
@@ -154,13 +167,18 @@ class ProductVideoType(DateMixin):
     class Meta:
         verbose_name = _('Product Video & Type')
         verbose_name_plural = _('Product Videos & Types')
+        indexes = [
+            models.Index(fields=['product_type']),
+        ]
 
 
 class UserProductLike(DateMixin):
     user = models.OneToOneField(User, verbose_name=_(
-        "User"), on_delete=models.CASCADE, related_name='user_like')
+        "User"), on_delete=models.CASCADE, related_name='user_like',
+    )
     product = models.ManyToManyField(Product, verbose_name=_(
-        "Product"), related_name='user_product_like')
+        "Product"), related_name='user_product_like',
+    )
 
     def __str__(self):
         return f"{self.user.username} - products like"
@@ -168,19 +186,28 @@ class UserProductLike(DateMixin):
     class Meta:
         verbose_name = _('Product Like')
         verbose_name_plural = _('Products Like')
+        indexes = [
+            models.Index(fields=['user']),
+        ]
 
 
 class ProductComment(DateMixin):
     comment = models.TextField(_("Comment"))
 
-    like_count = models.IntegerField(_("Like Count"), default=0)
+    like_count = models.PositiveIntegerField(_("Like Count"), default=0)
 
     user = models.ForeignKey(User, verbose_name=_(
         "User"), on_delete=models.CASCADE, related_name='user_comment')
     product = models.ForeignKey(Product, verbose_name=_(
         "Product"), on_delete=models.CASCADE, related_name='product_comment')
-    parent_comment = models.ForeignKey("ProductComment", verbose_name=_(
-        "Parent Comment"), on_delete=models.CASCADE, related_name='comment_child', null=True, blank=True)
+    parent_comment = models.ForeignKey(
+        "self",
+        verbose_name=_("Parent Comment"),
+        on_delete=models.CASCADE,
+        related_name='comment_child',
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
         return f"{self.user.username} - {self.product.name} comment"
@@ -203,6 +230,9 @@ class ProductComment(DateMixin):
     class Meta:
         verbose_name = _('Product Comment')
         verbose_name_plural = _('Product Comments')
+        indexes = [
+            models.Index(fields=['user', 'product']),
+        ]
 
 
 class ProductCommentLike(DateMixin):
@@ -217,6 +247,9 @@ class ProductCommentLike(DateMixin):
     class Meta:
         verbose_name = _('Product Comment Like')
         verbose_name_plural = _('Product Comments Like')
+        indexes = [
+            models.Index(fields=['user']),
+        ]
 
 
 class ProductPropertyAndValue(DateMixin):
@@ -231,3 +264,6 @@ class ProductPropertyAndValue(DateMixin):
     class Meta:
         verbose_name = _('Product Property & Value')
         verbose_name_plural = _('Product Property & Value')
+        indexes = [
+            models.Index(fields=['product']),
+        ]

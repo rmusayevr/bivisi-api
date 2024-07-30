@@ -15,6 +15,9 @@ class Favorite(DateMixin):
     class Meta:
         verbose_name = "Favorite"
         verbose_name_plural = "Favorites"
+        indexes = [
+            models.Index(fields=['user']),
+        ]
 
 
 class BasketItem(DateMixin):
@@ -43,6 +46,9 @@ class BasketItem(DateMixin):
     class Meta:
         verbose_name = "Basket Item"
         verbose_name_plural = "Basket Items"
+        indexes = [
+            models.Index(fields=['user', 'product']),
+        ]
 
 
 class Basket(DateMixin):
@@ -57,7 +63,9 @@ class Basket(DateMixin):
     class Meta:
         verbose_name = "Basket"
         verbose_name_plural = "Baskets"
-
+        indexes = [
+            models.Index(fields=['user', 'is_active']),
+        ]
 
 class Order(DateMixin):
     user = models.ForeignKey(
@@ -72,3 +80,6 @@ class Order(DateMixin):
     class Meta:
         verbose_name = "Order"
         verbose_name_plural = "Orders"
+        indexes = [
+            models.Index(fields=['user', 'basket']),
+        ]

@@ -137,7 +137,7 @@ class WebProductVideoTypeSerializer(serializers.ModelSerializer):
 class WebUploadProductCREATESerializer(serializers.ModelSerializer):
 
     product_type = serializers.ChoiceField(
-        choices=ProductVideoType.product_types, write_only=True)
+        choices=ProductVideoType.ProductTypeChoices.choices, write_only=True)
     cover_image = serializers.ImageField(
         required=False, allow_null=True, write_only=True)
     original_video = serializers.FileField(write_only=True)

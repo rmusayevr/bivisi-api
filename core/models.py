@@ -43,7 +43,7 @@ class FAQ(DateMixin):
     is_active = models.BooleanField(_('is_active'), default=True)
 
     def __str__(self):
-        return self.faq
+        return f"{self.pk}. FAQ"
 
     class Meta:
         verbose_name = _('FAQ')
