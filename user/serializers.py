@@ -21,7 +21,7 @@ class LoginTokenSerializer(TokenObtainPairSerializer):
         user = self.user
 
         # Check the user's status
-        if user.status == 'Not Verified':
+        if user.status == 'Not Verified' and not user.is_active:
             raise serializers.ValidationError(
                 'Please verify your account with OTP.')
 
