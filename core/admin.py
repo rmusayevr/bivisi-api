@@ -4,7 +4,7 @@ from .models import FAQ, Slider, Stream
 
 
 class SliderAdmin(ImportExportModelAdmin):
-    list_display = ["id", "image", "created_at", "updated_at"]
+    list_display = ["__str__", "created_at", "updated_at"]
     list_filter = ["created_at", "updated_at"]
     list_per_page = 15
 
@@ -31,9 +31,16 @@ class FAQAdmin(ImportExportModelAdmin):
 
 
 class StreamAdmin(ImportExportModelAdmin):
-    list_display = ["room_id", "room_name", "user_name", "product", "created_at", "updated_at"]
+    list_display = [
+        "room_id",
+        "room_name",
+        "user_name",
+        "product",
+        "created_at",
+        "updated_at"
+    ]
     list_display_links = ["room_id", "room_name"]
-    list_filter = ["created_at", "updated_at"]
+    list_filter = ["user_name", "product", "created_at", "updated_at"]
     list_per_page = 15
 
 

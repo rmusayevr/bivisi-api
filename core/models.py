@@ -8,7 +8,11 @@ from services.uploader import Uploader
 
 class Slider(DateMixin):
     image = models.ImageField(
-        _("Image"), upload_to=Uploader.slider_image, max_length=500)
+        _("Image"), upload_to=Uploader.slider_image, max_length=500,
+    )
+
+    def __str__(self):
+        return f"{self.pk}. Slider"
 
     def save(self, *args, **kwargs):
         if self.pk:
