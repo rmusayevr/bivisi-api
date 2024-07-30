@@ -47,7 +47,7 @@ class SendEmailResetPasswordAPIView(CreateAPIView):
         message = f"""
                                 Hi {user.username}, here is your OTP {otp_token.otp_code}
                                 it expires in 2 minute, use the url below to redirect back to the website
-                                http://157.230.120.254/user/verify-otp
+                                https://bivisifront.online/user/verify-otp
 
                                 """
         sender = settings.DEFAULT_FROM_EMAIL
