@@ -92,9 +92,6 @@ class Product(DateMixin):
             discount_multiplier = Decimal(
                 1) - Decimal(self.percent) / Decimal(100)
             self.final_price = self.price * discount_multiplier
-        super().save(*args, **kwargs)
-
-        self.product_link = f"product_detail/{self.pk}"
 
         super().save(*args, **kwargs)
 

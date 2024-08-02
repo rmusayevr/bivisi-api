@@ -147,9 +147,9 @@ class WebUploadProductCREATESerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent',
-                  'phone_number', 'category', 'product_type', 'is_premium',
+                  'phone_number', 'category', 'product_type', 'is_premium', 'product_link',
                   'location', 'location_url', 'original_video', 'cover_image', 'properties']
-        read_only_fields = ['user']
+        read_only_fields = ['user', 'product_link']
 
     def validate_percent(self, value):
         if value is not None and not (0 <= value <= 100):
@@ -211,8 +211,8 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'price', 'in_sale', 'percent', 'phone_number', 'category',
-                  'location', 'location_url', 'cover_image', 'original_video', 'properties']
-        read_only_fields = ['user', 'product_type']
+                  'product_link', 'location', 'location_url', 'cover_image', 'original_video', 'properties']
+        read_only_fields = ['user', 'product_type', 'product_link']
 
     def validate_percent(self, value):
         if value is not None and not (0 <= value <= 100):
