@@ -15,21 +15,6 @@ class NotificationListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         return self.queryset.filter(recipient=self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        notification = serializer.save()
-
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            "notifications",
-            {
-                'type': 'send_notification',
-                'message': notification.message,
-            }
-        )
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 
 class NotificationDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Notification.objects.all()

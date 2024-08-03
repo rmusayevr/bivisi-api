@@ -6,12 +6,14 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
+
+from notification.models import Notification
 from ..models import User, Subscription
 from ..serializers import (
     SubscriptionSerializer,
 )
+from services.notification_channel import get_notification
 from services.pagination import InfiniteScrollPagination
-
 
 class SubscribeWebAPIView(ListAPIView):
     queryset = User.objects.all()
@@ -42,8 +44,19 @@ class ToggleSubscribeAPIView(APIView):
 
         subscription, created = Subscription.objects.get_or_create(
             follower=follower, follows=follows)
+        
+        if created:
+            # Create a new notification
+            notification = Notification.objects.create(
+                recipient=follows,
+                sender=follower,
+                message=f"{follower.username} has subscribed to you.",
+                notification_type=Notification.NotificationTypeChoices.SUBSCRIBE,
+                product_id=None  # No product related to a subscription notification
+            )
+            get_notification(notification)
 
-        return Response({'status': 'subscribed'}, status=status.HTTP_201_CREATED)
+        return Response({'status': 'subscribed', 'notification_message': notification.message, 'notification_type': notification.notification_type}, status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk, *args, **kwargs):
         follower = request.user
