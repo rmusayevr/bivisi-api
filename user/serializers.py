@@ -25,7 +25,8 @@ class LoginTokenSerializer(TokenObtainPairSerializer):
             if not user.check_password(password):
                 raise serializers.ValidationError('Incorrect credentials')
         except User.DoesNotExist:
-            raise serializers.ValidationError('No user found with this username.')
+            raise serializers.ValidationError(
+                'No user found with this username.')
 
         # Check the user's status
         if user.status == 'Not Verified':
@@ -58,7 +59,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'email', 'first_name', 'last_name',
-                   'password', 'password_confirm', 'status']
+                  'password', 'password_confirm', 'status']
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True}

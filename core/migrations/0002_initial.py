@@ -9,14 +9,14 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('notification', '0001_initial'),
+        ('core', '0001_initial'),
         ('product', '0001_initial'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='notification',
-            name='product_id',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='product.product'),
+            model_name='stream',
+            name='product',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='stream_products', to='product.product', verbose_name='product'),
         ),
     ]
