@@ -106,7 +106,13 @@ class ProductCommentCreateView(APIView):
                 product_id=comment.product if 'product' in data else parent_comment.product
             )
             get_notification(notification)
-            return Response({'data': serializer.data, 'notification': notification}, status=status.HTTP_201_CREATED)
+            response_data = {'data': serializer.data}
+            if notification:
+                response_data.update({
+                    'message': notification.message,
+                    'notification_type': notification.notification_type,
+                })
+            return Response(response_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

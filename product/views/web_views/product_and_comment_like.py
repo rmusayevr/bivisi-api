@@ -38,7 +38,13 @@ class ToggleProductLikeAPIView(APIView):
             message = 'Product liked'
             status_code = status.HTTP_201_CREATED
 
-        return Response({'message': message, 'notification': notification}, status=status_code)
+        response_data = {'message': message}
+        if notification:
+            response_data.update({
+                'message': notification.message,
+                'notification_type': notification.notification_type,
+            })
+        return Response(response_data, status=status_code)
 
 
 class ToggleProductCommentLikeAPIView(APIView):
@@ -62,13 +68,22 @@ class ToggleProductCommentLikeAPIView(APIView):
             product_comment.save()
             # Create a new notification
             notification = Notification.objects.create(
-                recipient=product_comment.user,  # Assuming the ProductComment model has a 'user' field
+                # Assuming the ProductComment model has a 'user' field
+                recipient=product_comment.user,
                 sender=self.request.user,
                 message=f"{self.request.user.username} liked your comment.",
                 notification_type=Notification.NotificationTypeChoices.LIKE,
-                product_id=product_comment.product  # Assuming ProductComment has a foreign key to Product
+                # Assuming ProductComment has a foreign key to Product
+                product_id=product_comment.product
             )
             get_notification(notification)
             message = 'Product comment liked'
             status_code = status.HTTP_201_CREATED
-        return Response({'message': message, 'notification': notification}, status=status_code)
+
+        response_data = {'message': message}
+        if notification:
+            response_data.update({
+                'message': notification.message,
+                'notification_type': notification.notification_type,
+            })
+        return Response(response_data, status=status_code)

@@ -1,10 +1,9 @@
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
 from rest_framework import generics, permissions
 from .models import Notification
 from .serializers import NotificationSerializer
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
 
 
 class NotificationListCreateView(generics.ListCreateAPIView):
@@ -23,3 +22,14 @@ class NotificationDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return self.queryset.filter(recipient=self.request.user)
+
+
+class MarkAllAsReadView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        notifications = Notification.objects.filter(
+            recipient=user, is_read=False)
+        count = notifications.update(is_read=True)
+        return Response({'message': f'{count} notifications marked as read.'}, status=status.HTTP_200_OK)
