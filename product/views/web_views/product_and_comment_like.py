@@ -44,6 +44,13 @@ class ToggleProductLikeAPIView(APIView):
                 'message': notification.message,
                 'notification_type': notification.notification_type,
                 'product_id': notification.product_id.name,
+                'sender': {
+                    'id': notification.sender.pk,
+                    'username': notification.sender.username,
+                    'first_name': notification.sender.first_name,
+                    'last_name': notification.sender.last_name,
+                    'avatar': notification.sender.avatar,
+                }
             })
         return Response(response_data, status=status_code)
 
@@ -87,5 +94,12 @@ class ToggleProductCommentLikeAPIView(APIView):
                 'message': notification.message,
                 'notification_type': notification.notification_type,
                 'product_id': notification.product_id.name,
+                'sender': {
+                    'id': notification.sender.pk,
+                    'username': notification.sender.username,
+                    'first_name': notification.sender.first_name,
+                    'last_name': notification.sender.last_name,
+                    'avatar': notification.sender.avatar,
+                }
             })
         return Response(response_data, status=status_code)
