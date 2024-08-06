@@ -6,6 +6,11 @@ from rest_framework.exceptions import NotFound
 from services.pagination import InfiniteScrollPagination
 from .serializers import FAQSerializer, SliderSerializer, StreamSerializer
 from .models import FAQ, Slider, Stream
+from django.shortcuts import render
+
+
+def home(request):
+    return render(request, 'home.html')
 
 
 # Slider GET & POST

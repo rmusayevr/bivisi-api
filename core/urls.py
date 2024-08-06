@@ -5,11 +5,13 @@ from .views import (
     SliderListCreateAPIView,
     SliderRetrieveUpdateDestroyAPIView,
     StreamListCreateAPIView,
-    StreamRetrieveUpdateDestroyAPIView
+    StreamRetrieveUpdateDestroyAPIView,
+    home
 )
 
 
 urlpatterns = [
+    path('home/', home),
 
     # FAQ URLs
     path('faq/', FAQListCreateAPIView.as_view(), name='faq_list_create'),
