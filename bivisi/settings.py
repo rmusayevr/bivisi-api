@@ -223,16 +223,16 @@ SIMPLE_JWT = {
     "TOKEN_TYPE_CLAIM": "token_type",
 }
 
-if PROD:
-    CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "http://*,https://*").split(",")
-else:
-    CORS_ALLOW_ALL_ORIGINS = True
+# if PROD:
+#     CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "http://*,https://*").split(",")
+# else:
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 if PROD:
     CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://*,https://*").split(",")
 
-AUTH_USER_MODEL = 'user.User'
+AUTH_USER_MODEL = 'user.User'   
 
 EMAIL_BACKEND = os.environ.get(
     "EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")

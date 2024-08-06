@@ -17,18 +17,15 @@ import django
 django.setup()
 
 from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.auth import AuthMiddlewareStack
-from channels.security.websocket import AllowedHostsOriginValidator
+# from channels.security.websocket import AllowedHostsOriginValidator
 from notification.routing import websocket_urlpatterns
-
+from .jwt_middleware import TokenAuthMiddleware
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
-    "websocket": AllowedHostsOriginValidator(
-        AuthMiddlewareStack(
-            URLRouter(
-                websocket_urlpatterns
-            )
+    "websocket": TokenAuthMiddleware(
+        URLRouter(
+            websocket_urlpatterns
         )
     ),
 })
