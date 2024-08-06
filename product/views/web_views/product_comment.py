@@ -88,12 +88,14 @@ class ProductCommentCreateView(APIView):
                     pk=data['parent_comment'])
                 # Assuming the ProductComment model has a 'user' field
                 recipient = parent_comment.user
-                message = f"{self.request.user.username} replied to your comment."
+                message = f"{
+                    self.request.user.username} replied to your comment."
                 notification_type = Notification.NotificationTypeChoices.COMMENT
             else:
                 product = Product.objects.get(pk=data['product'])
                 recipient = product.user  # Assuming the Product model has an 'owner' field
-                message = f"{self.request.user.username} commented on your product."
+                message = f"{
+                    self.request.user.username} commented on your product."
                 notification_type = Notification.NotificationTypeChoices.COMMENT
 
             # Create a new notification
@@ -111,6 +113,21 @@ class ProductCommentCreateView(APIView):
                 response_data.update({
                     'message': notification.message,
                     'notification_type': notification.notification_type,
+                    'product_id': notification.product_id.name,
+                    'recipient': {
+                        'id': notification.recipient.pk,
+                        'username': notification.recipient.username,
+                        'first_name': notification.recipient.first_name,
+                        'last_name': notification.recipient.last_name,
+                        'avatar': notification.recipient.avatar,
+                    },
+                    'sender': {
+                        'id': notification.sender.pk,
+                        'username': notification.sender.username,
+                        'first_name': notification.sender.first_name,
+                        'last_name': notification.sender.last_name,
+                        'avatar': notification.sender.avatar,
+                    }
                 })
             return Response(response_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
