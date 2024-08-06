@@ -15,6 +15,7 @@ from ..serializers import (
 from services.notification_channel import get_notification
 from services.pagination import InfiniteScrollPagination
 
+
 class SubscribeWebAPIView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = SubscriptionSerializer
@@ -44,7 +45,7 @@ class ToggleSubscribeAPIView(APIView):
 
         subscription, created = Subscription.objects.get_or_create(
             follower=follower, follows=follows)
-        
+
         if created:
             # Create a new notification
             notification = Notification.objects.create(
@@ -56,7 +57,14 @@ class ToggleSubscribeAPIView(APIView):
             )
             get_notification(notification)
 
-        return Response({'status': 'subscribed', 'notification_message': notification.message, 'notification_type': notification.notification_type}, status=status.HTTP_201_CREATED)
+        response_data = {'status': 'subscribed'}
+        if notification:
+            response_data.update({
+                'notification_message': notification.message,
+                'notification_type': notification.notification_type,
+            })
+
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk, *args, **kwargs):
         follower = request.user
