@@ -15,6 +15,8 @@ class ToggleProductLikeAPIView(APIView):
         product = get_object_or_404(Product, pk=product_id)
         user_like, created = UserProductLike.objects.get_or_create(
             user=self.request.user)
+        
+        notification = None
 
         if product in user_like.product.all():
             user_like.product.remove(product)
@@ -63,6 +65,8 @@ class ToggleProductCommentLikeAPIView(APIView):
             ProductComment, pk=product_comment_id)
         user_like, created = ProductCommentLike.objects.get_or_create(
             user=self.request.user)
+        
+        notification = None
 
         if product_comment in user_like.product_comment.all():
             user_like.product_comment.remove(product_comment)

@@ -74,6 +74,8 @@ class ProductCommentCreateView(APIView):
         data = request.data.copy()
         data['user'] = self.request.user.pk
 
+        notification = None
+
         if 'product' not in data and 'parent_comment' not in data:
             return Response({"detail": "Either product or parent_comment must be provided."}, status=status.HTTP_400_BAD_REQUEST)
 

@@ -46,6 +46,8 @@ class ToggleSubscribeAPIView(APIView):
         subscription, created = Subscription.objects.get_or_create(
             follower=follower, follows=follows)
 
+        notification = None
+
         if created:
             # Create a new notification
             notification = Notification.objects.create(
