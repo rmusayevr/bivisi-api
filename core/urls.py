@@ -6,13 +6,10 @@ from .views import (
     SliderRetrieveUpdateDestroyAPIView,
     StreamListCreateAPIView,
     StreamRetrieveUpdateDestroyAPIView,
-    home
 )
 
 
 urlpatterns = [
-    path('home/', home),
-
     # FAQ URLs
     path('faq/', FAQListCreateAPIView.as_view(), name='faq_list_create'),
     path('faq/<int:pk>/', FAQRetrieveUpdateDestroyAPIView.as_view(), name='faq_detail'),

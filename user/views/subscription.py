@@ -60,7 +60,7 @@ class ToggleSubscribeAPIView(APIView):
         response_data = {'status': 'subscribed'}
         if notification:
             response_data.update({
-                'notification_message': notification.message,
+                'message': notification.message,
                 'notification_type': notification.notification_type,
             })
 
