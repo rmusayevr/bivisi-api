@@ -62,20 +62,6 @@ class ToggleSubscribeAPIView(APIView):
             response_data.update({
                 'message': notification.message,
                 'notification_type': notification.notification_type,
-                'recipient': {
-                    'id': notification.recipient.pk,
-                    'username': notification.recipient.username,
-                    'first_name': notification.recipient.first_name,
-                    'last_name': notification.recipient.last_name,
-                    'avatar': notification.recipient.avatar,
-                },
-                'sender': {
-                    'id': notification.sender.pk,
-                    'username': notification.sender.username,
-                    'first_name': notification.sender.first_name,
-                    'last_name': notification.sender.last_name,
-                    'avatar': notification.sender.avatar,
-                }
             })
 
         return Response(response_data, status=status.HTTP_201_CREATED)

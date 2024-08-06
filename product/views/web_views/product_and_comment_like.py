@@ -44,20 +44,6 @@ class ToggleProductLikeAPIView(APIView):
                 'message': notification.message,
                 'notification_type': notification.notification_type,
                 'product_id': notification.product_id.name,
-                'recipient': {
-                    'id': notification.recipient.pk,
-                    'username': notification.recipient.username,
-                    'first_name': notification.recipient.first_name,
-                    'last_name': notification.recipient.last_name,
-                    'avatar': notification.recipient.avatar,
-                },
-                'sender': {
-                    'id': notification.sender.pk,
-                    'username': notification.sender.username,
-                    'first_name': notification.sender.first_name,
-                    'last_name': notification.sender.last_name,
-                    'avatar': notification.sender.avatar,
-                }
             })
         return Response(response_data, status=status_code)
 
@@ -91,7 +77,7 @@ class ToggleProductCommentLikeAPIView(APIView):
                 # Assuming ProductComment has a foreign key to Product
                 product_id=product_comment.product
             )
-            get_notification(notification)
+            get_notification(notification)  
             message = 'Product comment liked'
             status_code = status.HTTP_201_CREATED
 
@@ -101,19 +87,5 @@ class ToggleProductCommentLikeAPIView(APIView):
                 'message': notification.message,
                 'notification_type': notification.notification_type,
                 'product_id': notification.product_id.name,
-                'recipient': {
-                    'id': notification.recipient.pk,
-                    'username': notification.recipient.username,
-                    'first_name': notification.recipient.first_name,
-                    'last_name': notification.recipient.last_name,
-                    'avatar': notification.recipient.avatar,
-                },
-                'sender': {
-                    'id': notification.sender.pk,
-                    'username': notification.sender.username,
-                    'first_name': notification.sender.first_name,
-                    'last_name': notification.sender.last_name,
-                    'avatar': notification.sender.avatar,
-                }
             })
         return Response(response_data, status=status_code)
