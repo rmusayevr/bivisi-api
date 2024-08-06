@@ -11,7 +11,7 @@ class ProductFilter(django_filters.FilterSet):
 
     class Meta:
         model = ProductVideoType
-        fields = ['min_price', 'max_price', 'product__in_sale',
+        fields = ['min_price', 'max_price', 'product__in_sale', 'product__is_premium',
                   'product', 'product_type', 'product__category']
 
     def filter_min_price(self, queryset, name, value):
