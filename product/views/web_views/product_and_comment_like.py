@@ -3,9 +3,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+from notification.firebase_manager import send_notification
 from notification.models import Notification
 from product.models import Product, ProductComment, ProductCommentLike, UserProductLike
-from services.notification_channel import get_notification
+from services.notification_channel import trigger_notification
 
 
 class ToggleProductLikeAPIView(APIView):
@@ -36,7 +37,9 @@ class ToggleProductLikeAPIView(APIView):
                 notification_type=Notification.NotificationTypeChoices.LIKE,
                 product_id=product
             )
-            get_notification(notification)
+            trigger_notification(notification)
+            send_notification("Product Like", notification.message, notification.recipient.token)
+
             message = 'Product liked'
             status_code = status.HTTP_201_CREATED
 
@@ -45,14 +48,7 @@ class ToggleProductLikeAPIView(APIView):
             response_data.update({
                 'message': notification.message,
                 'notification_type': notification.notification_type,
-                'product_id': notification.product_id.name,
-                'sender': {
-                    'id': notification.sender.pk,
-                    'username': notification.sender.username,
-                    'first_name': notification.sender.first_name,
-                    'last_name': notification.sender.last_name,
-                    'avatar': notification.sender.avatar,
-                }
+                'product_id': notification.product_id.pk,
             })
         return Response(response_data, status=status_code)
 
@@ -88,7 +84,8 @@ class ToggleProductCommentLikeAPIView(APIView):
                 # Assuming ProductComment has a foreign key to Product
                 product_id=product_comment.product
             )
-            get_notification(notification)  
+            trigger_notification(notification)
+            send_notification("Comment Like", notification.message, notification.recipient.token)
             message = 'Product comment liked'
             status_code = status.HTTP_201_CREATED
 
@@ -97,13 +94,6 @@ class ToggleProductCommentLikeAPIView(APIView):
             response_data.update({
                 'message': notification.message,
                 'notification_type': notification.notification_type,
-                'product_id': notification.product_id.name,
-                'sender': {
-                    'id': notification.sender.pk,
-                    'username': notification.sender.username,
-                    'first_name': notification.sender.first_name,
-                    'last_name': notification.sender.last_name,
-                    'avatar': notification.sender.avatar,
-                }
+                'product_id': notification.product_id.pk,
             })
         return Response(response_data, status=status_code)

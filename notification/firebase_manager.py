@@ -1,11 +1,12 @@
 import firebase_admin
 from firebase_admin import credentials, messaging
+from firebase_admin.exceptions import FirebaseError
 
-cred = credentials.Certificate("../serviceAccountKey.json")
+cred = credentials.Certificate("./serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
 
 
-def send_notification(title, body, data, tokens):
+def send_notification(title, body, token):
     """
     Send a notification using Firebase Cloud Messaging.
 
@@ -16,24 +17,45 @@ def send_notification(title, body, data, tokens):
     """
     try:
         # Create the notification message
-        message = messaging.MulticastMessage(
-            notification=messaging.Notification(
-                title=title,
-                body=body,
-            ),
-            data=data,  # Optional additional data as a dictionary
-            tokens=tokens,  # List of device tokens
+        notification = messaging.Notification(
+            title=title,
+            body=body
         )
 
-        # Send the message to the specified devices
-        response = messaging.send_multicast(message)
+        # Create APNs config with default sound
+        apns_config = messaging.APNSConfig(
+            aps=messaging.Aps(
+                sound='default'
+            )
+        )
 
-        # Log the result
-        print(f"Successfully sent message: {response.success_count} messages were sent successfully")
-        if response.failure_count > 0:
-            print(f"Failed to send {response.failure_count} messages")
-            for error in response.responses:
-                if not error.success:
-                    print(f"Error sending message: {error.exception}")
+        # Create Android config with high priority and default sound
+        android_notification = messaging.AndroidNotification(
+            sound='default',
+            channel_id='high_importance_channel'
+        )
+        android_config = messaging.AndroidConfig(
+            notification=android_notification,
+            priority='high'
+        )
+
+        # Build the message
+        message = messaging.Message(
+            notification=notification,
+            token=token,
+            apns=apns_config,
+            android=android_config
+        )
+
+        # Send the message
+        response = messaging.send(message)
+        result = {'success': True, 'response': response}
+        return result
+
+    except FirebaseError as e:
+        # Handle Firebase-specific errors
+        return {'success': False, 'error': str(e)}
+
     except Exception as e:
-        print(f"Error sending notification: {e}")
+        # Handle other unexpected errors
+        return {'success': False, 'error': str(e)}

@@ -7,12 +7,13 @@ from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
+from notification.firebase_manager import send_notification
 from notification.models import Notification
 from ..models import User, Subscription
 from ..serializers import (
     SubscriptionSerializer,
 )
-from services.notification_channel import get_notification
+from services.notification_channel import trigger_notification
 from services.pagination import InfiniteScrollPagination
 
 
@@ -57,20 +58,14 @@ class ToggleSubscribeAPIView(APIView):
                 notification_type=Notification.NotificationTypeChoices.SUBSCRIBE,
                 product_id=None  # No product related to a subscription notification
             )
-            get_notification(notification)
+            trigger_notification(notification)
+            send_notification("Subscribe", notification.message, notification.recipient.token)
 
         response_data = {'status': 'subscribed'}
         if notification:
             response_data.update({
                 'message': notification.message,
-                'notification_type': notification.notification_type,
-                'sender': {
-                    'id': notification.sender.pk,
-                    'username': notification.sender.username,
-                    'first_name': notification.sender.first_name,
-                    'last_name': notification.sender.last_name,
-                    'avatar': notification.sender.avatar,
-                }
+                'notification_type': notification.notification_type
             })
 
         return Response(response_data, status=status.HTTP_201_CREATED)

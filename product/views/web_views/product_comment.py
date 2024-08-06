@@ -2,10 +2,11 @@ import django_filters.rest_framework
 from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, DestroyAPIView
+from notification.firebase_manager import send_notification
 from notification.models import Notification
 from product.models import Product, ProductComment, ProductCommentLike
 from product.serializers import ProductCommentCREATESerializer, WebProductCommentSerializer
-from services.notification_channel import get_notification
+from services.notification_channel import trigger_notification
 from services.pagination import InfiniteScrollPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
@@ -106,20 +107,15 @@ class ProductCommentCreateView(APIView):
                 # Assuming a foreign key to Product
                 product_id=comment.product if 'product' in data else parent_comment.product
             )
-            get_notification(notification)
+            trigger_notification(notification)
+            send_notification("Product Comment", notification.message, notification.recipient.token)
+
             response_data = {'data': serializer.data}
             if notification:
                 response_data.update({
                     'message': notification.message,
                     'notification_type': notification.notification_type,
-                    'product_id': notification.product_id.name,
-                    'sender': {
-                        'id': notification.sender.pk,
-                        'username': notification.sender.username,
-                        'first_name': notification.sender.first_name,
-                        'last_name': notification.sender.last_name,
-                        'avatar': notification.sender.avatar,
-                    }
+                    'product_id': notification.product_id.pk,
                 })
             return Response(response_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

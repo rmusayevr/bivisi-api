@@ -55,6 +55,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(_('superuser'), default=False)
     date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
 
+    token = models.CharField(
+        max_length=1024, blank=True, null=True
+    )
+
     bio = models.TextField(_("About"), null=True, blank=True)
 
     instagram = models.URLField(

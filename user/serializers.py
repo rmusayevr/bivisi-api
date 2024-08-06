@@ -293,3 +293,7 @@ class DeleteAccountSerializer(serializers.Serializer):
                 "Unable to delete account. Please try again.")
 
         return {"message": "Account deleted successfully."}
+
+
+class UpdateTokenSerializer(serializers.Serializer):
+    token = serializers.CharField(required=True, max_length=1024)
