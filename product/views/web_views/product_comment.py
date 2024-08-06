@@ -14,9 +14,8 @@ from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+
 # Product Comments only parent comment null
-
-
 class ParentCommentListAPIView(ListAPIView):
     serializer_class = WebProductCommentSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
@@ -88,14 +87,12 @@ class ProductCommentCreateView(APIView):
                     pk=data['parent_comment'])
                 # Assuming the ProductComment model has a 'user' field
                 recipient = parent_comment.user
-                message = f"{
-                    self.request.user.username} replied to your comment."
+                message = f"{self.request.user.username} replied to your comment."
                 notification_type = Notification.NotificationTypeChoices.COMMENT
             else:
                 product = Product.objects.get(pk=data['product'])
                 recipient = product.user  # Assuming the Product model has an 'owner' field
-                message = f"{
-                    self.request.user.username} commented on your product."
+                message = f"{self.request.user.username} commented on your product."
                 notification_type = Notification.NotificationTypeChoices.COMMENT
 
             # Create a new notification
@@ -141,8 +138,7 @@ class ProductCommentDeleteView(DestroyAPIView):
 
     def perform_destroy(self, instance):
         if instance.user != self.request.user:
-            raise PermissionDenied(
-                "You do not have permission to delete this comment like.")
+            raise PermissionDenied("You do not have permission to delete this comment like.")
         super().perform_destroy(instance)
 
     def delete(self, request, *args, **kwargs):
