@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportModelAdmin
-from .models import User, PhoneNumber, Subscription
+from .models import User, PhoneNumber, Subscription, Chats, Messages
 
 
 class UserAdmin(BaseUserAdmin):
@@ -125,6 +125,36 @@ class SubscriptionAdmin(ImportExportModelAdmin):
     list_per_page = 15
 
 
+class ChatsAdmin(ImportExportModelAdmin):
+    list_display = [
+        "id",
+        "from_user",
+        "to_user",
+        "created_at",
+        "updated_at"
+    ]
+    list_display_links = ["from_user"]
+    search_fields = ["from_user__username", "to_user__username"]
+    list_filter = ["created_at", "updated_at"]
+    list_per_page = 15
+
+
+class MessagesAdmin(ImportExportModelAdmin):
+    list_display = [
+        "id",
+        "user",
+        "chat",
+        "created_at",
+        "updated_at"
+    ]
+    list_display_links = ["user"]
+    search_fields = ["chat", "user"]
+    list_filter = ["created_at", "updated_at"]
+    list_per_page = 15
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(PhoneNumber, PhoneNumberAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
+admin.site.register(Chats, ChatsAdmin)
+admin.site.register(Messages, MessagesAdmin)

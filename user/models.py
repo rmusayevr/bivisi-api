@@ -11,7 +11,6 @@ from services.mixins import DateMixin
 from django_countries.fields import CountryField
 
 
-
 class ChannelCategory(DateMixin):
     name = models.CharField(_('channel category name'),
                             max_length=50, unique=True)
@@ -35,7 +34,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         ("De-active", "De-active"),
         ("Not Verified", "Not Verified")
     )
-    sign_up_method = models.CharField(_('sign up method'), max_length=30, default='email')
+    sign_up_method = models.CharField(
+        _('sign up method'), max_length=30, default='email')
 
     username = models.CharField(_('username'), max_length=60, unique=True)
     email = models.EmailField(_('email address'), unique=True)
@@ -181,3 +181,32 @@ class Subscription(DateMixin):
 
     def __str__(self):
         return f"{self.follower.username} follows {self.follows.username}"
+
+
+class Chats(DateMixin):
+    from_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="from_user_chats")
+    to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="to_user_chats")
+    last_message = models.TextField()
+
+    class Meta:
+        verbose_name = _('Chat')
+        verbose_name_plural = _('Chats')
+
+    def __str__(self):
+        return f"Chat between {self.from_user.username} and {self.to_user.username}"
+
+
+class Messages(DateMixin):
+    chat = models.ForeignKey(Chats, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    media = models.FileField(
+        upload_to=Uploader.user_chat_media, null=True, blank=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = _('Message')
+        verbose_name_plural = _('Messages')
+
+    def __str__(self):
+        return f"{self.user.username}'s chat messages with {self.chat.to_user}"

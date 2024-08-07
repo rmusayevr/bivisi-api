@@ -11,6 +11,12 @@ class Uploader:
     @staticmethod
     def user_cover_image(instance, filename):
         return f"Accounts/Cover-images/{filename}"
+    
+    # USER CHAT MEDIA
+    @staticmethod
+    def user_chat_media(instance, filename):
+        return f"Accounts/Chat-media/{filename}"
+
 
     # SLIDER IMAGE
     @staticmethod
