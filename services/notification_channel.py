@@ -13,6 +13,12 @@ def trigger_notification(notification):
             "type": "send_notification",
             "message": notification.message,
             "notification_type": notification.notification_type,
-            "product_id": notification.product_id.pk if notification.product_id else None
+            "product_id": notification.product_id.pk if notification.product_id else None,
+            "sender": {
+                "first_name": notification.sender.first_name,
+                "last_name": notification.sender.last_name,
+                "username": notification.sender.username,
+                "avatar": notification.sender.avatar.url if notification.sender.avatar else None,
+            },
         }
     )
