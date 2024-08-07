@@ -32,5 +32,6 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             "message": event["message"],
             "notification_type": event["notification_type"],
             "product_id": event.get("product_id", None),
+            "sender": event["sender"],
         }
         await self.send(text_data=json.dumps(notification_data))
