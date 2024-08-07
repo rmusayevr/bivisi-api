@@ -23,7 +23,7 @@ from .views.web_views import (
     RegisterAPIView,
     LoginTokenView,
     ChangePasswordAPIView,
-    UpdateTokenView,
+#     UpdateTokenView,
     UserDetailAPIView,
     UserListAPIView,
     DeleteAccountAPIView
@@ -45,7 +45,7 @@ urlpatterns = [
     path('login/facebook/', FacebookLogin.as_view(), name='fb_login'),
     path('login/google/', GoogleLogin.as_view(), name='google_login'),
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('update-token/', UpdateTokenView.as_view(), name='update_token'),
+#     path('update-token/', UpdateTokenView.as_view(), name='update_token'),
 
     path('register/', RegisterAPIView.as_view(), name='register'),
     path('verify_otp/', OTPVerifyAPIView.as_view(), name='verify-otp'),

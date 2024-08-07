@@ -21,17 +21,17 @@ class ParentCommentListAPIView(ListAPIView):
     serializer_class = WebProductCommentSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['user']
-    search_fields = ['comment']
+    filterset_fields = ["user"]
+    search_fields = ["comment"]
     pagination_class = InfiniteScrollPagination
 
     def get_queryset(self):
-        product_id = self.kwargs['product_id']
+        product_id = self.kwargs["product_id"]
         return ProductComment.objects.filter(
             parent_comment__isnull=True,
             product__id=product_id
         ).select_related(
-            'user'
+            "user"
         )
 
 
@@ -39,16 +39,16 @@ class SubCommentListAPIView(ListAPIView):
     serializer_class = WebProductCommentSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['user']
-    search_fields = ['comment']
+    filterset_fields = ["user"]
+    search_fields = ["comment"]
     pagination_class = InfiniteScrollPagination
 
     def get_queryset(self):
-        parent_comment_id = self.kwargs['parent_comment_id']
+        parent_comment_id = self.kwargs["parent_comment_id"]
         return ProductComment.objects.filter(
             parent_comment__id=parent_comment_id,
         ).select_related(
-            'user'
+            "user"
         )
 
 
@@ -59,25 +59,25 @@ class ProductCommentCreateView(APIView):
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'product': openapi.Schema(type=openapi.TYPE_INTEGER, description='ID of the product', nullable=True),
-                'parent_comment': openapi.Schema(type=openapi.TYPE_INTEGER, description='ID of the parent comment', nullable=True, default=None),
-                'comment': openapi.Schema(type=openapi.TYPE_STRING, description='Comment text', nullable=False),
+                "product": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID of the product", nullable=True),
+                "parent_comment": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID of the parent comment", nullable=True, default=None),
+                "comment": openapi.Schema(type=openapi.TYPE_STRING, description="Comment text", nullable=False),
             },
-            required=['comment'],
+            required=["comment"],
             description="Either 'product' or 'parent_comment' must be provided."
         ),
         responses={
-            201: openapi.Response('Created', ProductCommentCREATESerializer),
-            400: 'Bad Request'
+            201: openapi.Response("Created", ProductCommentCREATESerializer),
+            400: "Bad Request"
         }
     )
     def post(self, request, *args, **kwargs):
         data = request.data.copy()
-        data['user'] = self.request.user.pk
+        data["user"] = self.request.user.pk
 
         notification = None
 
-        if 'product' not in data and 'parent_comment' not in data:
+        if "product" not in data and "parent_comment" not in data:
             return Response({"detail": "Either product or parent_comment must be provided."}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = ProductCommentCREATESerializer(data=data)
@@ -85,16 +85,16 @@ class ProductCommentCreateView(APIView):
             comment = serializer.save()
 
             # Determine the recipient and notification type
-            if data['parent_comment']:
+            if data["parent_comment"]:
                 parent_comment = ProductComment.objects.get(
-                    pk=data['parent_comment'])
-                # Assuming the ProductComment model has a 'user' field
+                    pk=data["parent_comment"])
+                # Assuming the ProductComment model has a "user" field
                 recipient = parent_comment.user
                 message = f"{self.request.user.username} replied to your comment."
                 notification_type = Notification.NotificationTypeChoices.COMMENT
             else:
-                product = Product.objects.get(pk=data['product'])
-                recipient = product.user  # Assuming the Product model has an 'owner' field
+                product = Product.objects.get(pk=data["product"])
+                recipient = product.user  # Assuming the Product model has an "owner" field
                 message = f"{self.request.user.username} commented on your product."
                 notification_type = Notification.NotificationTypeChoices.COMMENT
 
@@ -105,17 +105,23 @@ class ProductCommentCreateView(APIView):
                 message=message,
                 notification_type=notification_type,
                 # Assuming a foreign key to Product
-                product_id=comment.product if 'product' in data else parent_comment.product
+                product_id=comment.product if "product" in data else parent_comment.product
             )
             trigger_notification(notification)
-            send_notification("Product Comment", notification.message, notification.recipient.token)
+            # send_notification("Product Comment", notification.message, notification.recipient.token)
 
-            response_data = {'data': serializer.data}
+            response_data = {"data": serializer.data}
             if notification:
                 response_data.update({
-                    'message': notification.message,
-                    'notification_type': notification.notification_type,
-                    'product_id': notification.product_id.pk,
+                    "message": notification.message,
+                    "notification_type": notification.notification_type,
+                    "product_id": notification.product_id.pk,
+                    "sender": {
+                        "first_name": notification.sender.first_name,
+                        "last_name": notification.sender.last_name,
+                        "username": notification.sender.username,
+                        "avatar": notification.sender.avatar.url if notification.sender.avatar else None,
+                    },
                 })
             return Response(response_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -125,7 +131,7 @@ class ProductCommentDeleteView(DestroyAPIView):
     queryset = ProductComment.objects.all()
     serializer_class = WebProductCommentSerializer
     permission_classes = [IsAuthenticated]
-    lookup_field = 'pk'
+    lookup_field = "pk"
 
     def perform_destroy(self, instance):
         if instance.user != self.request.user:

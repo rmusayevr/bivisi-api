@@ -23,7 +23,7 @@ class ToggleProductLikeAPIView(APIView):
             user_like.product.remove(product)
             product.like_count -= 1
             product.save()
-            message = 'Product unliked'
+            message = "Product unliked"
             status_code = status.HTTP_204_NO_CONTENT
         else:
             user_like.product.add(product)
@@ -31,24 +31,30 @@ class ToggleProductLikeAPIView(APIView):
             product.save()
             # Create a new notification
             notification = Notification.objects.create(
-                recipient=product.user,  # Assuming the Product model has an 'owner' field
+                recipient=product.user,  # Assuming the Product model has an "owner" field
                 sender=self.request.user,
                 message=f"{self.request.user.username} liked your product.",
                 notification_type=Notification.NotificationTypeChoices.LIKE,
                 product_id=product
             )
             trigger_notification(notification)
-            send_notification("Product Like", notification.message, notification.recipient.token)
+            # send_notification("Product Like", notification.message, notification.recipient.token)
 
-            message = 'Product liked'
+            message = "Product liked"
             status_code = status.HTTP_201_CREATED
 
-        response_data = {'message': message}
+        response_data = {"message": message}
         if notification:
             response_data.update({
-                'message': notification.message,
-                'notification_type': notification.notification_type,
-                'product_id': notification.product_id.pk,
+                "message": notification.message,
+                "notification_type": notification.notification_type,
+                "product_id": notification.product_id.pk,
+                "sender": {
+                    "first_name": notification.sender.first_name,
+                    "last_name": notification.sender.last_name,
+                    "username": notification.sender.username,
+                    "avatar": notification.sender.avatar.url if notification.sender.avatar else None,
+                },
             })
         return Response(response_data, status=status_code)
 
@@ -68,7 +74,7 @@ class ToggleProductCommentLikeAPIView(APIView):
             user_like.product_comment.remove(product_comment)
             product_comment.like_count -= 1
             product_comment.save()
-            message = 'Product comment unliked'
+            message = "Product comment unliked"
             status_code = status.HTTP_204_NO_CONTENT
         else:
             user_like.product_comment.add(product_comment)
@@ -76,7 +82,7 @@ class ToggleProductCommentLikeAPIView(APIView):
             product_comment.save()
             # Create a new notification
             notification = Notification.objects.create(
-                # Assuming the ProductComment model has a 'user' field
+                # Assuming the ProductComment model has a "user" field
                 recipient=product_comment.user,
                 sender=self.request.user,
                 message=f"{self.request.user.username} liked your comment.",
@@ -85,15 +91,21 @@ class ToggleProductCommentLikeAPIView(APIView):
                 product_id=product_comment.product
             )
             trigger_notification(notification)
-            send_notification("Comment Like", notification.message, notification.recipient.token)
-            message = 'Product comment liked'
+            # send_notification("Comment Like", notification.message, notification.recipient.token)
+            message = "Product comment liked"
             status_code = status.HTTP_201_CREATED
 
-        response_data = {'message': message}
+        response_data = {"message": message}
         if notification:
             response_data.update({
-                'message': notification.message,
-                'notification_type': notification.notification_type,
-                'product_id': notification.product_id.pk,
+                "message": notification.message,
+                "notification_type": notification.notification_type,
+                "product_id": notification.product_id.pk,
+                "sender": {
+                    "first_name": notification.sender.first_name,
+                    "last_name": notification.sender.last_name,
+                    "username": notification.sender.username,
+                    "avatar": notification.sender.avatar.url if notification.sender.avatar else None,
+                },
             })
         return Response(response_data, status=status_code)

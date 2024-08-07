@@ -30,19 +30,19 @@ class SubscribeWebAPIView(ListAPIView):
         if not following.exists():
             return User.objects.none()
 
-        return User.objects.filter(id__in=following.values_list('follows_id', flat=True))
+        return User.objects.filter(id__in=following.values_list("follows_id", flat=True))
 
 
 class ToggleSubscribeAPIView(APIView):
     permission_classes = [IsAuthenticated]
-    http_method_names = ['post', 'delete']
+    http_method_names = ["post", "delete"]
 
     def post(self, request, pk, *args, **kwargs):
         follower = request.user
         follows = get_object_or_404(User, pk=pk)
 
         if follower == follows:
-            return Response({'error': 'You cannot subscribe to yourself.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "You cannot subscribe to yourself."}, status=status.HTTP_400_BAD_REQUEST)
 
         subscription, created = Subscription.objects.get_or_create(
             follower=follower, follows=follows)
@@ -59,13 +59,19 @@ class ToggleSubscribeAPIView(APIView):
                 product_id=None  # No product related to a subscription notification
             )
             trigger_notification(notification)
-            send_notification("Subscribe", notification.message, notification.recipient.token)
+            # send_notification("Subscribe", notification.message, notification.recipient.token)
 
-        response_data = {'status': 'subscribed'}
+        response_data = {"status": "subscribed"}
         if notification:
             response_data.update({
-                'message': notification.message,
-                'notification_type': notification.notification_type
+                "message": notification.message,
+                "notification_type": notification.notification_type,
+                "sender": {
+                    "first_name": notification.sender.first_name,
+                    "last_name": notification.sender.last_name,
+                    "username": notification.sender.username,
+                    "avatar": notification.sender.avatar.url if notification.sender.avatar else None,
+                },
             })
 
         return Response(response_data, status=status.HTTP_201_CREATED)
@@ -77,9 +83,9 @@ class ToggleSubscribeAPIView(APIView):
             subscription = Subscription.objects.get(
                 follower=follower, follows=follows)
             subscription.delete()
-            return Response({'status': 'unsubscribed'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"status": "unsubscribed"}, status=status.HTTP_204_NO_CONTENT)
         except Subscription.DoesNotExist:
-            return Response({'error': 'Subscription does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "Subscription does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class PopularChannelsAPIView(ListAPIView):
@@ -87,10 +93,10 @@ class PopularChannelsAPIView(ListAPIView):
     serializer_class = SubscriptionSerializer
     pagination_class = InfiniteScrollPagination
     filter_backends = [OrderingFilter]
-    ordering_fields = ['follower_count']
+    ordering_fields = ["follower_count"]
 
     def get_queryset(self):
-        return User.objects.annotate(follower_count=Count('followers')).order_by('-follower_count')
+        return User.objects.annotate(follower_count=Count("followers")).order_by("-follower_count")
 
 
 class SubscriptionsAPIView(ListAPIView):

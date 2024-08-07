@@ -12,7 +12,7 @@ from ..serializers import (
     LoginTokenSerializer,
     RegisterSerializer,
     ChangePasswordSerializer,
-    UpdateTokenSerializer,
+    # UpdateTokenSerializer,
     UserDetailSerializer
 )
 
@@ -69,16 +69,16 @@ class DeleteAccountAPIView(CreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UpdateTokenView(CreateAPIView):
-    serializer_class = UpdateTokenSerializer
-    permission_classes = [IsAuthenticated]
+# class UpdateTokenView(CreateAPIView):
+#     serializer_class = UpdateTokenSerializer
+#     permission_classes = [IsAuthenticated]
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            token = serializer.validated_data.get('token')
-            user = request.user
-            user.token = token
-            user.save()
-            return Response({'status': 'Token updated successfully.'}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def post(self, request, *args, **kwargs):
+#         serializer = self.serializer_class(data=request.data)
+#         if serializer.is_valid():
+#             token = serializer.validated_data.get('token')
+#             user = request.user
+#             user.token = token
+#             user.save()
+#             return Response({'status': 'Token updated successfully.'}, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
