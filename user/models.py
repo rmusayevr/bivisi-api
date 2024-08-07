@@ -186,7 +186,7 @@ class Subscription(DateMixin):
 class Chats(DateMixin):
     from_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="from_user_chats")
     to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="to_user_chats")
-    last_message = models.TextField()
+    last_message = models.TextField(null=True, blank=True)
 
     class Meta:
         verbose_name = _('Chat')
@@ -199,7 +199,7 @@ class Chats(DateMixin):
 class Messages(DateMixin):
     chat = models.ForeignKey(Chats, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    message = models.TextField()
+    message = models.TextField(null=True, blank=True)
     media = models.FileField(
         upload_to=Uploader.user_chat_media, null=True, blank=True)
     is_read = models.BooleanField(default=False)
