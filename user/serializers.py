@@ -295,5 +295,5 @@ class DeleteAccountSerializer(serializers.Serializer):
         return {"message": "Account deleted successfully."}
 
 
-# class UpdateTokenSerializer(serializers.Serializer):
-#     token = serializers.CharField(required=True, max_length=1024)
+class UpdateTokenSerializer(serializers.Serializer):
+    token = serializers.CharField(required=True, max_length=1024)

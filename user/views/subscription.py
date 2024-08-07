@@ -59,7 +59,7 @@ class ToggleSubscribeAPIView(APIView):
                 product_id=None  # No product related to a subscription notification
             )
             trigger_notification(notification)
-            # send_notification("Subscribe", notification.message, notification.recipient.token)
+            send_notification("Subscribe", notification.message, notification.recipient.token)
 
         response_data = {"status": "subscribed"}
         if notification:

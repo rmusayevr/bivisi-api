@@ -108,7 +108,7 @@ class ProductCommentCreateView(APIView):
                 product_id=comment.product if "product" in data else parent_comment.product
             )
             trigger_notification(notification)
-            # send_notification("Product Comment", notification.message, notification.recipient.token)
+            send_notification("Product Comment", notification.message, notification.recipient.token)
 
             response_data = {"data": serializer.data}
             if notification:

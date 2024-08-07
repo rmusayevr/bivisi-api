@@ -38,7 +38,7 @@ class ToggleProductLikeAPIView(APIView):
                 product_id=product
             )
             trigger_notification(notification)
-            # send_notification("Product Like", notification.message, notification.recipient.token)
+            send_notification("Product Like", notification.message, notification.recipient.token)
 
             message = "Product liked"
             status_code = status.HTTP_201_CREATED
@@ -91,7 +91,7 @@ class ToggleProductCommentLikeAPIView(APIView):
                 product_id=product_comment.product
             )
             trigger_notification(notification)
-            # send_notification("Comment Like", notification.message, notification.recipient.token)
+            send_notification("Comment Like", notification.message, notification.recipient.token)
             message = "Product comment liked"
             status_code = status.HTTP_201_CREATED
 
