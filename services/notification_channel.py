@@ -12,6 +12,7 @@ def trigger_notification(notification):
         {
             "type": "send_notification",
             "message": notification.message,
+            "notification_id": notification.pk,
             "notification_type": notification.notification_type,
             "product_id": notification.product_id.pk if notification.product_id else None,
             "sender": {

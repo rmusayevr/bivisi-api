@@ -24,6 +24,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         notification_data = {
             "message": data["message"],
+            "notification_id": data["notification_id"],
             "notification_type": data["notification_type"],
             "sender": data["sender"],
         }
@@ -32,6 +33,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     async def send_notification(self, event):
         notification_data = {
             "message": event["message"],
+            "notification_id": event["notification_id"],
             "notification_type": event["notification_type"],
             "product_id": event.get("product_id", None),
             "sender": event["sender"],
