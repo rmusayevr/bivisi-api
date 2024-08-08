@@ -47,6 +47,7 @@ class ToggleProductLikeAPIView(APIView):
         if notification:
             response_data.update({
                 "message": notification.message,
+                "notification_id": notification.pk,
                 "notification_type": notification.notification_type,
                 "product_id": notification.product_id.pk,
                 "sender": {
@@ -99,6 +100,7 @@ class ToggleProductCommentLikeAPIView(APIView):
         if notification:
             response_data.update({
                 "message": notification.message,
+                "notification_id": notification.pk,
                 "notification_type": notification.notification_type,
                 "product_id": notification.product_id.pk,
                 "sender": {
