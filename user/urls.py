@@ -12,7 +12,6 @@ from user.views.reset_password import (
     ResetPasswordAPIView,
     SendEmailResetPasswordAPIView
 )
-from user.views.social_views import FacebookLogin, GoogleLogin
 from user.views.subscription import (
     PopularChannelsAPIView,
     SubscribeWebAPIView,
@@ -36,14 +35,28 @@ from .views.admin_views import (
     SubscriptionListCreateAPIView,
     SubscriptionRetrieveUpdateDestroyAPIView,
 )
+from .views.google_views import (
+    GoogleLoginApi,
+    GoogleLoginRedirectApi,
+)
+from .views.facebook_views import (
+    FacebookLoginApi,
+    FacebookLoginRedirectApi,
+)
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
 urlpatterns = [
+    path("google/callback/", GoogleLoginApi.as_view(), name="callback-raw"),
+    path("google/redirect/", GoogleLoginRedirectApi.as_view(), name="redirect-raw"),
+
+    path("facebook/callback/", FacebookLoginApi.as_view(),
+         name="callback-facebook"),
+    path("facebook/redirect/", FacebookLoginRedirectApi.as_view(),
+         name="redirect-facebook"),
+
     path('login/', LoginTokenView.as_view(), name='token_obtain_pair'),
-    path('login/facebook/', FacebookLogin.as_view(), name='fb_login'),
-    path('login/google/', GoogleLogin.as_view(), name='google_login'),
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('update-token/', UpdateTokenView.as_view(), name='update_token'),
 

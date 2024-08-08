@@ -12,6 +12,7 @@ class UserAdmin(BaseUserAdmin):
                 "username",
                 "email",
                 "password",
+                "token",
             ]
         }),
         (_("Personal info"), {
