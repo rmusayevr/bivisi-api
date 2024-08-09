@@ -102,8 +102,7 @@ class FacebookLoginApi(PublicApi):
         username = base_username
         User = get_user_model()
         while User.objects.filter(username=username).exists():
-            username = f"{base_username}{''.join(random.choices(
-                string.ascii_lowercase + string.digits, k=6))}"
+            username = f"{base_username}{''.join(random.choices(string.ascii_lowercase + string.digits, k=6))}"
         return username
 
     def save_profile_image(self, user, image_url):

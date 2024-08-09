@@ -110,8 +110,7 @@ class GoogleLoginApi(PublicApi):
         # Ensure the username is unique
         while User.objects.filter(username=username).exists():
             # Append a random string if the username is taken
-            username = f"{base_username}{''.join(random.choices(
-                string.ascii_lowercase + string.digits, k=6))}"
+            username = f"{base_username}{''.join(random.choices(string.ascii_lowercase + string.digits, k=6))}"
 
         return username
 
