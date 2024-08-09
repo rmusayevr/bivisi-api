@@ -255,4 +255,4 @@ GOOGLE_OAUTH2_PROJECT_ID=os.environ.get("GOOGLE_OAUTH2_PROJECT_ID", "")
 FACEBOOK_APP_ID = os.environ.get("FACEBOOK_APP_ID", "")
 FACEBOOK_APP_SECRET = os.environ.get("FACEBOOK_APP_SECRET", "")
 
-BASE_BACKEND_URL = os.environ.get("BASE_BACKEND_URL", "http://localhost:8000")
+BASE_FRONTEND_URL = os.environ.get("BASE_FRONTEND_URL", "http://localhost:5173")

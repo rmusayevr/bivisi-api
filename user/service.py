@@ -33,7 +33,7 @@ class GoogleAccessTokens:
 
 
 class GoogleRawLoginFlowService:
-    API_URI = reverse_lazy("callback-raw")
+    # API_URI = reverse_lazy("callback-raw")
 
     GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/auth"
     GOOGLE_ACCESS_TOKEN_OBTAIN_URL = "https://oauth2.googleapis.com/token"
@@ -56,10 +56,7 @@ class GoogleRawLoginFlowService:
         return state
 
     def _get_redirect_uri(self):
-        domain = settings.BASE_BACKEND_URL
-        api_uri = self.API_URI
-        redirect_uri = f"{domain}{api_uri}"
-        return redirect_uri
+        return f"{settings.BASE_FRONTEND_URL}"
 
     def get_authorization_url(self):
         redirect_uri = self._get_redirect_uri()
@@ -159,7 +156,7 @@ class FacebookLoginFlowService:
         return state
 
     def _get_redirect_uri(self):
-        return f"{settings.BASE_BACKEND_URL}{reverse_lazy('callback-facebook')}"
+        return f"{settings.BASE_FRONTEND_URL}"
 
     def get_authorization_url(self):
         redirect_uri = self._get_redirect_uri()
