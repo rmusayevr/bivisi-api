@@ -1,6 +1,5 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-from notification.models import Notification
 
 
 class NotificationConsumer(AsyncWebsocketConsumer):
@@ -26,6 +25,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             "message": data["message"],
             "notification_id": data["notification_id"],
             "notification_type": data["notification_type"],
+            "product_cover_image": data["product_cover_image"],
             "sender": data["sender"],
         }
         await self.send(text_data=json.dumps(notification_data))
@@ -36,6 +36,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             "notification_id": event["notification_id"],
             "notification_type": event["notification_type"],
             "product_id": event.get("product_id", None),
+            "product_cover_image": event["product_cover_image"],
             "sender": event["sender"],
         }
         await self.send(text_data=json.dumps(notification_data))
