@@ -1,6 +1,6 @@
 import django_filters.rest_framework
 from rest_framework import filters
-from rest_framework.views import APIView
+from rest_framework.generics import CreateAPIView
 from rest_framework.generics import ListAPIView, DestroyAPIView
 from notification.firebase_manager import send_notification
 from notification.models import Notification
@@ -52,7 +52,8 @@ class SubCommentListAPIView(ListAPIView):
         )
 
 
-class ProductCommentCreateView(APIView):
+class ProductCommentCreateView(CreateAPIView):
+    serializer_class = ProductCommentCREATESerializer
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
@@ -107,6 +108,7 @@ class ProductCommentCreateView(APIView):
                 # Assuming a foreign key to Product
                 product_id=comment.product if "product" in data else parent_comment.product
             )
+            print(notification.product_id.product_video_type.first())
             trigger_notification(notification)
             send_notification("Product Comment", notification.message, notification.recipient.token)
 
@@ -117,6 +119,7 @@ class ProductCommentCreateView(APIView):
                     "notification_id": notification.pk,
                     "notification_type": notification.notification_type,
                     "product_id": notification.product_id.pk,
+                    "product_cover_image": notification.product_id.product_video_type.first().cover_image.url,
                     "sender": {
                         "first_name": notification.sender.first_name,
                         "last_name": notification.sender.last_name,
