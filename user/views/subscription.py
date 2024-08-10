@@ -13,7 +13,7 @@ from ..models import User, Subscription
 from ..serializers import (
     SubscriptionSerializer,
 )
-from services.notification_channel import trigger_notification
+from notification.utils import trigger_delete_notification, trigger_notification
 from services.pagination import InfiniteScrollPagination
 
 
@@ -91,6 +91,7 @@ class ToggleSubscribeAPIView(APIView):
                 notification_type=Notification.NotificationTypeChoices.SUBSCRIBE
             ).first()
             if notification:
+                trigger_delete_notification(notification)
                 notification.delete()
             return Response({"status": "unsubscribed"}, status=status.HTTP_204_NO_CONTENT)
         except Subscription.DoesNotExist:

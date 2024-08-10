@@ -24,3 +24,16 @@ def trigger_notification(notification):
             },
         }
     )
+
+
+# Trigger WebSocket notification for deleted notifications
+def trigger_delete_notification(notification):
+    channel_layer = get_channel_layer()
+    group_name = f"user_{notification.recipient.id}"
+    async_to_sync(channel_layer.group_send)(
+        group_name,
+        {
+            "type": "delete_notification",
+            "notification_id": notification.id,
+        }
+    )

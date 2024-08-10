@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from notification.firebase_manager import send_notification
 from notification.models import Notification
 from product.models import Product, ProductComment, ProductCommentLike, UserProductLike
-from services.notification_channel import trigger_notification
+from notification.utils import trigger_delete_notification, trigger_notification
 
 
 class ToggleProductLikeAPIView(APIView):
@@ -34,6 +34,7 @@ class ToggleProductLikeAPIView(APIView):
                 notification_type=Notification.NotificationTypeChoices.LIKE
             ).first()
             if notification:
+                trigger_delete_notification(notification)
                 notification.delete()
         else:
             user_like.product.add(product)
@@ -99,6 +100,7 @@ class ToggleProductCommentLikeAPIView(APIView):
             ).first()
 
             if notification:
+                trigger_delete_notification(notification)
                 notification.delete()
         else:
             user_like.product_comment.add(product_comment)

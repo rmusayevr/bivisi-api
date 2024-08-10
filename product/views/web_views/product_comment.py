@@ -6,7 +6,7 @@ from notification.firebase_manager import send_notification
 from notification.models import Notification
 from product.models import Product, ProductComment, ProductCommentLike
 from product.serializers import ProductCommentCREATESerializer, WebProductCommentSerializer
-from services.notification_channel import trigger_notification
+from notification.utils import trigger_notification
 from services.pagination import InfiniteScrollPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
@@ -108,7 +108,6 @@ class ProductCommentCreateView(CreateAPIView):
                 # Assuming a foreign key to Product
                 product_id=comment.product if "product" in data else parent_comment.product
             )
-            print(notification.product_id.product_video_type.first())
             trigger_notification(notification)
             send_notification("Product Comment", notification.message, notification.recipient.token)
 

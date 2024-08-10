@@ -40,3 +40,11 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             "sender": event["sender"],
         }
         await self.send(text_data=json.dumps(notification_data))
+
+    async def delete_notification(self, event):
+        # Prepare data for the notification deletion event
+        notification_data = {
+            "notification_id": event["notification_id"],
+            "message": "Notification deleted",
+        }
+        await self.send(text_data=json.dumps(notification_data))
