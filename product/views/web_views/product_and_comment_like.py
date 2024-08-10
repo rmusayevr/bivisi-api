@@ -16,7 +16,7 @@ class ToggleProductLikeAPIView(APIView):
         product = get_object_or_404(Product, pk=product_id)
         user_like, created = UserProductLike.objects.get_or_create(
             user=self.request.user)
-        
+
         notification = None
 
         if product in user_like.product.all():
@@ -25,20 +25,31 @@ class ToggleProductLikeAPIView(APIView):
             product.save()
             message = "Product unliked"
             status_code = status.HTTP_204_NO_CONTENT
+
+            # Find and delete the existing notification
+            notification = Notification.objects.filter(
+                recipient=product.user,
+                sender=self.request.user,
+                product_id=product,
+                notification_type=Notification.NotificationTypeChoices.LIKE
+            ).first()
+            if notification:
+                notification.delete()
         else:
             user_like.product.add(product)
             product.like_count += 1
             product.save()
             # Create a new notification
             notification = Notification.objects.create(
-                recipient=product.user,  # Assuming the Product model has an "owner" field
+                recipient=product.user,
                 sender=self.request.user,
                 message=f"{self.request.user.username} liked your product.",
                 notification_type=Notification.NotificationTypeChoices.LIKE,
                 product_id=product
             )
             trigger_notification(notification)
-            send_notification("Product Like", notification.message, notification.recipient.token)
+            send_notification("Product Like", notification.message,
+                              notification.recipient.token)
 
             message = "Product liked"
             status_code = status.HTTP_201_CREATED
@@ -69,7 +80,7 @@ class ToggleProductCommentLikeAPIView(APIView):
             ProductComment, pk=product_comment_id)
         user_like, created = ProductCommentLike.objects.get_or_create(
             user=self.request.user)
-        
+
         notification = None
 
         if product_comment in user_like.product_comment.all():
@@ -78,6 +89,17 @@ class ToggleProductCommentLikeAPIView(APIView):
             product_comment.save()
             message = "Product comment unliked"
             status_code = status.HTTP_204_NO_CONTENT
+
+            # Find and delete the existing notification
+            notification = Notification.objects.filter(
+                recipient=product_comment.user,
+                sender=self.request.user,
+                product_id=product_comment.product,
+                notification_type=Notification.NotificationTypeChoices.LIKE
+            ).first()
+
+            if notification:
+                notification.delete()
         else:
             user_like.product_comment.add(product_comment)
             product_comment.like_count += 1
@@ -93,7 +115,8 @@ class ToggleProductCommentLikeAPIView(APIView):
                 product_id=product_comment.product
             )
             trigger_notification(notification)
-            send_notification("Comment Like", notification.message, notification.recipient.token)
+            send_notification("Comment Like", notification.message,
+                              notification.recipient.token)
             message = "Product comment liked"
             status_code = status.HTTP_201_CREATED
 

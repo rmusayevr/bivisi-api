@@ -27,13 +27,12 @@ class GoogleAccessTokens:
 
     def decode_id_token(self) -> dict[str, str]:
         id_token = self.id_token
-        decoded_token = jwt.decode(jwt=id_token, options={
-                                   "verify_signature": False})
+        decoded_token = jwt.decode(jwt=id_token, options={"verify_signature": False})
         return decoded_token
 
 
 class GoogleRawLoginFlowService:
-    # API_URI = reverse_lazy("callback-raw")
+    API_URI = reverse_lazy("callback-raw")
 
     GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/auth"
     GOOGLE_ACCESS_TOKEN_OBTAIN_URL = "https://oauth2.googleapis.com/token"
@@ -56,7 +55,7 @@ class GoogleRawLoginFlowService:
         return state
 
     def _get_redirect_uri(self):
-        return f"{settings.BASE_FRONTEND_URL}"
+        return f"{settings.BASE_BACKEND_URL}{self.API_URI}"
 
     def get_authorization_url(self):
         redirect_uri = self._get_redirect_uri()
@@ -156,7 +155,7 @@ class FacebookLoginFlowService:
         return state
 
     def _get_redirect_uri(self):
-        return f"{settings.BASE_FRONTEND_URL}"
+        return f"{settings.BASE_BACKEND_URL}"
 
     def get_authorization_url(self):
         redirect_uri = self._get_redirect_uri()

@@ -84,6 +84,14 @@ class ToggleSubscribeAPIView(APIView):
             subscription = Subscription.objects.get(
                 follower=follower, follows=follows)
             subscription.delete()
+            # Find and delete the existing notification
+            notification = Notification.objects.filter(
+                recipient=follows,
+                sender=follower,
+                notification_type=Notification.NotificationTypeChoices.SUBSCRIBE
+            ).first()
+            if notification:
+                notification.delete()
             return Response({"status": "unsubscribed"}, status=status.HTTP_204_NO_CONTENT)
         except Subscription.DoesNotExist:
             return Response({"error": "Subscription does not exist"}, status=status.HTTP_404_NOT_FOUND)
