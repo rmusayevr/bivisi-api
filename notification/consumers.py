@@ -21,14 +21,28 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        notification_data = {
-            "message": data["message"],
-            "notification_id": data["notification_id"],
-            "notification_type": data["notification_type"],
-            "product_cover_image": data["product_cover_image"],
-            "sender": data["sender"],
-        }
-        await self.send(text_data=json.dumps(notification_data))
+        event_type = data.get("type")
+
+        if event_type == "send_notification":
+            notification_data = {
+                "message": data["message"],
+                "notification_id": data["notification_id"],
+                "notification_type": data["notification_type"],
+                "product_id": data.get("product_id", None),
+                "product_cover_image": data.get("product_cover_image", None),
+                "sender": data["sender"],
+            }
+            await self.send(text_data=json.dumps(notification_data))
+
+        elif event_type == "delete_notification":
+            notification_data = {
+                "notification_id": data["notification_id"],
+                "message": "Notification deleted",
+            }
+            await self.send(text_data=json.dumps({
+                "type": "delete_notification",
+                "data": notification_data
+            }))
 
     async def send_notification(self, event):
         notification_data = {
@@ -47,4 +61,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             "notification_id": event["notification_id"],
             "message": "Notification deleted",
         }
-        await self.send(text_data=json.dumps(notification_data))
+        await self.send(text_data=json.dumps({
+            "type": "delete_notification",
+            "data": notification_data
+        }))
