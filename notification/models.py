@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from product.models import Product
+from product.models import Product, ProductComment
 from user.models import User
 from services.mixins import DateMixin
 
@@ -33,6 +33,12 @@ class Notification(DateMixin):
         Product,
         on_delete=models.CASCADE,
         null=True,
+        blank=True,
+    )
+    comment_id = models.ForeignKey(
+        ProductComment, 
+        on_delete=models.CASCADE, 
+        null=True, 
         blank=True,
     )
     is_read = models.BooleanField(default=False)

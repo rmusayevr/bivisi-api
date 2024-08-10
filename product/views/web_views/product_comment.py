@@ -91,25 +91,29 @@ class ProductCommentCreateView(CreateAPIView):
                     pk=data["parent_comment"])
                 # Assuming the ProductComment model has a "user" field
                 recipient = parent_comment.user
-                message = f"{self.request.user.username} replied to your comment."
-                notification_type = Notification.NotificationTypeChoices.COMMENT
+                if recipient != self.request.user:
+                    message = f"{self.request.user.username} replied to your comment: {parent_comment.comment}"
+                    notification_type = Notification.NotificationTypeChoices.COMMENT
             else:
                 product = Product.objects.get(pk=data["product"])
                 recipient = product.user  # Assuming the Product model has an "owner" field
-                message = f"{self.request.user.username} commented on your product."
-                notification_type = Notification.NotificationTypeChoices.COMMENT
-
-            # Create a new notification
-            notification = Notification.objects.create(
-                recipient=recipient,
-                sender=self.request.user,
-                message=message,
-                notification_type=notification_type,
-                # Assuming a foreign key to Product
-                product_id=comment.product if "product" in data else parent_comment.product
-            )
-            trigger_notification(notification)
-            send_notification("Product Comment", notification.message, notification.recipient.token)
+                if recipient != self.request.user:
+                    message = f"{self.request.user.username} commented on your product: {data.comment}"
+                    notification_type = Notification.NotificationTypeChoices.COMMENT
+            
+            if recipient != self.request.user:
+                # Create a new notification
+                notification = Notification.objects.create(
+                    recipient=recipient,
+                    sender=self.request.user,
+                    message=message,
+                    notification_type=notification_type,
+                    # Assuming a foreign key to Product
+                    comment_id=comment.id,
+                    product_id=comment.product if "product" in data else parent_comment.product
+                )
+                trigger_notification(notification)
+                send_notification("Product Comment", notification.message, notification.recipient.token)
 
             response_data = {"data": serializer.data}
             if notification:
@@ -118,6 +122,7 @@ class ProductCommentCreateView(CreateAPIView):
                     "notification_id": notification.pk,
                     "notification_type": notification.notification_type,
                     "product_id": notification.product_id.pk,
+                    "comment_id": notification.comment_id.pk,
                     "product_cover_image": notification.product_id.product_video_type.first().cover_image.url,
                     "sender": {
                         "first_name": notification.sender.first_name,
@@ -138,7 +143,17 @@ class ProductCommentDeleteView(DestroyAPIView):
 
     def perform_destroy(self, instance):
         if instance.user != self.request.user:
-            raise PermissionDenied("You do not have permission to delete this comment like.")
+            raise PermissionDenied("You do not have permission to delete this comment.")
+        
+        # Fetch the specific notification related to this comment
+        notification = Notification.objects.get(comment_id=instance)
+
+        # Trigger deletion of the specific notification
+        if notification:
+            trigger_delete_notification(notification)
+            notification.delete()
+
+
         super().perform_destroy(instance)
 
     def delete(self, request, *args, **kwargs):

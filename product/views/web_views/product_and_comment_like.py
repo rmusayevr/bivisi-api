@@ -41,16 +41,18 @@ class ToggleProductLikeAPIView(APIView):
             product.like_count += 1
             product.save()
             # Create a new notification
-            notification = Notification.objects.create(
-                recipient=product.user,
-                sender=self.request.user,
-                message=f"{self.request.user.username} liked your product.",
-                notification_type=Notification.NotificationTypeChoices.LIKE,
-                product_id=product
-            )
-            trigger_notification(notification)
-            send_notification("Product Like", notification.message,
-                              notification.recipient.token)
+            if product.user != self.request.user:
+
+                notification = Notification.objects.create(
+                    recipient=product.user,
+                    sender=self.request.user,
+                    message=f"{self.request.user.username} liked your product.",
+                    notification_type=Notification.NotificationTypeChoices.LIKE,
+                    product_id=product
+                )
+                trigger_notification(notification)
+                send_notification("Product Like", notification.message,
+                                notification.recipient.token)
 
             message = "Product liked"
             status_code = status.HTTP_201_CREATED
@@ -106,19 +108,20 @@ class ToggleProductCommentLikeAPIView(APIView):
             user_like.product_comment.add(product_comment)
             product_comment.like_count += 1
             product_comment.save()
-            # Create a new notification
-            notification = Notification.objects.create(
-                # Assuming the ProductComment model has a "user" field
-                recipient=product_comment.user,
-                sender=self.request.user,
-                message=f"{self.request.user.username} liked your comment.",
-                notification_type=Notification.NotificationTypeChoices.LIKE,
-                # Assuming ProductComment has a foreign key to Product
-                product_id=product_comment.product
-            )
-            trigger_notification(notification)
-            send_notification("Comment Like", notification.message,
-                              notification.recipient.token)
+            if product_comment.user != self.request.user:
+                # Create a new notification
+                notification = Notification.objects.create(
+                    # Assuming the ProductComment model has a "user" field
+                    recipient=product_comment.user,
+                    sender=self.request.user,
+                    message=f"{self.request.user.username} liked your comment.",
+                    notification_type=Notification.NotificationTypeChoices.LIKE,
+                    # Assuming ProductComment has a foreign key to Product
+                    product_id=product_comment.product
+                )
+                trigger_notification(notification)
+                send_notification("Comment Like", notification.message,
+                                notification.recipient.token)
             message = "Product comment liked"
             status_code = status.HTTP_201_CREATED
 

@@ -108,7 +108,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ('password', 'groups', 'user_permissions', 'status',
+        exclude = ('password', 'groups', 'user_permissions', 'status', 'token',
                    'is_superuser', 'is_staff', 'is_active', 'date_joined')
 
     def get_subscribers_count(self, obj):
