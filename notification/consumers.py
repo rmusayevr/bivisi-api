@@ -29,7 +29,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                 "notification_id": data["notification_id"],
                 "notification_type": data["notification_type"],
                 "product_id": data.get("product_id", None),
-                "comment_id": event.get("comment_id", None),
+                "comment_id": data.get("comment_id", None),
                 "product_cover_image": data.get("product_cover_image", None),
                 "sender": data["sender"],
             }

@@ -6,7 +6,7 @@ from notification.firebase_manager import send_notification
 from notification.models import Notification
 from product.models import Product, ProductComment, ProductCommentLike
 from product.serializers import ProductCommentCREATESerializer, WebProductCommentSerializer
-from notification.utils import trigger_notification
+from notification.utils import trigger_delete_notification, trigger_notification
 from services.pagination import InfiniteScrollPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
@@ -98,7 +98,7 @@ class ProductCommentCreateView(CreateAPIView):
                 product = Product.objects.get(pk=data["product"])
                 recipient = product.user  # Assuming the Product model has an "owner" field
                 if recipient != self.request.user:
-                    message = f"{self.request.user.username} commented on your product: {data.comment}"
+                    message = f"{self.request.user.username} commented on your product: {data['comment']}"
                     notification_type = Notification.NotificationTypeChoices.COMMENT
             
             if recipient != self.request.user:
@@ -109,7 +109,7 @@ class ProductCommentCreateView(CreateAPIView):
                     message=message,
                     notification_type=notification_type,
                     # Assuming a foreign key to Product
-                    comment_id=comment.id,
+                    comment_id=comment,
                     product_id=comment.product if "product" in data else parent_comment.product
                 )
                 trigger_notification(notification)
@@ -152,7 +152,6 @@ class ProductCommentDeleteView(DestroyAPIView):
         if notification:
             trigger_delete_notification(notification)
             notification.delete()
-
 
         super().perform_destroy(instance)
 
