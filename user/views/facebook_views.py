@@ -3,6 +3,7 @@ import string
 import requests
 from django.core.files.base import ContentFile
 from django.contrib.auth import login
+from django.conf import settings
 from django.utils.text import slugify
 from django.shortcuts import redirect
 from rest_framework import serializers, status

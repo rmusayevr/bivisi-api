@@ -1,17 +1,17 @@
-import json
 import random
 import string
 import requests
 from django.core.files.base import ContentFile
 from django.conf import settings
 from django.contrib.auth import login
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect
 from django.utils.text import slugify
 from django.shortcuts import redirect
 from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from ..service import GoogleRawLoginFlowService
 
@@ -93,17 +93,19 @@ class GoogleLoginApi(PublicApi):
 
         login(request, user)
 
-        # Serialize the user data to return
-        data = {
-            'access_token': google_tokens.access_token,
-            'username': user.username,
-            'email': user.email,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-        }
-         # Store data in a secure, HTTP-only cookie
+        # Generate JWT token
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+
+        # Store data in a secure, HTTP-only cookie
         response = HttpResponseRedirect(settings.BASE_FRONTEND_URL)
-        response.set_cookie('user_data', json.dumps(data), httponly=True, secure=True, samesite='Strict')
+        response.set_cookie(
+            key='access_token',
+            value=access_token,
+            httponly=True,  # Ensures the cookie is not accessible via JavaScript
+            secure=True,    # Use this in production (ensures the cookie is only sent over HTTPS)
+            samesite='Lax'  # Adjust this based on your cross-site request needs
+        )
 
         return response
 
@@ -132,12 +134,3 @@ class GoogleLoginApi(PublicApi):
         except requests.exceptions.RequestException as e:
             # Handle potential errors with image downloading
             return f"Error downloading or saving profile image for user {user.username}: {e}"
-
-
-
-class UserDataAPI(PublicApi):
-    def get(self, request, *args, **kwargs):
-        user_data = request.COOKIES.get('user_data')
-        if user_data:
-            return Response(json.loads(user_data), status=status.HTTP_200_OK)
-        return Response({'error': 'No user data found'}, status=status.HTTP_400_BAD_REQUEST)
