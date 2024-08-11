@@ -73,8 +73,7 @@ class FacebookLoginApi(PublicApi):
             user.first_name = user_info.get("name", "").split()[0]
             user.last_name = " ".join(user_info.get("name", "").split()[1:])
             user.username = self.generate_unique_username(user_email)
-            profile_image_url = user_info.get(
-                "picture", {}).get("data", {}).get("url")
+            profile_image_url = user_info.get("picture", {}).get("data", {}).get("url")
 
             if profile_image_url:
                 self.save_profile_image(user, profile_image_url)
@@ -95,7 +94,7 @@ class FacebookLoginApi(PublicApi):
             "username": user.username,
         }
 
-        return Response(result)
+        return redirect(f"{settings.BASE_FRONTEND_URL}", {"result": result})
 
     def generate_unique_username(self, email):
         base_username = slugify(email.split('@')[0])

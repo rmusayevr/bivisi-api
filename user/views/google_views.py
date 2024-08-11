@@ -1,8 +1,11 @@
+import json
 import random
 import string
 import requests
 from django.core.files.base import ContentFile
+from django.conf import settings
 from django.contrib.auth import login
+from django.http import HttpResponseRedirect, JsonResponse
 from django.utils.text import slugify
 from django.shortcuts import redirect
 from rest_framework import serializers, status
@@ -66,8 +69,7 @@ class GoogleLoginApi(PublicApi):
         google_tokens = google_login_flow.get_tokens(code=code)
 
         id_token_decoded = google_tokens.decode_id_token()
-        user_info = google_login_flow.get_user_info(
-            google_tokens=google_tokens)
+        user_info = google_login_flow.get_user_info(google_tokens=google_tokens)
 
         user_email = id_token_decoded["email"]
 
@@ -91,17 +93,19 @@ class GoogleLoginApi(PublicApi):
 
         login(request, user)
 
-        result = {
-            "id_token_decoded": id_token_decoded,
-            "user_info": user_info,
-            "access_token": google_tokens.access_token,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "email": user.email,
-            "username": user.username,
+        # Serialize the user data to return
+        data = {
+            'access_token': google_tokens.access_token,
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
         }
+         # Store data in a secure, HTTP-only cookie
+        response = HttpResponseRedirect(settings.BASE_FRONTEND_URL)
+        response.set_cookie('user_data', json.dumps(data), httponly=True, secure=True, samesite='Strict')
 
-        return Response(result)
+        return response
 
     def generate_unique_username(self, email):
         base_username = slugify(email.split('@')[0])
@@ -128,3 +132,12 @@ class GoogleLoginApi(PublicApi):
         except requests.exceptions.RequestException as e:
             # Handle potential errors with image downloading
             return f"Error downloading or saving profile image for user {user.username}: {e}"
+
+
+
+class UserDataAPI(PublicApi):
+    def get(self, request, *args, **kwargs):
+        user_data = request.COOKIES.get('user_data')
+        if user_data:
+            return Response(json.loads(user_data), status=status.HTTP_200_OK)
+        return Response({'error': 'No user data found'}, status=status.HTTP_400_BAD_REQUEST)

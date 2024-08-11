@@ -146,7 +146,7 @@ class ProductCommentDeleteView(DestroyAPIView):
             raise PermissionDenied("You do not have permission to delete this comment.")
         
         # Fetch the specific notification related to this comment
-        notification = Notification.objects.get(comment_id=instance)
+        notification = Notification.objects.filter(comment_id=instance).first()
 
         # Trigger deletion of the specific notification
         if notification:

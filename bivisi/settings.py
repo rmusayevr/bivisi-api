@@ -256,3 +256,16 @@ FACEBOOK_APP_ID = os.environ.get("FACEBOOK_APP_ID", "")
 FACEBOOK_APP_SECRET = os.environ.get("FACEBOOK_APP_SECRET", "")
 
 BASE_FRONTEND_URL = os.environ.get("BASE_FRONTEND_URL", "http://localhost:5173")
+# BASE_FRONTEND_URL = "http://localhost:5173"
+BASE_BACKEND_URL = os.environ.get("BASE_BACKEND_URL", "http://localhost:8000")
+
+
+# Ensure cookies are set for cross-origin requests
+CORS_ALLOW_CREDENTIALS = True
+
+# Session settingss
+SESSION_COOKIE_HTTPONLY = False
+SESSION_COOKIE_SAMESITE = None
+SESSION_COOKIE_SECURE = True  # Set to True for production
+CSRF_COOKIE_SAMESITE = None
+CSRF_COOKIE_SECURE = True 

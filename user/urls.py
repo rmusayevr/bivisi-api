@@ -38,6 +38,7 @@ from .views.admin_views import (
 from .views.google_views import (
     GoogleLoginApi,
     GoogleLoginRedirectApi,
+    UserDataAPI,
 )
 from .views.facebook_views import (
     FacebookLoginApi,
@@ -50,6 +51,7 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path("google/callback/", GoogleLoginApi.as_view(), name="callback-raw"),
     path("google/redirect/", GoogleLoginRedirectApi.as_view(), name="redirect-raw"),
+    path("user-data/", UserDataAPI.as_view(), name="user-data"),
 
     path("facebook/callback/", FacebookLoginApi.as_view(),
          name="callback-facebook"),
