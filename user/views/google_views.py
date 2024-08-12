@@ -1,136 +1,136 @@
-import random
-import string
-import requests
-from django.core.files.base import ContentFile
-from django.conf import settings
-from django.contrib.auth import login
-from django.http import HttpResponseRedirect
-from django.utils.text import slugify
-from django.shortcuts import redirect
-from rest_framework import serializers, status
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.tokens import RefreshToken
+# import json
+# import random
+# import string
+# import requests
+# from django.core.files.base import ContentFile
+# from django.conf import settings
+# from django.contrib.auth import login
+# from django.http import HttpResponseRedirect, JsonResponse
+# from django.utils.text import slugify
+# from django.shortcuts import redirect
+# from rest_framework import serializers, status
+# from rest_framework.response import Response
+# from rest_framework.views import APIView
+# from django.contrib.auth import get_user_model
+# from rest_framework_simplejwt.tokens import RefreshToken
 
-from ..service import GoogleRawLoginFlowService
-
-
-class PublicApi(APIView):
-    authentication_classes = ()
-    permission_classes = ()
+# from ..service import GoogleRawLoginFlowService
 
 
-class GoogleLoginRedirectApi(PublicApi):
-    def get(self, request, *args, **kwargs):
-        google_login_flow = GoogleRawLoginFlowService()
-
-        authorization_url, state = google_login_flow.get_authorization_url()
-
-        request.session["google_oauth2_state"] = state
-
-        return redirect(authorization_url)
+# class PublicApi(APIView):
+#     authentication_classes = ()
+#     permission_classes = ()
 
 
-class GoogleLoginApi(PublicApi):
-    class InputSerializer(serializers.Serializer):
-        code = serializers.CharField(required=False)
-        error = serializers.CharField(required=False)
-        state = serializers.CharField(required=False)
+# class GoogleLoginRedirectApi(PublicApi):
+#     def get(self, request, *args, **kwargs):
+#         google_login_flow = GoogleRawLoginFlowService()
 
-    def get(self, request, *args, **kwargs):
-        input_serializer = self.InputSerializer(data=request.GET)
-        input_serializer.is_valid(raise_exception=True)
+#         authorization_url, state = google_login_flow.get_authorization_url()
 
-        validated_data = input_serializer.validated_data
+#         request.session["google_oauth2_state"] = state
 
-        code = validated_data.get("code")
-        error = validated_data.get("error")
-        state = validated_data.get("state")
+#         return redirect(authorization_url)
 
-        if error is not None:
-            return Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
 
-        if code is None or state is None:
-            return Response({"error": "Code and state are required."}, status=status.HTTP_400_BAD_REQUEST)
+# class GoogleLoginApi(PublicApi):
+#     class InputSerializer(serializers.Serializer):
+#         code = serializers.CharField(required=False)
+#         error = serializers.CharField(required=False)
+#         state = serializers.CharField(required=False)
 
-        session_state = request.session.get("google_oauth2_state")
+#     def get(self, request, *args, **kwargs):
+#         input_serializer = self.InputSerializer(data=request.GET)
+#         input_serializer.is_valid(raise_exception=True)
 
-        if session_state is None:
-            return Response({"error": "CSRF check failed."}, status=status.HTTP_400_BAD_REQUEST)
+#         validated_data = input_serializer.validated_data
 
-        del request.session["google_oauth2_state"]
+#         code = validated_data.get("code")
+#         error = validated_data.get("error")
+#         state = validated_data.get("state")
 
-        if state != session_state:
-            return Response({"error": "CSRF check failed."}, status=status.HTTP_400_BAD_REQUEST)
+#         if error is not None:
+#             return Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
 
-        google_login_flow = GoogleRawLoginFlowService()
+#         if code is None or state is None:
+#             return Response({"error": "Code and state are required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        google_tokens = google_login_flow.get_tokens(code=code)
+#         session_state = request.session.get("google_oauth2_state")
 
-        id_token_decoded = google_tokens.decode_id_token()
-        user_info = google_login_flow.get_user_info(google_tokens=google_tokens)
+#         if session_state is None:
+#             return Response({"error": "CSRF check failed."}, status=status.HTTP_400_BAD_REQUEST)
 
-        user_email = id_token_decoded["email"]
+#         del request.session["google_oauth2_state"]
 
-        User = get_user_model()  # Get the user model dynamically
-        user, created = User.objects.get_or_create(email=user_email)
+#         if state != session_state:
+#             return Response({"error": "CSRF check failed."}, status=status.HTTP_400_BAD_REQUEST)
 
-        if created:
-            # Extract or generate required fields
-            user.first_name = user_info.get("given_name", "")
-            user.last_name = user_info.get("family_name", "")
-            user.username = self.generate_unique_username(user_email)
-            profile_image_url = user_info.get("picture")
+#         google_login_flow = GoogleRawLoginFlowService()
 
-            if profile_image_url:
-                self.save_profile_image(user, profile_image_url)
+#         google_tokens = google_login_flow.get_tokens(code=code)
 
-            user.is_active = True
-            user.status = "Active"
-            user.sign_up_method = "google"
-            user.save()
+#         id_token_decoded = google_tokens.decode_id_token()
+#         user_info = google_login_flow.get_user_info(google_tokens=google_tokens)
 
-        login(request, user)
+#         user_email = id_token_decoded["email"]
 
-        # Generate JWT token
-        refresh = RefreshToken.for_user(user)
-        access_token = str(refresh.access_token)
+#         User = get_user_model()  # Get the user model dynamically
+#         user, created = User.objects.get_or_create(email=user_email)
 
-        # Store data in a secure, HTTP-only cookie
-        response = HttpResponseRedirect(settings.BASE_FRONTEND_URL)
-        response.set_cookie(
-            key='access_token',
-            value=access_token,
-            httponly=True,  # Ensures the cookie is not accessible via JavaScript
-            secure=True,    # Use this in production (ensures the cookie is only sent over HTTPS)
-            samesite='Lax'  # Adjust this based on your cross-site request needs
-        )
+#         if created:
+#             # Extract or generate required fields
+#             user.first_name = user_info.get("given_name", "")
+#             user.last_name = user_info.get("family_name", "")
+#             user.username = self.generate_unique_username(user_email)
+#             profile_image_url = user_info.get("picture")
 
-        return response
+#             if profile_image_url:
+#                 self.save_profile_image(user, profile_image_url)
 
-    def generate_unique_username(self, email):
-        base_username = slugify(email.split('@')[0])
-        username = base_username
-        User = get_user_model()
-        # Ensure the username is unique
-        while User.objects.filter(username=username).exists():
-            # Append a random string if the username is taken
-            username = f"{base_username}{''.join(random.choices(string.ascii_lowercase + string.digits, k=6))}"
+#             user.is_active = True
+#             user.status = "Active"
+#             user.sign_up_method = "google"
+#             user.save()
 
-        return username
+#         login(request, user)
 
-    def save_profile_image(self, user, image_url):
-        try:
-            response = requests.get(image_url)
-            response.raise_for_status()  # Ensure the request was successful
+#         # Generate JWT token
+#         refresh = RefreshToken.for_user(user)
+#         access_token = str(refresh.access_token)
 
-            # Generate a filename
-            filename = slugify(user.username) + ".jpg"
+#         # Store data in a secure, HTTP-only cookie
+#         data = {
+#             'access_token': access_token,
+#             'username': user.username,
+#             'email': user.email,
+#             'first_name': user.first_name,
+#             'last_name': user.last_name,
+#         }
 
-            # Save the image to the avatar field
-            user.avatar.save(filename, ContentFile(
-                response.content), save=False)
-        except requests.exceptions.RequestException as e:
-            # Handle potential errors with image downloading
-            return f"Error downloading or saving profile image for user {user.username}: {e}"
+#         return JsonResponse(data)
+
+#     def generate_unique_username(self, email):
+#         base_username = slugify(email.split('@')[0])
+#         username = base_username
+#         User = get_user_model()
+#         # Ensure the username is unique
+#         while User.objects.filter(username=username).exists():
+#             # Append a random string if the username is taken
+#             username = f"{base_username}{''.join(random.choices(string.ascii_lowercase + string.digits, k=6))}"
+
+#         return username
+
+#     def save_profile_image(self, user, image_url):
+#         try:
+#             response = requests.get(image_url)
+#             response.raise_for_status()  # Ensure the request was successful
+
+#             # Generate a filename
+#             filename = slugify(user.username) + ".jpg"
+
+#             # Save the image to the avatar field
+#             user.avatar.save(filename, ContentFile(
+#                 response.content), save=False)
+#         except requests.exceptions.RequestException as e:
+#             # Handle potential errors with image downloading
+#             return f"Error downloading or saving profile image for user {user.username}: {e}"
