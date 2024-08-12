@@ -35,6 +35,7 @@ class GoogleLogin(SocialLoginView):
             'email': user.email,
             'first_name': user.first_name,
             'last_name': user.last_name,
+            'status': user.status,
         }
 
         # Return a custom response with user details

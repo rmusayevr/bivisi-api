@@ -8,7 +8,7 @@ from django.utils import timezone
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_token(sender, instance, created, **kwargs):
-    if created:
+    if created and instance.has_usable_password():
         if not instance.is_superuser and instance.sign_up_method == 'email':
             otp_code = generate_otp(instance.id)
             OTPToken.objects.create(user=instance, otp_code=otp_code, otp_expires_at=timezone.now(
