@@ -4,6 +4,9 @@ from dj_rest_auth.registration.views import SocialLoginView
 from django.conf import settings
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken  # For generating tokens
+import requests
+from django.core.files.base import ContentFile
 
 
 class GoogleLogin(SocialLoginView):
@@ -25,9 +28,29 @@ class GoogleLogin(SocialLoginView):
             user.sign_up_method = "google"
             user.save()
 
+        # Save Google profile picture as avatar
+        social_account = user.socialaccount_set.filter(provider='google').first()
+        if social_account:
+            google_data = social_account.extra_data
+            profile_picture_url = google_data.get('picture')
+            if profile_picture_url:
+                avatar_response = requests.get(profile_picture_url)
+                if avatar_response.status_code == 200:
+                    # Save the image to the user's avatar field
+                    user.avatar.save(
+                        f'{user.username}_avatar.jpg',
+                        ContentFile(avatar_response.content),
+                        save=True
+                    )
+
     def get_response(self):
         # Get the user
         user = self.user
+
+        # Generate the access and refresh tokens
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
 
         # Prepare the response data
         data = {
@@ -36,6 +59,8 @@ class GoogleLogin(SocialLoginView):
             'first_name': user.first_name,
             'last_name': user.last_name,
             'status': user.status,
+            'access_token': access_token,
+            'refresh_token': refresh_token,
         }
 
         # Return a custom response with user details
