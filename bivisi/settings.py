@@ -45,6 +45,7 @@ BASE_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
 ]
 
 THIRD_PARTY_APPS = [
@@ -58,6 +59,13 @@ THIRD_PARTY_APPS = [
     "phonenumber_field",
     "import_export",
     "storages",
+    "dj_rest_auth",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.facebook",
+    "dj_rest_auth.registration",
 ]
 
 MY_APPS = [
@@ -82,6 +90,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "bivisi.urls"
@@ -97,6 +106,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.request",
             ],
         },
     },
@@ -182,12 +192,18 @@ else:
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+SITE_ID = 3
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     )
+}
+
+REST_AUTH = {
+    'USE_JWT': True,
 }
 
 SIMPLE_JWT = {
@@ -212,9 +228,10 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 
 if PROD:
-    CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://*,https://*").split(",")
+    CSRF_TRUSTED_ORIGINS = os.environ.get(
+        "CSRF_TRUSTED_ORIGINS", "http://*,https://*").split(",")
 
-AUTH_USER_MODEL = "user.User"   
+AUTH_USER_MODEL = "user.User"
 
 EMAIL_BACKEND = os.environ.get(
     "EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
@@ -246,26 +263,10 @@ CHANNEL_LAYERS = {
 
 AUTHENTICATION_BACKENDS = [
     "user.backends.EmailBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-GOOGLE_OAUTH2_CLIENT_ID=os.environ.get("GOOGLE_OAUTH2_CLIENT_ID", "")
-GOOGLE_OAUTH2_CLIENT_SECRET=os.environ.get("GOOGLE_OAUTH2_CLIENT_SECRET", "")
-GOOGLE_OAUTH2_PROJECT_ID=os.environ.get("GOOGLE_OAUTH2_PROJECT_ID", "")
-
-FACEBOOK_APP_ID = os.environ.get("FACEBOOK_APP_ID", "")
-FACEBOOK_APP_SECRET = os.environ.get("FACEBOOK_APP_SECRET", "")
-
-BASE_FRONTEND_URL = os.environ.get("BASE_FRONTEND_URL", "http://localhost:5173")
+BASE_FRONTEND_URL = os.environ.get(
+    "BASE_FRONTEND_URL", "http://localhost:5173")
 # BASE_FRONTEND_URL = "http://localhost:5173"
 BASE_BACKEND_URL = os.environ.get("BASE_BACKEND_URL", "http://localhost:8000")
-
-
-# Ensure cookies are set for cross-origin requests
-CORS_ALLOW_CREDENTIALS = True
-
-# Session settingss
-SESSION_COOKIE_HTTPONLY = False
-SESSION_COOKIE_SAMESITE = None
-SESSION_COOKIE_SECURE = True  # Set to True for production
-CSRF_COOKIE_SAMESITE = None
-CSRF_COOKIE_SECURE = True 

@@ -30,6 +30,8 @@ urlpatterns = [
     path('api/order/', include('order.urls')),
     path('api/history/', include('history.urls')),
     path('api/', include('notification.urls')),
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),
+    path('accounts/', include('allauth.urls')),
 ]
 
 schema_view = get_schema_view(

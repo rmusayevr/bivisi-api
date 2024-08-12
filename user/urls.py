@@ -1,5 +1,7 @@
 from django.urls import path
 
+from user.views.facebook_views import FacebookLogin
+from user.views.google_views import GoogleLogin
 from user.views.otp_views import (
     OTPResendAPIView,
     OTPVerifyAPIView
@@ -35,26 +37,14 @@ from .views.admin_views import (
     SubscriptionListCreateAPIView,
     SubscriptionRetrieveUpdateDestroyAPIView,
 )
-# from .views.google_views import (
-#     GoogleLoginApi,
-#     GoogleLoginRedirectApi,
-# )
-# from .views.facebook_views import (
-#     FacebookLoginApi,
-#     FacebookLoginRedirectApi,
 # )
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
 urlpatterns = [
-#     path("google/callback/", GoogleLoginApi.as_view(), name="callback-raw"),
-#     path("google/redirect/", GoogleLoginRedirectApi.as_view(), name="redirect-raw"),
-
-#     path("facebook/callback/", FacebookLoginApi.as_view(),
-#          name="callback-facebook"),
-#     path("facebook/redirect/", FacebookLoginRedirectApi.as_view(),
-#          name="redirect-facebook"),
+    path('login/facebook/', FacebookLogin.as_view(), name='fb_login'),
+    path('login/google/', GoogleLogin.as_view(), name='google_login'),
 
     path('login/', LoginTokenView.as_view(), name='token_obtain_pair'),
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
