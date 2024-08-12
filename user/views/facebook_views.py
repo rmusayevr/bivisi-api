@@ -62,13 +62,5 @@ class FacebookLogin(SocialLoginView):
             'refresh_token': refresh_token,
         }
 
-        # Prepare the response data
-        data = {
-            'username': user.username,
-            'email': user.email,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-        }
-
         # Return a custom response with user details
         return Response(data, status=status.HTTP_200_OK)
