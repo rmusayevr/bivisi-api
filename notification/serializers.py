@@ -1,11 +1,13 @@
 from rest_framework import serializers
 from .models import Notification
+from product.serializers import ProductCommentREADSerializer
 from user.serializers import UserDetailSerializer
 
 class NotificationSerializer(serializers.ModelSerializer):
     recipient = UserDetailSerializer()
     sender = UserDetailSerializer()
-    product_cover_image = serializers.SerializerMethodField()    
+    product_cover_image = serializers.SerializerMethodField()
+    comment_id = ProductCommentREADSerializer()
 
     class Meta:
         model = Notification

@@ -92,13 +92,13 @@ class ProductCommentCreateView(CreateAPIView):
                 # Assuming the ProductComment model has a "user" field
                 recipient = parent_comment.user
                 if recipient != self.request.user:
-                    message = f"{self.request.user.username} replied to your comment: {parent_comment.comment}"
+                    message = f"{self.request.user.username} replied to your comment"
                     notification_type = Notification.NotificationTypeChoices.COMMENT
             else:
                 product = Product.objects.get(pk=data["product"])
                 recipient = product.user  # Assuming the Product model has an "owner" field
                 if recipient != self.request.user:
-                    message = f"{self.request.user.username} commented on your product: {data['comment']}"
+                    message = f"{self.request.user.username} commented on your product"
                     notification_type = Notification.NotificationTypeChoices.COMMENT
             
             if recipient != self.request.user:
