@@ -1,22 +1,26 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from services.pagination import InfiniteScrollPagination
 from .models import Notification
 from .serializers import NotificationSerializer
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.views import APIView
-from services.pagination import InfiniteScrollPagination
 
 
+@method_decorator(cache_page(60 * 15), name="get")
 class NotificationListCreateView(generics.ListCreateAPIView):
-    queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = InfiniteScrollPagination
 
     def get_queryset(self):
-        return self.queryset.filter(recipient=self.request.user)
+        return Notification.objects.filter(recipient=self.request.user).select_related(
+            "sender", "product_id", "comment_id"
+        )
 
 
+@method_decorator(cache_page(60 * 15), name="get")
 class NotificationDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer

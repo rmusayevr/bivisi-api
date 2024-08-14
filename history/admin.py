@@ -21,6 +21,11 @@ class UserHistoryAdmin(ImportExportModelAdmin):
     ]
     list_per_page = 15
     search_fields = ["user__username"]
+    readonly_fields = ["created_at", "updated_at"]
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related('user', 'product_video_type')
 
 
 admin.site.register(UserHistory, UserHistoryAdmin)

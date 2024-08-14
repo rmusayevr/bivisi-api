@@ -1,5 +1,9 @@
 import django_filters.rest_framework
 from rest_framework import filters, status
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.db.models import Count
 from rest_framework.generics import (
     ListAPIView,
@@ -21,10 +25,9 @@ from product.serializers import (
     ProductREADSerializer,
 )
 from services.pagination import InfiniteScrollPagination
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 
 
+@method_decorator(cache_page(60 * 15), name="get")
 class WebProductVideoTypeListView(ListAPIView):
     serializer_class = WebProductVideoTypeSerializer
     pagination_class = InfiniteScrollPagination
@@ -40,9 +43,11 @@ class WebProductVideoTypeListView(ListAPIView):
         queryset = ProductVideoType.objects.select_related('product').annotate(
             comment_count=Count('product__product_comment')
         )
+        
         return queryset
 
 
+@method_decorator(cache_page(60 * 15), name="get")
 class UserWebProductTypeListView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = WebProductVideoTypeSerializer
@@ -59,6 +64,7 @@ class UserWebProductTypeListView(ListAPIView):
         return ProductVideoType.objects.filter(product__user=self.request.user)
 
 
+@method_decorator(cache_page(60 * 15), name="get")
 class ChannelWebProductTypeListView(ListAPIView):
     serializer_class = WebProductVideoTypeSerializer
     pagination_class = InfiniteScrollPagination
@@ -128,6 +134,7 @@ class ShortsDeleteAPIView(DestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@method_decorator(cache_page(60 * 15), name="get")
 class UserProductLikeWebAPIView(ListAPIView):
     queryset = ProductVideoType.objects.all()
     serializer_class = WebProductVideoTypeSerializer
@@ -149,6 +156,7 @@ class UserProductLikeWebAPIView(ListAPIView):
         )
 
 
+@method_decorator(cache_page(60 * 15), name="get")
 class TrendingAPIView(ListAPIView):
     queryset = ProductVideoType.objects.select_related('product').all()
     serializer_class = WebProductVideoTypeSerializer
@@ -169,6 +177,7 @@ class TrendingAPIView(ListAPIView):
         return self.queryset
 
 
+@method_decorator(cache_page(60 * 15), name="get")
 class WebTrendingAPIView(ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductREADSerializer

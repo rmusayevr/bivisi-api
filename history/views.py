@@ -9,12 +9,14 @@ from .models import UserHistory, ProductVideoType
 from .serializers import UserHistoryDeleteSerializer, UserHistorySerializer
 from rest_framework.permissions import IsAuthenticated
 from django.utils.dateparse import parse_datetime
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 
-
 # GET LIST USER HISTORY
+@method_decorator(cache_page(60 * 15), name="get")
 class UserHistoryListAPIView(ListAPIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]

@@ -18,7 +18,6 @@ from services.pagination import InfiniteScrollPagination
 
 
 class FavoriteWebAPIView(ListAPIView):
-    queryset = ProductVideoType.objects.all()
     serializer_class = WebProductVideoTypeSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = InfiniteScrollPagination
@@ -28,14 +27,13 @@ class FavoriteWebAPIView(ListAPIView):
         product_type = self.request.GET.get('product_type')
         favorite_product_ids = Favorite.objects.filter(
             user=user).values_list('items__id', flat=True)
+        queryset = ProductVideoType.objects.filter(
+            product_id__in=favorite_product_ids)
+
         if product_type:
-            return ProductVideoType.objects.filter(
-                product_id__in=favorite_product_ids,
-                product_type=product_type
-            )
-        return ProductVideoType.objects.filter(
-            product_id__in=favorite_product_ids
-        )
+            queryset = queryset.filter(product_type=product_type)
+
+        return queryset
 
 
 class ToggleFavoriteAPIView(APIView):
@@ -67,12 +65,11 @@ class ToggleFavoriteAPIView(APIView):
 
 
 class BasketWebAPIView(ListAPIView):
-    queryset = Basket.objects.all()
     serializer_class = BasketWebReadSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Basket.objects.filter(user=self.request.user, is_active=True)
+        return Basket.objects.filter(user=self.request.user, is_active=True).select_related("user")
 
 
 class AddBasketAPIView(APIView):
@@ -176,7 +173,8 @@ class OrderListView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user)
+        return Order.objects.filter(user=self.request.user).select_related("user")
+
 
 class OrderCreateView(CreateAPIView):
     queryset = Order.objects.all()

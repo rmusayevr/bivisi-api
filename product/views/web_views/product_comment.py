@@ -1,22 +1,23 @@
-import django_filters.rest_framework
-from rest_framework import filters
-from rest_framework.generics import CreateAPIView
-from rest_framework.generics import ListAPIView, DestroyAPIView
-from notification.firebase_manager import send_notification
-from notification.models import Notification
-from product.models import Product, ProductComment, ProductCommentLike
-from product.serializers import ProductCommentCREATESerializer, WebProductCommentSerializer
-from notification.utils import trigger_delete_notification, trigger_notification
-from services.pagination import InfiniteScrollPagination
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import PermissionDenied
-from rest_framework import status
-from rest_framework.response import Response
-from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+import django_filters.rest_framework
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from rest_framework import filters, status
+from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import ListAPIView, DestroyAPIView, CreateAPIView
+from notification.models import Notification
+from notification.firebase_manager import send_notification
+from notification.utils import trigger_delete_notification, trigger_notification
+from product.models import Product, ProductComment
+from product.serializers import ProductCommentCREATESerializer, WebProductCommentSerializer
+from services.pagination import InfiniteScrollPagination
 
 
 # Product Comments only parent comment null
+@method_decorator(cache_page(60 * 15), name="get")
 class ParentCommentListAPIView(ListAPIView):
     serializer_class = WebProductCommentSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
@@ -35,6 +36,7 @@ class ParentCommentListAPIView(ListAPIView):
         )
 
 
+@method_decorator(cache_page(60 * 15), name="get")
 class SubCommentListAPIView(ListAPIView):
     serializer_class = WebProductCommentSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend,

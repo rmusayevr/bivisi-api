@@ -26,7 +26,7 @@ class BasketItemAdmin(ImportExportModelAdmin):
         "updated_at"
     ]
     list_display_links = ["user", "product"]
-    search_fields = ["user__username", "product"]
+    search_fields = ["user__username", "product__name"]
     list_filter = ["created_at", "updated_at"]
     autocomplete_fields = ["product"]
     list_per_page = 15
@@ -47,6 +47,7 @@ class BasketAdmin(ImportExportModelAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.select_related("user").prefetch_related("items")
+
 
 class OrderAdmin(ImportExportModelAdmin):
     list_display = ["id", "user", "basket", "created_at", "updated_at"]

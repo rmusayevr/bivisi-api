@@ -1,10 +1,10 @@
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
+from django.core.files.base import ContentFile
 from dj_rest_auth.registration.views import SocialLoginView
+import requests
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken  # For generating tokens
-import requests
-from django.core.files.base import ContentFile
 
 
 class FacebookLogin(SocialLoginView):
@@ -58,8 +58,8 @@ class FacebookLogin(SocialLoginView):
             'first_name': user.first_name,
             'last_name': user.last_name,
             'status': user.status,
-            'access_token': access_token,
-            'refresh_token': refresh_token,
+            'access': access_token,
+            'refresh': refresh_token,
         }
 
         # Return a custom response with user details
