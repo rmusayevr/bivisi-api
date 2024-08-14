@@ -66,6 +66,7 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.facebook",
     "dj_rest_auth.registration",
+    "django_cleanup.apps.CleanupConfig",
 ]
 
 MY_APPS = [
@@ -208,7 +209,7 @@ REST_AUTH = {
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=14),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "ALGORITHM": "HS256",
@@ -226,6 +227,7 @@ SIMPLE_JWT = {
 # else:
 CORS_ALLOW_ALL_ORIGINS = True
 
+CORS_ALLOW_CREDENTIALS = True
 
 if PROD:
     CSRF_TRUSTED_ORIGINS = os.environ.get(
@@ -261,12 +263,23 @@ CHANNEL_LAYERS = {
     },
 }
 
+if PROD:
+    REDIS_LOCATION = os.environ.get("REDIS_LOCATION", "redis://localhost:6379/1")
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": REDIS_LOCATION,
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "IGNORE_EXCEPTIONS": not DEBUG,
+            }
+        }
+    }
+
 AUTHENTICATION_BACKENDS = [
     "user.backends.EmailBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-BASE_FRONTEND_URL = os.environ.get(
-    "BASE_FRONTEND_URL", "http://localhost:5173")
-# BASE_FRONTEND_URL = "http://localhost:5173"
+BASE_FRONTEND_URL = os.environ.get("BASE_FRONTEND_URL", "http://localhost:5173")
 BASE_BACKEND_URL = os.environ.get("BASE_BACKEND_URL", "http://localhost:8000")
