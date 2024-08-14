@@ -134,7 +134,7 @@ class ToggleProductCommentLikeAPIView(APIView):
                 "notification_id": notification.pk,
                 "notification_type": notification.notification_type,
                 "product_id": notification.product_id.pk,
-                "comment_id": notification.comment_id.message,
+                "comment_id": notification.comment_id.comment,
                 "product_cover_image": notification.product_id.product_video_type.first().cover_image.url,
                 "sender": {
                     "first_name": notification.sender.first_name,
