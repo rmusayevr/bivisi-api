@@ -15,6 +15,7 @@ def trigger_notification(notification):
             "notification_id": notification.pk,
             "notification_type": notification.notification_type,
             "product_id": notification.product_id.pk if notification.product_id else None,
+            "comment_id": notification.comment_id.message if notification.comment_id else None,
             "product_cover_image": notification.product_id.product_video_type.first().cover_image.url if notification.product_id else None,
             "sender": {
                 "first_name": notification.sender.first_name,

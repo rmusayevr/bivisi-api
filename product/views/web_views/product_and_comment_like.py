@@ -98,6 +98,7 @@ class ToggleProductCommentLikeAPIView(APIView):
                 recipient=product_comment.user,
                 sender=self.request.user,
                 product_id=product_comment.product,
+                comment_id=product_comment,
                 notification_type=Notification.NotificationTypeChoices.LIKE
             ).first()
 
@@ -117,6 +118,7 @@ class ToggleProductCommentLikeAPIView(APIView):
                     message=f"{self.request.user.username} liked your comment.",
                     notification_type=Notification.NotificationTypeChoices.LIKE,
                     # Assuming ProductComment has a foreign key to Product
+                    comment_id=product_comment,
                     product_id=product_comment.product
                 )
                 trigger_notification(notification)
@@ -132,6 +134,7 @@ class ToggleProductCommentLikeAPIView(APIView):
                 "notification_id": notification.pk,
                 "notification_type": notification.notification_type,
                 "product_id": notification.product_id.pk,
+                "comment_id": notification.comment_id.message,
                 "product_cover_image": notification.product_id.product_video_type.first().cover_image.url,
                 "sender": {
                     "first_name": notification.sender.first_name,
