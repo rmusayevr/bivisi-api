@@ -132,3 +132,4 @@ dmypy.json
 media
 data
 serviceAccountKey.json
+delete_migrations.py

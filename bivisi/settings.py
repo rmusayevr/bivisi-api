@@ -67,6 +67,7 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount.providers.facebook",
     "dj_rest_auth.registration",
     "django_cleanup.apps.CleanupConfig",
+    "silk",
 ]
 
 MY_APPS = [
@@ -82,6 +83,7 @@ INSTALLED_APPS = INITIAL_APPS + BASE_APPS + THIRD_PARTY_APPS + MY_APPS
 
 
 MIDDLEWARE = [
+    "silk.middleware.SilkyMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
