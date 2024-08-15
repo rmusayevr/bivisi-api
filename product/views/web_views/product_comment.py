@@ -1,8 +1,6 @@
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 import django_filters.rest_framework
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 from rest_framework import filters, status
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
@@ -17,7 +15,6 @@ from services.pagination import InfiniteScrollPagination
 
 
 # Product Comments only parent comment null
-@method_decorator(cache_page(60 * 15), name="get")
 class ParentCommentListAPIView(ListAPIView):
     serializer_class = WebProductCommentSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
@@ -36,7 +33,6 @@ class ParentCommentListAPIView(ListAPIView):
         )
 
 
-@method_decorator(cache_page(60 * 15), name="get")
 class SubCommentListAPIView(ListAPIView):
     serializer_class = WebProductCommentSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
