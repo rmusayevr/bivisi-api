@@ -11,7 +11,6 @@ class OneSessionPerUserMiddleware:
         # the view (and later middleware) are called.
         if request.user.is_authenticated:
             stored_session_key = request.user.logged_in_user.session_key
-
             # if there is a stored_session_key  in our database and it is
             # different from the current session, delete the stored_session_key
             # session_key with from the Session table
