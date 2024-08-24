@@ -8,7 +8,7 @@ from services.pagination import InfiniteScrollPagination
 from .models import UserHistory, ProductVideoType
 from .serializers import UserHistoryDeleteSerializer, UserHistorySerializer
 from rest_framework.permissions import IsAuthenticated
-from django.views.decorators.cache import cache_page
+from django.utils.dateparse import parse_datetime
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 

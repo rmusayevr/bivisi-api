@@ -89,7 +89,7 @@ class ProductForTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'in_sale', 'percent', 'final_price', 'view_count', 'product_link', 'location',
+        fields = ['id', 'name','description', 'price', 'in_sale', 'percent', 'final_price', 'view_count', 'product_link', 'location',
                   'location_url', 'properties', 'like_count', 'category', 'user', 'comment_count', 'is_premium', 'created_at', 'updated_at']
 
     def get_user(self, obj):
