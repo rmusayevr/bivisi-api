@@ -42,9 +42,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(_('first name'), max_length=50)
     last_name = models.CharField(_('last name'), max_length=60)
     avatar = models.ImageField(
-        _("avatar"), upload_to=Uploader.user_avatar, max_length=500, null=True, blank=True)
+        _("avatar"), upload_to=Uploader.user_avatar, max_length=2000, null=True, blank=True)
     cover_image = models.ImageField(
-        _("cover image"), upload_to=Uploader.user_cover_image, max_length=500, null=True, blank=True)
+        _("cover image"), upload_to=Uploader.user_cover_image, max_length=2000, null=True, blank=True)
     gender = models.CharField(
         _('gender'), max_length=30, choices=GENDER_CHOICES, null=True, blank=True)
     birthday = models.DateField(_('birthday'), null=True, blank=True)

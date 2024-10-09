@@ -261,7 +261,6 @@ class WebUploadProductUPDATESerializer(serializers.ModelSerializer):
                         'property_value', property_instance.property_value)
                     property_instance.save()
                 else:
-                    print('no')
                     ProductPropertyAndValue.objects.create(
                         product=instance, **property_data)
 

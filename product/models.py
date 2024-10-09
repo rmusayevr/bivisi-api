@@ -112,12 +112,12 @@ class ProductVideoType(DateMixin):
         _("Product Type"), max_length=255, choices=ProductTypeChoices.choices, db_index=True
     )
     cover_image = models.ImageField(
-        _("Cover Image"), upload_to=Uploader.product_cover_image, max_length=500, null=True, blank=True)
+        _("Cover Image"), upload_to=Uploader.product_cover_image, max_length=2000, null=True, blank=True)
 
     original_video = models.FileField(
-        _("Original Video"), upload_to=Uploader.product_original_video, max_length=500)
+        _("Original Video"), upload_to=Uploader.product_original_video, max_length=5000)
     compressed_video = models.FileField(
-        _("Compressed Video (480p)"), upload_to=Uploader.product_compress_video, max_length=500, null=True, blank=True)
+        _("Compressed Video (480p)"), upload_to=Uploader.product_compress_video, max_length=2000, null=True, blank=True)
 
     product = models.ForeignKey(Product, verbose_name=_(
         "Product"), on_delete=models.CASCADE, related_name='product_video_type', db_index=True,

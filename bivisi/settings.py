@@ -26,6 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-m$pctt(_0zrns4$^cgmdgufmff(#l8)i6s0!f+d86-hy#e#iz9")
 
 # SECURITY WARNING: don"t run with debug turned on in production!
+# DEBUG=True
 DEBUG = int(os.environ.get("DEBUG", default=1))
 PROD = int(os.environ.get("PROD", default=0))
 
@@ -94,7 +95,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    "user.middleware.OneSessionPerUserMiddleware",
+    # "user.middleware.OneSessionPerUserMiddleware",
 ]
 
 ROOT_URLCONF = "bivisi.urls"
@@ -196,7 +197,7 @@ else:
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-SITE_ID = 2
+SITE_ID = 3
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -254,8 +255,8 @@ JAZZMIN_SETTINGS = JAZZMIN_SETTINGS
 JAZZMIN_UI_TWEAKS = JAZZMIN_UI_TWEAKS
 
 # Maximum size of file uploads in bytes (1 GB)
-FILE_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 1024  # 1 GB
-DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 1024  # 1 GB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 1024
+DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 1024
 
 CHANNEL_LAYERS = {
     "default": {

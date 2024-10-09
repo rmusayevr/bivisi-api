@@ -8,7 +8,7 @@ from services.uploader import Uploader
 
 class Slider(DateMixin):
     image = models.ImageField(
-        _("Image"), upload_to=Uploader.slider_image, max_length=500,
+        _("Image"), upload_to=Uploader.slider_image, max_length=2000,
     )
 
     def __str__(self):
@@ -59,7 +59,7 @@ class Stream(DateMixin):
     room_name = models.CharField(_('room name'), max_length=255)
     user_name = models.CharField(_('user name'), max_length=255)
     cover_image = models.ImageField(
-        _('cover image'), upload_to=Uploader.stream_image, max_length=500)
+        _('cover image'), upload_to=Uploader.stream_image, max_length=2000)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name=_(
         'product'), related_name="stream_products", null=True, blank=True)
 
